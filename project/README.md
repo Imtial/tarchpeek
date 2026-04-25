@@ -4,7 +4,7 @@ This directory is the operating surface for the React Native client project.
 
 ## Current Status
 
-- Current phase: `Phase 00 - Product Definition`
+- Current phase: `Phase 01 - Feasibility Spike`
 - Overall status: `in_progress`
 - App code location: `/app`
 - Primary targets: `Android`, `Android TV`

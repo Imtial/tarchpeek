@@ -1,8 +1,8 @@
 # Phase 01: Feasibility Spike
 
-Status: `planned`
+Status: `in_progress`
 Owner: `user + OpenCode`
-Last updated: `2026-04-22`
+Last updated: `2026-04-26`
 
 ## Goal
 

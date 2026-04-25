@@ -1,8 +1,8 @@
 # Project Status
 
 Status: `in_progress`
-Current phase: `Phase 00 - Product Definition`
-Last updated: `2026-04-22`
+Current phase: `Phase 01 - Feasibility Spike`
+Last updated: `2026-04-26`
 
 ## Product Summary
 
@@ -11,9 +11,9 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Current Focus
 
-- Lock product boundaries and delivery sequence
-- Keep the repository layout stable before app implementation begins
-- De-risk playback/auth assumptions before UI-heavy work starts
+- Bootstrap the minimal app shell in `/app`
+- Prove API-token auth and protected media playback
+- Validate progress sync, subtitles, and Android TV playback-path interaction
 
 ## Active Constraints
 
@@ -32,17 +32,17 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Immediate Next Steps
 
-1. Start `Phase 01 - Feasibility Spike`
-2. Prove authenticated playback on Android phone and Android TV
-3. Confirm progress sync and subtitle behavior
-4. Decide whether any backend adaptation is required for reliable playback
+1. Bootstrap the minimal React Native app shell in `/app`
+2. Implement `Server URL + API token` input and persistence
+3. Fetch one known-good video and attempt authenticated playback
+4. Document playback, subtitle, and progress-sync findings
 
 ## Phase Summary
 
 | Phase | Name | Status | Outcome |
 | --- | --- | --- | --- |
-| 00 | Product Definition | in_progress | Lock scope, UX principles, and repo conventions |
-| 01 | Feasibility Spike | planned | Prove playback, auth, and progress sync |
+| 00 | Product Definition | done | Lock scope, UX principles, and repo conventions |
+| 01 | Feasibility Spike | in_progress | Prove playback, auth, and progress sync |
 | 02 | Foundation | planned | Establish app shell and engineering baseline |
 | 03 | Browsing MVP | planned | Deliver intentional discovery and browsing |
 | 04 | Playback MVP | planned | Deliver dependable end-to-end viewing |
