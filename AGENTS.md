@@ -39,3 +39,4 @@ These rules apply to the whole repository.
 - The MVP uses `Server URL + API token` authentication.
 - `Continue Watching` is the highest-priority home surface.
 - `Shorts` are hidden in the MVP.
+- Use `useEffect` with strong restraint. Any new `useEffect` usage must be justified explicitly, including why a simpler or more direct solution was not better.
