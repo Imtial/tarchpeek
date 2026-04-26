@@ -3,23 +3,33 @@ import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
-  TextInput,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
   useColorScheme,
   View,
 } from 'react-native';
-import {
-  SafeAreaProvider,
-  SafeAreaView,
-} from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useEvent, useVideoPlayer, VideoView } from 'react-native-video';
 
 const SERVER_URL_KEY = 'serverUrl';
 const API_TOKEN_KEY = 'apiToken';
+const VIDEO_INPUT_KEY = 'testVideoInput';
+
 const storage = createAsyncStorage('tarchpeek');
 
-type FieldName = 'serverUrl' | 'apiToken' | null;
+type FieldName = 'serverUrl' | 'apiToken' | 'testVideo' | null;
+
+type VideoDetails = {
+  title: string;
+  duration?: number;
+  source: {
+    uri: number | string;
+    headers?: Record<string, string>;
+  };
+};
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -36,19 +46,24 @@ function AppContent() {
   const isDarkMode = useColorScheme() === 'dark';
   const [serverUrl, setServerUrl] = useState('');
   const [apiToken, setApiToken] = useState('');
+  const [testVideoInput, setTestVideoInput] = useState('');
+  const [focusedField, setFocusedField] = useState<FieldName>(null);
   const [isHydrating, setIsHydrating] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [focusedField, setFocusedField] = useState<FieldName>(null);
+  const [isLoadingVideo, setIsLoadingVideo] = useState(false);
   const [statusMessage, setStatusMessage] = useState('Enter a TubeArchivist server and API token.');
+  const [playbackStatus, setPlaybackStatus] = useState('No playback attempted yet.');
+  const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
 
   useEffect(() => {
     let isMounted = true;
 
     async function hydrateConnection() {
       try {
-        const [storedServerUrl, storedApiToken] = await Promise.all([
+        const [storedServerUrl, storedApiToken, storedVideoInput] = await Promise.all([
           storage.getItem(SERVER_URL_KEY),
           storage.getItem(API_TOKEN_KEY),
+          storage.getItem(VIDEO_INPUT_KEY),
         ]);
 
         if (!isMounted) {
@@ -61,6 +76,10 @@ function AppContent() {
 
         if (storedApiToken) {
           setApiToken(storedApiToken);
+        }
+
+        if (storedVideoInput) {
+          setTestVideoInput(storedVideoInput);
         }
 
         if (storedServerUrl || storedApiToken) {
@@ -87,6 +106,7 @@ function AppContent() {
   async function saveConnection() {
     const normalizedServerUrl = serverUrl.trim().replace(/\/$/, '');
     const normalizedApiToken = apiToken.trim();
+    const normalizedVideoInput = testVideoInput.trim();
 
     if (!normalizedServerUrl || !normalizedApiToken) {
       setStatusMessage('Server URL and API token are both required.');
@@ -100,9 +120,11 @@ function AppContent() {
       await Promise.all([
         storage.setItem(SERVER_URL_KEY, normalizedServerUrl),
         storage.setItem(API_TOKEN_KEY, normalizedApiToken),
+        storage.setItem(VIDEO_INPUT_KEY, normalizedVideoInput),
       ]);
       setServerUrl(normalizedServerUrl);
       setApiToken(normalizedApiToken);
+      setTestVideoInput(normalizedVideoInput);
       setStatusMessage('Saved locally. Playback validation can use this connection next.');
     } catch {
       setStatusMessage('Saving failed. Check local storage availability and try again.');
@@ -111,13 +133,108 @@ function AppContent() {
     }
   }
 
+  function getVideoId(input: string) {
+    const normalizedInput = input.trim();
+
+    if (!normalizedInput) {
+      return null;
+    }
+
+    const videoMatch = normalizedInput.match(/\/video\/([A-Za-z0-9_-]+)/);
+    if (videoMatch?.[1]) {
+      return videoMatch[1];
+    }
+
+    const bareIdMatch = normalizedInput.match(/^[A-Za-z0-9_-]{8,}$/);
+    return bareIdMatch ? normalizedInput : null;
+  }
+
+  async function loadTestVideo() {
+    const normalizedServerUrl = serverUrl.trim().replace(/\/$/, '');
+    const normalizedApiToken = apiToken.trim();
+    const videoId = getVideoId(testVideoInput);
+
+    if (!normalizedServerUrl || !normalizedApiToken) {
+      setStatusMessage('Save a server URL and API token before loading a test video.');
+      return;
+    }
+
+    if (!videoId) {
+      setPlaybackStatus('Enter a TubeArchivist video URL or a bare video id.');
+      return;
+    }
+
+    setIsLoadingVideo(true);
+    setPlaybackStatus('Fetching video metadata...');
+
+    try {
+      const response = await fetch(`${normalizedServerUrl}/api/video/${videoId}/`, {
+        headers: {
+          Authorization: `Token ${normalizedApiToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Video API returned ${response.status}`);
+      }
+
+      const payload = (await response.json()) as {
+        media_url?: string;
+        player?: { duration?: number };
+        title?: string;
+      };
+
+      if (!payload.media_url) {
+        throw new Error('Video payload did not include media_url');
+      }
+
+      const resolvedMediaUrl = payload.media_url.startsWith('http')
+        ? payload.media_url
+        : `${normalizedServerUrl}${payload.media_url}`;
+
+      setVideoDetails({
+        title: payload.title ?? videoId,
+        duration: payload.player?.duration,
+        source: {
+          uri: resolvedMediaUrl,
+          headers: {
+            Authorization: `Token ${normalizedApiToken}`,
+          },
+        },
+      });
+      setPlaybackStatus('Metadata loaded. Opening player...');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown video load error';
+      setVideoDetails(null);
+      setPlaybackStatus(`Video load failed: ${errorMessage}`);
+    } finally {
+      setIsLoadingVideo(false);
+    }
+  }
+
+  function closePlayer() {
+    setVideoDetails(null);
+    setPlaybackStatus('No playback attempted yet.');
+  }
+
+  if (videoDetails) {
+    return (
+      <PlayerScreen
+        key={`${videoDetails.title}-${String(videoDetails.source.uri)}`}
+        isDarkMode={isDarkMode}
+        onBack={closePlayer}
+        videoDetails={videoDetails}
+      />
+    );
+  }
+
   return (
     <SafeAreaView
       style={[
         styles.container,
         isDarkMode ? styles.containerDark : styles.containerLight,
       ]}>
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text
           style={[
             styles.eyebrow,
@@ -148,15 +265,15 @@ function AppContent() {
             focusable
             hasTVPreferredFocus={isHydrating}
             keyboardType="url"
-            onFocus={() => {
-              setFocusedField('serverUrl');
-            }}
             onBlur={() => {
               setFocusedField(currentField =>
                 currentField === 'serverUrl' ? null : currentField,
               );
             }}
             onChangeText={setServerUrl}
+            onFocus={() => {
+              setFocusedField('serverUrl');
+            }}
             placeholder="https://archive.local"
             placeholderTextColor={isDarkMode ? '#64748b' : '#94a3b8'}
             returnKeyType="next"
@@ -177,20 +294,20 @@ function AppContent() {
             autoCorrect={false}
             editable={!isSaving}
             focusable
-            onFocus={() => {
-              setFocusedField('apiToken');
-            }}
             onBlur={() => {
               setFocusedField(currentField =>
                 currentField === 'apiToken' ? null : currentField,
               );
             }}
             onChangeText={setApiToken}
+            onFocus={() => {
+              setFocusedField('apiToken');
+            }}
             placeholder="Paste API token"
             placeholderTextColor={isDarkMode ? '#64748b' : '#94a3b8'}
             returnKeyType="done"
-            selectTextOnFocus
             secureTextEntry
+            selectTextOnFocus
             style={[
               styles.input,
               focusedField === 'apiToken' ? styles.inputFocused : null,
@@ -198,6 +315,35 @@ function AppContent() {
               isDarkMode ? styles.textDark : styles.textLight,
             ]}
             value={apiToken}
+          />
+          <Text style={[styles.label, isDarkMode ? styles.textDark : styles.textLight]}>
+            Test video URL or id
+          </Text>
+          <TextInput
+            autoCapitalize="none"
+            autoCorrect={false}
+            editable={!isLoadingVideo && !isSaving}
+            focusable
+            onBlur={() => {
+              setFocusedField(currentField =>
+                currentField === 'testVideo' ? null : currentField,
+              );
+            }}
+            onChangeText={setTestVideoInput}
+            onFocus={() => {
+              setFocusedField('testVideo');
+            }}
+            placeholder="https://tube.example.com/video/abc123"
+            placeholderTextColor={isDarkMode ? '#64748b' : '#94a3b8'}
+            returnKeyType="done"
+            selectTextOnFocus
+            style={[
+              styles.input,
+              focusedField === 'testVideo' ? styles.inputFocused : null,
+              isDarkMode ? styles.inputDark : styles.inputLight,
+              isDarkMode ? styles.textDark : styles.textLight,
+            ]}
+            value={testVideoInput}
           />
           <Pressable
             accessibilityRole="button"
@@ -216,6 +362,23 @@ function AppContent() {
               <Text style={styles.buttonText}>Save connection</Text>
             )}
           </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ busy: isLoadingVideo, disabled: isLoadingVideo || isSaving }}
+            disabled={isLoadingVideo || isSaving}
+            focusable
+            onPress={loadTestVideo}
+            style={({ pressed }) => [
+              styles.button,
+              isLoadingVideo || isSaving ? styles.buttonDisabled : styles.buttonSecondary,
+              pressed && !isLoadingVideo && !isSaving ? styles.buttonPressed : null,
+            ]}>
+            {isLoadingVideo ? (
+              <ActivityIndicator color="#e2e8f0" />
+            ) : (
+              <Text style={styles.buttonText}>Load test video</Text>
+            )}
+          </Pressable>
           <Text
             style={[
               styles.status,
@@ -223,6 +386,112 @@ function AppContent() {
             ]}>
             {statusMessage}
           </Text>
+          <Text
+            style={[
+              styles.status,
+              isDarkMode ? styles.textMutedDark : styles.textMutedLight,
+            ]}>
+            {playbackStatus}
+          </Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+function PlayerScreen({
+  isDarkMode,
+  onBack,
+  videoDetails,
+}: {
+  isDarkMode: boolean;
+  onBack: () => void;
+  videoDetails: VideoDetails;
+}) {
+  const [playbackTime, setPlaybackTime] = useState(0);
+  const [duration, setDuration] = useState(videoDetails.duration ?? 0);
+  const [playbackStatus, setPlaybackStatus] = useState('Preparing player...');
+
+  const player = useVideoPlayer(
+    videoDetails.source,
+    currentPlayer => {
+      currentPlayer.muted = false;
+      currentPlayer.volume = 1;
+      currentPlayer.loop = false;
+      currentPlayer.play();
+    },
+  );
+
+  useEvent(player, 'onLoadStart', () => {
+    setPlaybackStatus('Loading video source...');
+  });
+
+  useEvent(player, 'onLoad', data => {
+    setDuration(data.duration);
+    setPlaybackStatus(`Playback started. Duration ${Math.round(data.duration)}s.`);
+  });
+
+  useEvent(player, 'onReadyToDisplay', () => {
+    setPlaybackStatus('Video is ready to display.');
+  });
+
+  useEvent(player, 'onProgress', data => {
+    setPlaybackTime(data.currentTime);
+  });
+
+  useEvent(player, 'onBuffer', buffering => {
+    if (buffering) {
+      setPlaybackStatus('Buffering video...');
+    }
+  });
+
+  useEvent(player, 'onPlaybackStateChange', data => {
+    setPlaybackStatus(`Playback state: ${data.state}`);
+  });
+
+  useEvent(player, 'onError', error => {
+    setPlaybackStatus(`Playback failed: ${error.message}`);
+  });
+
+  return (
+    <SafeAreaView
+      style={[
+        styles.container,
+        isDarkMode ? styles.containerDark : styles.containerLight,
+      ]}>
+      <View style={styles.playerScreen}>
+        <View style={styles.playerScreenHeader}>
+          <Text style={[styles.videoTitle, isDarkMode ? styles.textDark : styles.textLight]}>
+            {videoDetails.title}
+          </Text>
+          <Text style={[styles.videoMeta, isDarkMode ? styles.textMutedDark : styles.textMutedLight]}>
+            {`Progress: ${Math.round(playbackTime)}s${duration ? ` / ${Math.round(duration)}s` : ''}`}
+          </Text>
+          <Text style={[styles.videoMeta, isDarkMode ? styles.textMutedDark : styles.textMutedLight]}>
+            {playbackStatus}
+          </Text>
+        </View>
+        <View style={styles.playerScreenFrame}>
+          <VideoView
+            controls
+            player={player}
+            resizeMode="contain"
+            style={styles.playerScreenVideo}
+            surfaceType="surface"
+          />
+        </View>
+        <View style={styles.playerScreenActions}>
+          <Pressable
+            accessibilityRole="button"
+            focusable
+            onPress={onBack}
+            style={({ pressed }) => [
+              styles.button,
+              styles.buttonEnabled,
+              pressed ? styles.buttonPressed : null,
+            ]}>
+            <Text style={styles.buttonText}>Back to form</Text>
+          </Pressable>
         </View>
       </View>
     </SafeAreaView>
@@ -240,9 +509,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#0f172a',
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 24,
+    paddingVertical: 32,
   },
   eyebrow: {
     fontSize: 14,
@@ -313,6 +583,9 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     backgroundColor: '#64748b',
   },
+  buttonSecondary: {
+    backgroundColor: '#0f766e',
+  },
   buttonPressed: {
     opacity: 0.9,
   },
@@ -325,6 +598,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     marginTop: 4,
+  },
+  playerScreen: {
+    flex: 1,
+    gap: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+  },
+  playerScreenHeader: {
+    gap: 8,
+  },
+  playerScreenFrame: {
+    flex: 1,
+    minHeight: 260,
+    backgroundColor: '#020617',
+  },
+  playerScreenVideo: {
+    flex: 1,
+  },
+  playerScreenActions: {
+    paddingBottom: 8,
+  },
+  videoTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  videoMeta: {
+    fontSize: 13,
+    lineHeight: 18,
   },
   textLight: {
     color: '#0f172a',
