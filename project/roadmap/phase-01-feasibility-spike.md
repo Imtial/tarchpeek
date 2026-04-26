@@ -46,3 +46,26 @@ Prove that a React Native Android/Android TV client can authenticate against Tub
 
 - This phase is the technical gate for the rest of the roadmap.
 - If playback is not reliable here, do not continue into broad UI implementation.
+
+## Findings
+
+- TubeArchivist API authentication works with `Authorization: Token <token>` against `/api/video/<video_id>/`.
+- A real server video record was fetched successfully from `https://tube.vpn.imtial.com/api/video/7Pa7nGiFfvs/` and returned a playable `media_url` plus player metadata.
+- The protected media URL also accepted the same token header on direct media requests.
+- Emulator access to the VPN-backed host was blocked until a host-side Docker reverse proxy was introduced and the app pointed at `http://10.0.2.2:8088`.
+- Local sample playback and real TubeArchivist playback both failed under `react-native-video` v6 inside the app, even though the official v6 sample app worked on the same emulator.
+- Root cause was integration mismatch with the current app runtime: the React Native `0.85` app is effectively on the New Architecture path, while the working v6 sample was validated on an older architecture path.
+- Migrating the app to `react-native-video` `7.0.0-beta.9` plus `react-native-nitro-modules` resolved local and remote playback inside this app.
+- After the migration, all of the following were verified manually on Android:
+- bundled/local video playback works
+- authenticated TubeArchivist playback works
+- physical device installation works after `adb reverse tcp:8081 tcp:8081` for Metro access
+- Subtitle behavior is currently known only for the tested real video: the API returned `subtitles: []`, so subtitle rendering is still unproven for a video that actually has subtitle tracks.
+- Progress sync is not implemented yet in the app. The backend endpoint exists at `/api/video/<video_id>/progress/`, but no app-side POST verification has been completed.
+
+## Current Assessment
+
+- Authenticated playback on Android is feasible.
+- Local-network or VPN-restricted servers may require explicit developer tooling during testing, but this is an environment issue rather than a protocol blocker.
+- `react-native-video` v7 is the correct integration direction for this repository's current React Native/runtime setup.
+- Subtitle support and progress sync remain open items before Phase 01 can be considered complete.

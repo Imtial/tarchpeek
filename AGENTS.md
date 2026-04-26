@@ -40,3 +40,4 @@ These rules apply to the whole repository.
 - `Continue Watching` is the highest-priority home surface.
 - `Shorts` are hidden in the MVP.
 - Use `useEffect` with strong restraint. Any new `useEffect` usage must be justified explicitly, including why a simpler or more direct solution was not better.
+- When a self-hosted or VPN-restricted TubeArchivist server is not reachable from an Android emulator, use a host-side Docker reverse proxy and point the emulator at `http://10.0.2.2:<port>` instead of treating emulator networking as the product blocker. Preferred command: `docker run -d --rm --name tarchpeek-vpn-proxy -p 8088:8088 caddy:2 caddy reverse-proxy --from :8088 --to https://<server-host>` and then use `http://10.0.2.2:8088` in the emulator.
