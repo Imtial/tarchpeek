@@ -68,7 +68,8 @@ Prove that a React Native Android/Android TV client can authenticate against Tub
 - physical device installation works after `adb reverse tcp:8081 tcp:8081` for Metro access
 - Subtitle behavior is currently known only for the tested real video: the API returned `subtitles: []`, so subtitle rendering is still unproven for a video that actually has subtitle tracks.
 - App-side progress sync now sends a checkpoint POST to `/api/video/<video_id>/progress/` when leaving the player, but end-to-end persistence is not verified yet.
-- Progress checkpoints are now attempted periodically during playback (15s interval) and on pause/end state transitions, so sync no longer depends only on pressing Back.
+- Progress checkpoints are now attempted periodically during playback (5s interval) and on pause/end state transitions, so sync no longer depends only on pressing Back.
+- Player initialization now uses resume metadata from `/api/video/<video_id>/` and seeks to that resume point when available.
 
 ## Current Assessment
 

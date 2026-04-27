@@ -28,6 +28,7 @@ type VideoDetails = {
   videoId: string;
   serverUrl: string;
   apiToken: string;
+  resumePositionSeconds: number;
   title: string;
   duration?: number;
   source: {
@@ -35,6 +36,79 @@ type VideoDetails = {
     headers?: Record<string, string>;
   };
 };
+
+function getNumericValueOrNull(value: unknown) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    const parsed = Number.parseFloat(value.trim());
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+}
+
+function convertProgressToSeconds(value: number, durationSeconds: number) {
+  if (value <= 0) {
+    return 0;
+  }
+
+  if (durationSeconds <= 0) {
+    return value;
+  }
+
+  if (value <= 1) {
+    return value * durationSeconds;
+  }
+
+  if (value <= 100) {
+    return (value / 100) * durationSeconds;
+  }
+
+  return value;
+}
+
+function getProgressSecondsFromObject(payload: unknown, durationSeconds: number): number | null {
+  if (Array.isArray(payload)) {
+    for (const entry of payload) {
+      const resolved = getProgressSecondsFromObject(entry, durationSeconds);
+      if (resolved != null) {
+        return resolved;
+      }
+    }
+
+    return null;
+  }
+
+  if (!payload || typeof payload !== 'object') {
+    return null;
+  }
+
+  const candidate = payload as Record<string, unknown>;
+  const directSeconds =
+    getNumericValueOrNull(candidate.position) ??
+    getNumericValueOrNull(candidate.current_time) ??
+    getNumericValueOrNull(candidate.currentTime) ??
+    getNumericValueOrNull(candidate.watched);
+
+  if (directSeconds != null) {
+    return directSeconds;
+  }
+
+  const progressValue = getNumericValueOrNull(candidate.progress);
+  if (progressValue != null) {
+    return convertProgressToSeconds(progressValue, durationSeconds);
+  }
+
+  const nestedPlayerValue = getProgressSecondsFromObject(candidate.player, durationSeconds);
+  if (nestedPlayerValue != null) {
+    return nestedPlayerValue;
+  }
+
+  return null;
+}
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -185,7 +259,14 @@ function AppContent() {
 
       const payload = (await response.json()) as {
         media_url?: string;
-        player?: { duration?: number };
+        player?: {
+          duration?: number;
+          position?: number;
+          current_time?: number;
+          currentTime?: number;
+          progress?: number;
+          watched?: number;
+        };
         title?: string;
       };
 
@@ -196,11 +277,20 @@ function AppContent() {
       const resolvedMediaUrl = payload.media_url.startsWith('http')
         ? payload.media_url
         : `${normalizedServerUrl}${payload.media_url}`;
+      const durationSeconds = Math.max(0, Math.floor(payload.player?.duration ?? 0));
+
+      const resumePositionSeconds = Math.max(
+        0,
+        Math.floor(
+          getProgressSecondsFromObject(payload.player, durationSeconds) ?? 0,
+        ),
+      );
 
       setVideoDetails({
         videoId,
         serverUrl: normalizedServerUrl,
         apiToken: normalizedApiToken,
+        resumePositionSeconds,
         title: payload.title ?? videoId,
         duration: payload.player?.duration,
         source: {
@@ -210,7 +300,11 @@ function AppContent() {
           },
         },
       });
-      setPlaybackStatus('Metadata loaded. Opening player...');
+      setPlaybackStatus(
+        resumePositionSeconds > 0
+          ? `Metadata loaded. Resume point found at ${resumePositionSeconds}s. Opening player...`
+          : 'Metadata loaded. No resume point found. Opening player...',
+      );
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown video load error';
       setVideoDetails(null);
@@ -228,7 +322,7 @@ function AppContent() {
   if (videoDetails) {
     return (
       <PlayerScreen
-        key={`${videoDetails.title}-${String(videoDetails.source.uri)}`}
+        key={`${videoDetails.title}-${String(videoDetails.source.uri)}`} // FIX: `videoId` is unique, should be sufficient as key
         isDarkMode={isDarkMode}
         onBack={closePlayer}
         videoDetails={videoDetails}
@@ -423,6 +517,25 @@ function PlayerScreen({
   const latestPlaybackTimeRef = useRef(0);
   const lastSyncedProgressRef = useRef(0);
   const isProgressSyncInFlightRef = useRef(false);
+  const hasAppliedInitialResumeRef = useRef(false);
+  const hasStartedInitialPlaybackRef = useRef(false);
+  const hasEvaluatedResumeAgainstDurationRef = useRef(false);
+  const initialResumeTargetRef = useRef<number | null>(
+    Math.floor(videoDetails.resumePositionSeconds) > 3
+      ? Math.floor(videoDetails.resumePositionSeconds)
+      : null,
+  );
+
+  function startInitialPlayback() {
+    if (hasStartedInitialPlaybackRef.current) {
+      return;
+    }
+
+    hasStartedInitialPlaybackRef.current = true;
+    setTimeout(() => {
+      player.play();
+    }, 120);
+  }
 
   const player = useVideoPlayer(
     videoDetails.source,
@@ -430,7 +543,6 @@ function PlayerScreen({
       currentPlayer.muted = false;
       currentPlayer.volume = 1;
       currentPlayer.loop = false;
-      currentPlayer.play();
     },
   );
 
@@ -440,11 +552,50 @@ function PlayerScreen({
 
   useEvent(player, 'onLoad', data => {
     setDuration(data.duration);
-    setPlaybackStatus(`Playback started. Duration ${Math.round(data.duration)}s.`);
+
+    if (!hasEvaluatedResumeAgainstDurationRef.current) {
+      hasEvaluatedResumeAgainstDurationRef.current = true;
+
+      const durationSeconds = Math.max(0, Math.floor(data.duration));
+      const resumeTarget = initialResumeTargetRef.current;
+      const canResume =
+        resumeTarget != null &&
+        (durationSeconds === 0 || resumeTarget < Math.max(4, durationSeconds - 3));
+
+      if (!canResume) {
+        initialResumeTargetRef.current = null;
+        hasAppliedInitialResumeRef.current = true;
+        setPlaybackStatus(`Playback started. Duration ${Math.round(data.duration)}s.`);
+      } else {
+        setPlaybackStatus(
+          `Video loaded. Preparing resume at ${resumeTarget}s. Duration ${Math.round(data.duration)}s.`,
+        );
+      }
+    }
+
+    startInitialPlayback();
   });
 
   useEvent(player, 'onReadyToDisplay', () => {
-    setPlaybackStatus('Video is ready to display.');
+    if (!hasAppliedInitialResumeRef.current) {
+      const resumeTarget = initialResumeTargetRef.current;
+
+      if (resumeTarget != null) {
+        player.seekTo(resumeTarget);
+        player.currentTime = resumeTarget;
+        lastSyncedProgressRef.current = resumeTarget;
+        latestPlaybackTimeRef.current = resumeTarget;
+        setPlaybackTime(resumeTarget);
+        setPlaybackStatus(`Video is ready. Resumed at ${resumeTarget}s.`);
+      } else {
+        setPlaybackStatus('Video is ready to display.');
+      }
+
+      hasAppliedInitialResumeRef.current = true;
+      initialResumeTargetRef.current = null;
+    }
+
+    startInitialPlayback();
   });
 
   useEvent(player, 'onProgress', data => {
@@ -474,18 +625,34 @@ function PlayerScreen({
   });
 
   useEvent(player, 'onPlaybackStateChange', data => {
-    setPlaybackStatus(`Playback state: ${data.state}`);
+    const nextStateLabel = data.isBuffering
+      ? 'buffering'
+      : data.isPlaying
+        ? 'playing'
+        : 'paused';
+    setPlaybackStatus(`Playback state: ${nextStateLabel}`);
 
-    if (data.state === 'paused' || data.state === 'ended') {
+    if (!data.isPlaying) {
       syncPlaybackProgressCheckpoint({
         force: true,
-        reasonLabel: data.state,
+        reasonLabel: nextStateLabel,
         shouldUpdateStatus: false,
       }).catch(error => {
         const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
         setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
       });
     }
+  });
+
+  useEvent(player, 'onEnd', () => {
+    syncPlaybackProgressCheckpoint({
+      force: true,
+      reasonLabel: 'ended',
+      shouldUpdateStatus: false,
+    }).catch(error => {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
+      setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
+    });
   });
 
   useEvent(player, 'onError', error => {
