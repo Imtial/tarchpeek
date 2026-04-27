@@ -1,5 +1,5 @@
 import { createAsyncStorage } from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -19,10 +19,15 @@ const API_TOKEN_KEY = 'apiToken';
 const VIDEO_INPUT_KEY = 'testVideoInput';
 
 const storage = createAsyncStorage('tarchpeek');
+const PROGRESS_SYNC_INTERVAL_SECONDS = 5;
+const PROGRESS_SYNC_MIN_DELTA_SECONDS = 5;
 
 type FieldName = 'serverUrl' | 'apiToken' | 'testVideo' | null;
 
 type VideoDetails = {
+  videoId: string;
+  serverUrl: string;
+  apiToken: string;
   title: string;
   duration?: number;
   source: {
@@ -193,6 +198,9 @@ function AppContent() {
         : `${normalizedServerUrl}${payload.media_url}`;
 
       setVideoDetails({
+        videoId,
+        serverUrl: normalizedServerUrl,
+        apiToken: normalizedApiToken,
         title: payload.title ?? videoId,
         duration: payload.player?.duration,
         source: {
@@ -212,9 +220,9 @@ function AppContent() {
     }
   }
 
-  function closePlayer() {
+  function closePlayer(resultMessage?: string) {
     setVideoDetails(null);
-    setPlaybackStatus('No playback attempted yet.');
+    setPlaybackStatus(resultMessage ?? 'No playback attempted yet.');
   }
 
   if (videoDetails) {
@@ -405,12 +413,16 @@ function PlayerScreen({
   videoDetails,
 }: {
   isDarkMode: boolean;
-  onBack: () => void;
+  onBack: (resultMessage?: string) => void;
   videoDetails: VideoDetails;
 }) {
   const [playbackTime, setPlaybackTime] = useState(0);
   const [duration, setDuration] = useState(videoDetails.duration ?? 0);
   const [playbackStatus, setPlaybackStatus] = useState('Preparing player...');
+  const [isSyncingProgress, setIsSyncingProgress] = useState(false);
+  const latestPlaybackTimeRef = useRef(0);
+  const lastSyncedProgressRef = useRef(0);
+  const isProgressSyncInFlightRef = useRef(false);
 
   const player = useVideoPlayer(
     videoDetails.source,
@@ -436,7 +448,23 @@ function PlayerScreen({
   });
 
   useEvent(player, 'onProgress', data => {
+    latestPlaybackTimeRef.current = data.currentTime;
     setPlaybackTime(data.currentTime);
+
+    const playbackSeconds = Math.max(0, Math.floor(data.currentTime));
+    const hasReachedIntervalThreshold =
+      playbackSeconds >= lastSyncedProgressRef.current + PROGRESS_SYNC_INTERVAL_SECONDS;
+
+    if (hasReachedIntervalThreshold) {
+      syncPlaybackProgressCheckpoint({
+        force: false,
+        reasonLabel: 'interval',
+        shouldUpdateStatus: false,
+      }).catch(error => {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
+        setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
+      });
+    }
   });
 
   useEvent(player, 'onBuffer', buffering => {
@@ -447,11 +475,109 @@ function PlayerScreen({
 
   useEvent(player, 'onPlaybackStateChange', data => {
     setPlaybackStatus(`Playback state: ${data.state}`);
+
+    if (data.state === 'paused' || data.state === 'ended') {
+      syncPlaybackProgressCheckpoint({
+        force: true,
+        reasonLabel: data.state,
+        shouldUpdateStatus: false,
+      }).catch(error => {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
+        setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
+      });
+    }
   });
 
   useEvent(player, 'onError', error => {
     setPlaybackStatus(`Playback failed: ${error.message}`);
   });
+
+  async function syncPlaybackProgressCheckpoint({
+    force,
+    reasonLabel,
+    shouldUpdateStatus,
+  }: {
+    force: boolean;
+    reasonLabel: string;
+    shouldUpdateStatus: boolean;
+  }) {
+    const playbackSeconds = Math.max(0, Math.floor(latestPlaybackTimeRef.current));
+
+    if (playbackSeconds <= 0) {
+      return 'Skipped progress sync because no watch time was recorded.';
+    }
+
+    const isNewEnoughCheckpoint =
+      playbackSeconds >= lastSyncedProgressRef.current + PROGRESS_SYNC_MIN_DELTA_SECONDS;
+    if (!force && !isNewEnoughCheckpoint) {
+      return `Skipped ${reasonLabel} sync because progress only moved ${Math.max(0, playbackSeconds - lastSyncedProgressRef.current)}s.`;
+    }
+
+    if (isProgressSyncInFlightRef.current) {
+      return `Skipped ${reasonLabel} sync because another request is in flight.`;
+    }
+
+    isProgressSyncInFlightRef.current = true;
+
+    if (shouldUpdateStatus) {
+      setPlaybackStatus(`Syncing progress checkpoint at ${playbackSeconds}s (${reasonLabel})...`);
+    }
+
+    try {
+      const response = await fetch(
+        `${videoDetails.serverUrl}/api/video/${videoDetails.videoId}/progress/`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Token ${videoDetails.apiToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            position: playbackSeconds,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Progress endpoint returned ${response.status}`);
+      }
+
+      lastSyncedProgressRef.current = playbackSeconds;
+
+      if (shouldUpdateStatus) {
+        setPlaybackStatus(`Progress checkpoint synced at ${playbackSeconds}s.`);
+      }
+
+      return `Progress checkpoint synced at ${playbackSeconds}s.`;
+    } finally {
+      isProgressSyncInFlightRef.current = false;
+    }
+  }
+
+  async function handleBackPress() {
+    if (isSyncingProgress) {
+      return;
+    }
+
+    setIsSyncingProgress(true);
+
+    let resultMessage = 'Playback closed.';
+
+    try {
+      resultMessage = await syncPlaybackProgressCheckpoint({
+        force: true,
+        reasonLabel: 'exit',
+        shouldUpdateStatus: true,
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
+      resultMessage = `Progress sync failed: ${errorMessage}`;
+      setPlaybackStatus(resultMessage);
+    } finally {
+      setIsSyncingProgress(false);
+      onBack(resultMessage);
+    }
+  }
 
   return (
     <SafeAreaView
@@ -484,13 +610,15 @@ function PlayerScreen({
           <Pressable
             accessibilityRole="button"
             focusable
-            onPress={onBack}
+            onPress={handleBackPress}
             style={({ pressed }) => [
               styles.button,
-              styles.buttonEnabled,
-              pressed ? styles.buttonPressed : null,
+              isSyncingProgress ? styles.buttonDisabled : styles.buttonEnabled,
+              pressed && !isSyncingProgress ? styles.buttonPressed : null,
             ]}>
-            <Text style={styles.buttonText}>Back to form</Text>
+            <Text style={styles.buttonText}>
+              {isSyncingProgress ? 'Syncing progress...' : 'Back to form'}
+            </Text>
           </Pressable>
         </View>
       </View>

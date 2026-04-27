@@ -2,7 +2,7 @@
 
 Status: `in_progress`
 Owner: `user + OpenCode`
-Last updated: `2026-04-26`
+Last updated: `2026-04-27`
 
 ## Goal
 
@@ -47,6 +47,12 @@ Prove that a React Native Android/Android TV client can authenticate against Tub
 - This phase is the technical gate for the rest of the roadmap.
 - If playback is not reliable here, do not continue into broad UI implementation.
 
+## Progress Sync TODOs
+
+- [x] TODO 1: Add first app-side progress sync path by posting a checkpoint to `/api/video/<video_id>/progress/` when leaving the player.
+- [x] TODO 2: Improve checkpoint strategy (periodic or lifecycle-driven) so progress does not depend only on pressing Back.
+- [ ] TODO 3: Verify progress persistence against a real TubeArchivist server and document request/response behavior.
+
 ## Findings
 
 - TubeArchivist API authentication works with `Authorization: Token <token>` against `/api/video/<video_id>/`.
@@ -61,7 +67,8 @@ Prove that a React Native Android/Android TV client can authenticate against Tub
 - authenticated TubeArchivist playback works
 - physical device installation works after `adb reverse tcp:8081 tcp:8081` for Metro access
 - Subtitle behavior is currently known only for the tested real video: the API returned `subtitles: []`, so subtitle rendering is still unproven for a video that actually has subtitle tracks.
-- Progress sync is not implemented yet in the app. The backend endpoint exists at `/api/video/<video_id>/progress/`, but no app-side POST verification has been completed.
+- App-side progress sync now sends a checkpoint POST to `/api/video/<video_id>/progress/` when leaving the player, but end-to-end persistence is not verified yet.
+- Progress checkpoints are now attempted periodically during playback (15s interval) and on pause/end state transitions, so sync no longer depends only on pressing Back.
 
 ## Current Assessment
 
