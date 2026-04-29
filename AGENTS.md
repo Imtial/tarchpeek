@@ -8,7 +8,21 @@ These rules apply to the whole repository.
 
 - Break non-trivial work into multiple TODOs instead of treating a feature as one opaque task.
 - Track active TODOs in the project tracking system, not only in chat.
-- After completing each TODO, stop and wait for explicit user approval before starting the next TODO.
+- Bundle TODOs into unit of work. Unit of work should be consistent, meaningful and small. After completing a unit of work, **stop** and wait for explicit user approval and mention the next TODOs along with unit of work bundle before starting the next work.
+Example: Done - Awaiting approval
+[x] TODO 1 description
+[x] TODO 2 description
+bullet points telling key changes made
+
+Next -
+[] TODO 1 description
+[] TODO 2 description
+
+Then -
+[] TODO 3 description
+[] TODO 4 description
+
+Note: TODOs should not span multiple tasks or phases. DO NOT write `TODO {number}` literally. `Then` section is optional, only include when it matters
 
 ## Agent Behavior
 

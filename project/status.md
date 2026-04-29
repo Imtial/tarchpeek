@@ -14,6 +14,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 - Formalize app structure beyond spike code in `/app`
 - Preserve verified auth, playback, and progress-sync behavior from Phase 01
 - Prepare clean baseline for browsing and playback MVP phases
+- Establish token-first design system baseline per `project/decisions/0007-design-system-foundation.md`
 
 ## Active Constraints
 
@@ -30,11 +31,18 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 - Android TV focus quality can regress if not validated continuously
 - TubeArchivist API is usable but not a stable third-party contract
 
+## Phase 02 Kickoff Assumptions
+
+- Resume source in-app is read from `/api/video/<video_id>/` metadata, not from `GET /api/video/<video_id>/progress/` in the current environment.
+- Progress persistence is validated via `POST /api/video/<video_id>/progress/` and confirmed visible in the TubeArchivist UI.
+- `react-native-video` v7 remains the baseline playback integration direction for this repository/runtime.
+
 ## Immediate Next Steps
 
-1. Define and document Phase 02 app module boundaries (UI, playback, API, storage)
-2. Split current spike-heavy `App.tsx` into foundational modules without changing verified behavior
-3. Keep subtitle verification deferred in `project/backlog.md` (`BL-001`)
+1. Execute Phase 02 Bundle B in `project/roadmap/phase-02-foundation.md` (playback extraction + parity verification)
+2. Execute Phase 02 Bundle C in `project/roadmap/phase-02-foundation.md` (root orchestration cleanup + conventions)
+3. Apply design tokens progressively as modules are extracted to maintain visual consistency
+4. Keep subtitle verification deferred in `project/backlog.md` (`BL-001`)
 
 ## Phase Summary
 
