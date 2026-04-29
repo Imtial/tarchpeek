@@ -1,8 +1,8 @@
 # Project Status
 
 Status: `in_progress`
-Current phase: `Phase 01 - Feasibility Spike`
-Last updated: `2026-04-26`
+Current phase: `Phase 02 - Foundation`
+Last updated: `2026-04-29`
 
 ## Product Summary
 
@@ -11,9 +11,9 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Current Focus
 
-- Bootstrap the minimal app shell in `/app`
-- Prove API-token auth and protected media playback
-- Validate progress sync, subtitles, and Android TV playback-path interaction
+- Formalize app structure beyond spike code in `/app`
+- Preserve verified auth, playback, and progress-sync behavior from Phase 01
+- Prepare clean baseline for browsing and playback MVP phases
 
 ## Active Constraints
 
@@ -32,18 +32,17 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Immediate Next Steps
 
-1. Bootstrap the minimal React Native app shell in `/app`
-2. Implement `Server URL + API token` input and persistence
-3. Fetch one known-good video and attempt authenticated playback
-4. Document playback, subtitle, and progress-sync findings
+1. Define and document Phase 02 app module boundaries (UI, playback, API, storage)
+2. Split current spike-heavy `App.tsx` into foundational modules without changing verified behavior
+3. Keep subtitle verification deferred in `project/backlog.md` (`BL-001`)
 
 ## Phase Summary
 
 | Phase | Name | Status | Outcome |
 | --- | --- | --- | --- |
 | 00 | Product Definition | done | Lock scope, UX principles, and repo conventions |
-| 01 | Feasibility Spike | in_progress | Prove playback, auth, and progress sync |
-| 02 | Foundation | planned | Establish app shell and engineering baseline |
+| 01 | Feasibility Spike | done | Proved auth, protected playback, and progress sync; subtitle moved to backlog (`BL-001`) |
+| 02 | Foundation | in_progress | Establish app shell and engineering baseline |
 | 03 | Browsing MVP | planned | Deliver intentional discovery and browsing |
 | 04 | Playback MVP | planned | Deliver dependable end-to-end viewing |
 | 05 | Hardening | planned | Raise quality to repeat-use stability |

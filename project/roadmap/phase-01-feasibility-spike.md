@@ -1,8 +1,8 @@
 # Phase 01: Feasibility Spike
 
-Status: `in_progress`
+Status: `done`
 Owner: `user + OpenCode`
-Last updated: `2026-04-27`
+Last updated: `2026-04-29`
 
 ## Goal
 
@@ -51,7 +51,7 @@ Prove that a React Native Android/Android TV client can authenticate against Tub
 
 - [x] TODO 1: Add first app-side progress sync path by posting a checkpoint to `/api/video/<video_id>/progress/` when leaving the player.
 - [x] TODO 2: Improve checkpoint strategy (periodic or lifecycle-driven) so progress does not depend only on pressing Back.
-- [ ] TODO 3: Verify progress persistence against a real TubeArchivist server and document request/response behavior.
+- [x] TODO 3: Verify progress persistence against a real TubeArchivist server and document request/response behavior.
 
 ## Findings
 
@@ -70,10 +70,20 @@ Prove that a React Native Android/Android TV client can authenticate against Tub
 - App-side progress sync now sends a checkpoint POST to `/api/video/<video_id>/progress/` when leaving the player, but end-to-end persistence is not verified yet.
 - Progress checkpoints are now attempted periodically during playback (5s interval) and on pause/end state transitions, so sync no longer depends only on pressing Back.
 - Player initialization now uses resume metadata from `/api/video/<video_id>/` and seeks to that resume point when available.
+- Real-server verification confirms progress POSTs are persisted in TubeArchivist and visible in the TubeArchivist UI.
+- Resume behavior is now verified end-to-end in app: reopening the same video starts from the server-provided resume point and autoplay continues normally.
+- `GET /api/video/<video_id>/progress/` returned `405` in this environment, so the app relies on `/api/video/<video_id>/` player metadata for resume while continuing to POST checkpoints to `/progress/`.
+- Subtitle verification is explicitly deferred to `project/backlog.md` (item `BL-001`) for post-feasibility work and is not a Phase 01 gate.
 
 ## Current Assessment
 
 - Authenticated playback on Android is feasible.
 - Local-network or VPN-restricted servers may require explicit developer tooling during testing, but this is an environment issue rather than a protocol blocker.
 - `react-native-video` v7 is the correct integration direction for this repository's current React Native/runtime setup.
-- Subtitle support and progress sync remain open items before Phase 01 can be considered complete.
+- Subtitle support is deferred to `project/backlog.md` and should be revisited in playback-focused phases.
+
+## Closure
+
+- Phase 01 is closed after validating server-token auth, protected media playback, and end-to-end progress sync behavior on Android.
+- Resume now works from `/api/video/<video_id>/` metadata and checkpoint persistence is confirmed via TubeArchivist UI.
+- Subtitle verification is intentionally deferred to `project/backlog.md` (`BL-001`) and is not a blocker for transitioning into Phase 02 Foundation work.

@@ -13,6 +13,7 @@ This directory is the operating surface for the React Native client project.
 ## Structure
 
 - `status.md`: single-page dashboard for current phase, blockers, and next steps
+- `backlog.md`: deferred items that are explicitly out of current phase gates
 - `roadmap/`: one file per delivery phase
 - `decisions/`: durable product and architecture decisions
 

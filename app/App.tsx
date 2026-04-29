@@ -37,6 +37,10 @@ type VideoDetails = {
   };
 };
 
+function buildUrl(baseUrl: string, path: string) {
+  return new URL(path, baseUrl).toString();
+}
+
 function getNumericValueOrNull(value: unknown) {
   if (typeof value === 'number' && Number.isFinite(value)) {
     return value;
@@ -183,11 +187,11 @@ function AppContent() {
   }, []);
 
   async function saveConnection() {
-    const normalizedServerUrl = serverUrl.trim().replace(/\/$/, '');
+    const trimmedServerUrl = serverUrl.trim();
     const normalizedApiToken = apiToken.trim();
     const normalizedVideoInput = testVideoInput.trim();
 
-    if (!normalizedServerUrl || !normalizedApiToken) {
+    if (!trimmedServerUrl || !normalizedApiToken) {
       setStatusMessage('Server URL and API token are both required.');
       return;
     }
@@ -196,6 +200,8 @@ function AppContent() {
     setStatusMessage('Saving connection...');
 
     try {
+      const normalizedServerUrl = new URL(trimmedServerUrl).toString();
+
       await Promise.all([
         storage.setItem(SERVER_URL_KEY, normalizedServerUrl),
         storage.setItem(API_TOKEN_KEY, normalizedApiToken),
@@ -229,11 +235,11 @@ function AppContent() {
   }
 
   async function loadTestVideo() {
-    const normalizedServerUrl = serverUrl.trim().replace(/\/$/, '');
+    const trimmedServerUrl = serverUrl.trim();
     const normalizedApiToken = apiToken.trim();
     const videoId = getVideoId(testVideoInput);
 
-    if (!normalizedServerUrl || !normalizedApiToken) {
+    if (!trimmedServerUrl || !normalizedApiToken) {
       setStatusMessage('Save a server URL and API token before loading a test video.');
       return;
     }
@@ -247,7 +253,8 @@ function AppContent() {
     setPlaybackStatus('Fetching video metadata...');
 
     try {
-      const response = await fetch(`${normalizedServerUrl}/api/video/${videoId}/`, {
+      const normalizedServerUrl = new URL(trimmedServerUrl).toString();
+      const response = await fetch(buildUrl(normalizedServerUrl, `/api/video/${videoId}/`), {
         headers: {
           Authorization: `Token ${normalizedApiToken}`,
         },
@@ -274,9 +281,7 @@ function AppContent() {
         throw new Error('Video payload did not include media_url');
       }
 
-      const resolvedMediaUrl = payload.media_url.startsWith('http')
-        ? payload.media_url
-        : `${normalizedServerUrl}${payload.media_url}`;
+      const resolvedMediaUrl = new URL(payload.media_url, normalizedServerUrl).toString();
       const durationSeconds = Math.max(0, Math.floor(payload.player?.duration ?? 0));
 
       const resumePositionSeconds = Math.max(
@@ -322,7 +327,7 @@ function AppContent() {
   if (videoDetails) {
     return (
       <PlayerScreen
-        key={`${videoDetails.title}-${String(videoDetails.source.uri)}`} // FIX: `videoId` is unique, should be sufficient as key
+        key={videoDetails.videoId}
         isDarkMode={isDarkMode}
         onBack={closePlayer}
         videoDetails={videoDetails}
@@ -510,32 +515,14 @@ function PlayerScreen({
   onBack: (resultMessage?: string) => void;
   videoDetails: VideoDetails;
 }) {
-  const [playbackTime, setPlaybackTime] = useState(0);
+  const initialResumeSeconds = Math.max(0, Math.floor(videoDetails.resumePositionSeconds));
+  const [playbackTime, setPlaybackTime] = useState(initialResumeSeconds);
   const [duration, setDuration] = useState(videoDetails.duration ?? 0);
   const [playbackStatus, setPlaybackStatus] = useState('Preparing player...');
   const [isSyncingProgress, setIsSyncingProgress] = useState(false);
   const latestPlaybackTimeRef = useRef(0);
   const lastSyncedProgressRef = useRef(0);
   const isProgressSyncInFlightRef = useRef(false);
-  const hasAppliedInitialResumeRef = useRef(false);
-  const hasStartedInitialPlaybackRef = useRef(false);
-  const hasEvaluatedResumeAgainstDurationRef = useRef(false);
-  const initialResumeTargetRef = useRef<number | null>(
-    Math.floor(videoDetails.resumePositionSeconds) > 3
-      ? Math.floor(videoDetails.resumePositionSeconds)
-      : null,
-  );
-
-  function startInitialPlayback() {
-    if (hasStartedInitialPlaybackRef.current) {
-      return;
-    }
-
-    hasStartedInitialPlaybackRef.current = true;
-    setTimeout(() => {
-      player.play();
-    }, 120);
-  }
 
   const player = useVideoPlayer(
     videoDetails.source,
@@ -543,6 +530,14 @@ function PlayerScreen({
       currentPlayer.muted = false;
       currentPlayer.volume = 1;
       currentPlayer.loop = false;
+
+      if (initialResumeSeconds > 3) {
+        currentPlayer.currentTime = initialResumeSeconds;
+        latestPlaybackTimeRef.current = initialResumeSeconds;
+        lastSyncedProgressRef.current = initialResumeSeconds;
+      }
+
+      currentPlayer.play();
     },
   );
 
@@ -553,49 +548,15 @@ function PlayerScreen({
   useEvent(player, 'onLoad', data => {
     setDuration(data.duration);
 
-    if (!hasEvaluatedResumeAgainstDurationRef.current) {
-      hasEvaluatedResumeAgainstDurationRef.current = true;
+    const canResume =
+      initialResumeSeconds > 3 &&
+      initialResumeSeconds < Math.max(4, Math.floor(data.duration) - 3);
 
-      const durationSeconds = Math.max(0, Math.floor(data.duration));
-      const resumeTarget = initialResumeTargetRef.current;
-      const canResume =
-        resumeTarget != null &&
-        (durationSeconds === 0 || resumeTarget < Math.max(4, durationSeconds - 3));
-
-      if (!canResume) {
-        initialResumeTargetRef.current = null;
-        hasAppliedInitialResumeRef.current = true;
-        setPlaybackStatus(`Playback started. Duration ${Math.round(data.duration)}s.`);
-      } else {
-        setPlaybackStatus(
-          `Video loaded. Preparing resume at ${resumeTarget}s. Duration ${Math.round(data.duration)}s.`,
-        );
-      }
-    }
-
-    startInitialPlayback();
-  });
-
-  useEvent(player, 'onReadyToDisplay', () => {
-    if (!hasAppliedInitialResumeRef.current) {
-      const resumeTarget = initialResumeTargetRef.current;
-
-      if (resumeTarget != null) {
-        player.seekTo(resumeTarget);
-        player.currentTime = resumeTarget;
-        lastSyncedProgressRef.current = resumeTarget;
-        latestPlaybackTimeRef.current = resumeTarget;
-        setPlaybackTime(resumeTarget);
-        setPlaybackStatus(`Video is ready. Resumed at ${resumeTarget}s.`);
-      } else {
-        setPlaybackStatus('Video is ready to display.');
-      }
-
-      hasAppliedInitialResumeRef.current = true;
-      initialResumeTargetRef.current = null;
-    }
-
-    startInitialPlayback();
+    setPlaybackStatus(
+      canResume
+        ? `Playback started. Resumed at ${initialResumeSeconds}s.`
+        : `Playback started. Duration ${Math.round(data.duration)}s.`,
+    );
   });
 
   useEvent(player, 'onProgress', data => {
@@ -632,7 +593,7 @@ function PlayerScreen({
         : 'paused';
     setPlaybackStatus(`Playback state: ${nextStateLabel}`);
 
-    if (!data.isPlaying) {
+    if (!data.isPlaying && !data.isBuffering) {
       syncPlaybackProgressCheckpoint({
         force: true,
         reasonLabel: nextStateLabel,
@@ -692,7 +653,7 @@ function PlayerScreen({
 
     try {
       const response = await fetch(
-        `${videoDetails.serverUrl}/api/video/${videoDetails.videoId}/progress/`,
+        buildUrl(videoDetails.serverUrl, `/api/video/${videoDetails.videoId}/progress/`),
         {
           method: 'POST',
           headers: {
