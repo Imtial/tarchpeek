@@ -2,9 +2,8 @@ import { useMemo } from 'react';
 import {
   videoProgressCreate,
   videoRetrieve2,
-  type videoProgressCreateResponse,
-  type videoRetrieve2Response,
 } from '../api/generated/endpoints/tubearchivist';
+import { setApiBaseUrl } from '../api/fetcher';
 import type { VideoProgressUpdate } from '../api/generated/models';
 
 type VideoSource = {
@@ -30,6 +29,14 @@ type TubeArchivistClient = {
   postProgressCheckpoint: (videoId: string, position: number) => Promise<void>;
 };
 
+function resolvePlaybackUrl(mediaUrl: string, serverUrl: string) {
+  const server = new URL(serverUrl);
+  const media = new URL(mediaUrl, server);
+
+  // Always use the configured server origin so emulator/TV can reach the stream host.
+  return new URL(`${media.pathname}${media.search}${media.hash}`, server).toString();
+}
+
 function getVideoId(input: string) {
   const normalizedInput = input.trim();
 
@@ -48,6 +55,8 @@ function getVideoId(input: string) {
 
 function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchivistClient {
   return useMemo(() => {
+    setApiBaseUrl(new URL(connection.serverUrl));
+
     function authHeaders() {
       return {
         Authorization: `Token ${connection.apiToken}`,
@@ -55,16 +64,11 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
     }
 
     async function fetchVideoDetails(videoId: string): Promise<VideoDetails> {
-      const response: videoRetrieve2Response = await videoRetrieve2(videoId, {
+      const response = await videoRetrieve2(videoId, {
         headers: authHeaders(),
       });
-
-      if (response.status !== 200) {
-        throw new Error(`Video API returned ${response.status}`);
-      }
-
       const video = response.data;
-      const resolvedMediaUrl = new URL(video.media_url, connection.serverUrl).toString();
+      const resolvedMediaUrl = resolvePlaybackUrl(video.media_url, connection.serverUrl);
       const resumePositionSeconds = video.player.position ?? 0;
 
       return {
@@ -84,13 +88,9 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
         position,
       };
 
-      const response: videoProgressCreateResponse = await videoProgressCreate(videoId, body, {
+      await videoProgressCreate(videoId, body, {
         headers: authHeaders(),
       });
-
-      if (response.status !== 200) {
-        throw new Error(`Progress endpoint returned ${response.status}`);
-      }
     }
 
     return {

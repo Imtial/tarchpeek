@@ -36,7 +36,6 @@ import type {
   DownloadRetrieveParams,
   DownloadStats,
   DynamicDict,
-  ErrorResponse,
   Login,
   ManualImportConfig,
   MembershipProfile,
@@ -80,4251 +79,1220 @@ import type {
   WatchedData
 } from '../models';
 
+import { customAxios } from '../../fetcher';
 
-/**
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
+  /**
  * get list of available backup files
  */
-export type appsettingsBackupRetrieveResponse200 = {
-  data: BackupFile[]
-  status: 200
-}
+export const appsettingsBackupRetrieve = (
 
-export type appsettingsBackupRetrieveResponseSuccess = (appsettingsBackupRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsBackupRetrieveResponse = (appsettingsBackupRetrieveResponseSuccess)
-
-export const getAppsettingsBackupRetrieveUrl = () => {
-
-
-
-
-  return `/api/appsettings/backup/`
-}
-
-export const appsettingsBackupRetrieve = async ( options?: RequestInit): Promise<appsettingsBackupRetrieveResponse> => {
-
-  const res = await fetch(getAppsettingsBackupRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsBackupRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsBackupRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<BackupFile[]>>,) => {
+      return customAxios<BackupFile[]>(
+      {url: `/api/appsettings/backup/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * start new backup file task
  */
-export type appsettingsBackupCreateResponse200 = {
-  data: AsyncTaskResponse
-  status: 200
-}
+export const appsettingsBackupCreate = (
 
-export type appsettingsBackupCreateResponseSuccess = (appsettingsBackupCreateResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsBackupCreateResponse = (appsettingsBackupCreateResponseSuccess)
-
-export const getAppsettingsBackupCreateUrl = () => {
-
-
-
-
-  return `/api/appsettings/backup/`
-}
-
-export const appsettingsBackupCreate = async ( options?: RequestInit): Promise<appsettingsBackupCreateResponse> => {
-
-  const res = await fetch(getAppsettingsBackupCreateUrl(),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsBackupCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsBackupCreateResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<AsyncTaskResponse>>,) => {
+      return customAxios<AsyncTaskResponse>(
+      {url: `/api/appsettings/backup/`, method: 'POST'
+    },
+      options);
+    }
 
 /**
  * get single backup
  */
-export type appsettingsBackupRetrieve2Response200 = {
-  data: BackupFile
-  status: 200
-}
-
-export type appsettingsBackupRetrieve2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type appsettingsBackupRetrieve2ResponseSuccess = (appsettingsBackupRetrieve2Response200) & {
-  headers: Headers;
-};
-export type appsettingsBackupRetrieve2ResponseError = (appsettingsBackupRetrieve2Response404) & {
-  headers: Headers;
-};
-
-export type appsettingsBackupRetrieve2Response = (appsettingsBackupRetrieve2ResponseSuccess | appsettingsBackupRetrieve2ResponseError)
-
-export const getAppsettingsBackupRetrieve2Url = (filename: string,) => {
-
-
-
-
-  return `/api/appsettings/backup/${filename}/`
-}
-
-export const appsettingsBackupRetrieve2 = async (filename: string, options?: RequestInit): Promise<appsettingsBackupRetrieve2Response> => {
-
-  const res = await fetch(getAppsettingsBackupRetrieve2Url(filename),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsBackupRetrieve2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsBackupRetrieve2Response
-}
-
-
+export const appsettingsBackupRetrieve2 = (
+    filename: string,
+ options?: SecondParameter<typeof customAxios<BackupFile>>,) => {
+      return customAxios<BackupFile>(
+      {url: `/api/appsettings/backup/${filename}/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * start new task to restore backup file
  */
-export type appsettingsBackupCreate2Response200 = {
-  data: AsyncTaskResponse
-  status: 200
-}
-
-export type appsettingsBackupCreate2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type appsettingsBackupCreate2ResponseSuccess = (appsettingsBackupCreate2Response200) & {
-  headers: Headers;
-};
-export type appsettingsBackupCreate2ResponseError = (appsettingsBackupCreate2Response404) & {
-  headers: Headers;
-};
-
-export type appsettingsBackupCreate2Response = (appsettingsBackupCreate2ResponseSuccess | appsettingsBackupCreate2ResponseError)
-
-export const getAppsettingsBackupCreate2Url = (filename: string,) => {
-
-
-
-
-  return `/api/appsettings/backup/${filename}/`
-}
-
-export const appsettingsBackupCreate2 = async (filename: string, options?: RequestInit): Promise<appsettingsBackupCreate2Response> => {
-
-  const res = await fetch(getAppsettingsBackupCreate2Url(filename),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsBackupCreate2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsBackupCreate2Response
-}
-
-
+export const appsettingsBackupCreate2 = (
+    filename: string,
+ options?: SecondParameter<typeof customAxios<AsyncTaskResponse>>,) => {
+      return customAxios<AsyncTaskResponse>(
+      {url: `/api/appsettings/backup/${filename}/`, method: 'POST'
+    },
+      options);
+    }
 
 /**
  * delete backup file
  */
-export type appsettingsBackupDestroyResponse204 = {
-  data: void
-  status: 204
-}
-
-export type appsettingsBackupDestroyResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type appsettingsBackupDestroyResponseSuccess = (appsettingsBackupDestroyResponse204) & {
-  headers: Headers;
-};
-export type appsettingsBackupDestroyResponseError = (appsettingsBackupDestroyResponse404) & {
-  headers: Headers;
-};
-
-export type appsettingsBackupDestroyResponse = (appsettingsBackupDestroyResponseSuccess | appsettingsBackupDestroyResponseError)
-
-export const getAppsettingsBackupDestroyUrl = (filename: string,) => {
-
-
-
-
-  return `/api/appsettings/backup/${filename}/`
-}
-
-export const appsettingsBackupDestroy = async (filename: string, options?: RequestInit): Promise<appsettingsBackupDestroyResponse> => {
-
-  const res = await fetch(getAppsettingsBackupDestroyUrl(filename),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsBackupDestroyResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as appsettingsBackupDestroyResponse
-}
-
-
+export const appsettingsBackupDestroy = (
+    filename: string,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/appsettings/backup/${filename}/`, method: 'DELETE'
+    },
+      options);
+    }
 
 /**
  * get app config
  */
-export type appsettingsConfigRetrieveResponse200 = {
-  data: AppConfig
-  status: 200
-}
+export const appsettingsConfigRetrieve = (
 
-export type appsettingsConfigRetrieveResponseSuccess = (appsettingsConfigRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsConfigRetrieveResponse = (appsettingsConfigRetrieveResponseSuccess)
-
-export const getAppsettingsConfigRetrieveUrl = () => {
-
-
-
-
-  return `/api/appsettings/config/`
-}
-
-export const appsettingsConfigRetrieve = async ( options?: RequestInit): Promise<appsettingsConfigRetrieveResponse> => {
-
-  const res = await fetch(getAppsettingsConfigRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsConfigRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsConfigRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<AppConfig>>,) => {
+      return customAxios<AppConfig>(
+      {url: `/api/appsettings/config/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * update config values, allows partial update
  */
-export type appsettingsConfigCreateResponse200 = {
-  data: AppConfig
-  status: 200
-}
-
-export type appsettingsConfigCreateResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type appsettingsConfigCreateResponseSuccess = (appsettingsConfigCreateResponse200) & {
-  headers: Headers;
-};
-export type appsettingsConfigCreateResponseError = (appsettingsConfigCreateResponse400) & {
-  headers: Headers;
-};
-
-export type appsettingsConfigCreateResponse = (appsettingsConfigCreateResponseSuccess | appsettingsConfigCreateResponseError)
-
-export const getAppsettingsConfigCreateUrl = () => {
-
-
-
-
-  return `/api/appsettings/config/`
-}
-
-export const appsettingsConfigCreate = async (appConfig?: AppConfig, options?: RequestInit): Promise<appsettingsConfigCreateResponse> => {
-
-  const res = await fetch(getAppsettingsConfigCreateUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      appConfig,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsConfigCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsConfigCreateResponse
-}
-
-
+export const appsettingsConfigCreate = (
+    appConfig?: AppConfig,
+ options?: SecondParameter<typeof customAxios<AppConfig>>,) => {
+      return customAxios<AppConfig>(
+      {url: `/api/appsettings/config/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: appConfig
+    },
+      options);
+    }
 
 /**
  * get cookie validation status
  */
-export type appsettingsCookieRetrieveResponse200 = {
-  data: CookieValidation
-  status: 200
-}
+export const appsettingsCookieRetrieve = (
 
-export type appsettingsCookieRetrieveResponseSuccess = (appsettingsCookieRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsCookieRetrieveResponse = (appsettingsCookieRetrieveResponseSuccess)
-
-export const getAppsettingsCookieRetrieveUrl = () => {
-
-
-
-
-  return `/api/appsettings/cookie/`
-}
-
-export const appsettingsCookieRetrieve = async ( options?: RequestInit): Promise<appsettingsCookieRetrieveResponse> => {
-
-  const res = await fetch(getAppsettingsCookieRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsCookieRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsCookieRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<CookieValidation>>,) => {
+      return customAxios<CookieValidation>(
+      {url: `/api/appsettings/cookie/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * validate cookie
  */
-export type appsettingsCookieCreateResponse200 = {
-  data: CookieValidation
-  status: 200
-}
+export const appsettingsCookieCreate = (
 
-export type appsettingsCookieCreateResponseSuccess = (appsettingsCookieCreateResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsCookieCreateResponse = (appsettingsCookieCreateResponseSuccess)
-
-export const getAppsettingsCookieCreateUrl = () => {
-
-
-
-
-  return `/api/appsettings/cookie/`
-}
-
-export const appsettingsCookieCreate = async ( options?: RequestInit): Promise<appsettingsCookieCreateResponse> => {
-
-  const res = await fetch(getAppsettingsCookieCreateUrl(),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsCookieCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsCookieCreateResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<CookieValidation>>,) => {
+      return customAxios<CookieValidation>(
+      {url: `/api/appsettings/cookie/`, method: 'POST'
+    },
+      options);
+    }
 
 /**
  * handle put request
  */
-export type appsettingsCookieUpdateResponse200 = {
-  data: CookieValidation
-  status: 200
-}
-
-export type appsettingsCookieUpdateResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type appsettingsCookieUpdateResponseSuccess = (appsettingsCookieUpdateResponse200) & {
-  headers: Headers;
-};
-export type appsettingsCookieUpdateResponseError = (appsettingsCookieUpdateResponse400) & {
-  headers: Headers;
-};
-
-export type appsettingsCookieUpdateResponse = (appsettingsCookieUpdateResponseSuccess | appsettingsCookieUpdateResponseError)
-
-export const getAppsettingsCookieUpdateUrl = () => {
-
-
-
-
-  return `/api/appsettings/cookie/`
-}
-
-export const appsettingsCookieUpdate = async (cookieUpdate: CookieUpdate, options?: RequestInit): Promise<appsettingsCookieUpdateResponse> => {
-
-  const res = await fetch(getAppsettingsCookieUpdateUrl(),
-  {
-    ...options,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      cookieUpdate,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsCookieUpdateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsCookieUpdateResponse
-}
-
-
+export const appsettingsCookieUpdate = (
+    cookieUpdate: CookieUpdate,
+ options?: SecondParameter<typeof customAxios<CookieValidation>>,) => {
+      return customAxios<CookieValidation>(
+      {url: `/api/appsettings/cookie/`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: cookieUpdate
+    },
+      options);
+    }
 
 /**
  * delete the cookie
  */
-export type appsettingsCookieDestroyResponse204 = {
-  data: void
-  status: 204
-}
+export const appsettingsCookieDestroy = (
 
-export type appsettingsCookieDestroyResponseSuccess = (appsettingsCookieDestroyResponse204) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsCookieDestroyResponse = (appsettingsCookieDestroyResponseSuccess)
-
-export const getAppsettingsCookieDestroyUrl = () => {
-
-
-
-
-  return `/api/appsettings/cookie/`
-}
-
-export const appsettingsCookieDestroy = async ( options?: RequestInit): Promise<appsettingsCookieDestroyResponse> => {
-
-  const res = await fetch(getAppsettingsCookieDestroyUrl(),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsCookieDestroyResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as appsettingsCookieDestroyResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/appsettings/cookie/`, method: 'DELETE'
+    },
+      options);
+    }
 
 /**
  * manual import
  */
-export type appsettingsManualImportCreateResponse200 = {
-  data: AsyncTaskResponse
-  status: 200
-}
-
-export type appsettingsManualImportCreateResponseSuccess = (appsettingsManualImportCreateResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsManualImportCreateResponse = (appsettingsManualImportCreateResponseSuccess)
-
-export const getAppsettingsManualImportCreateUrl = () => {
-
-
-
-
-  return `/api/appsettings/manual-import/`
-}
-
-export const appsettingsManualImportCreate = async (manualImportConfig: ManualImportConfig, options?: RequestInit): Promise<appsettingsManualImportCreateResponse> => {
-
-  const res = await fetch(getAppsettingsManualImportCreateUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      manualImportConfig,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsManualImportCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsManualImportCreateResponse
-}
-
-
+export const appsettingsManualImportCreate = (
+    manualImportConfig: ManualImportConfig,
+ options?: SecondParameter<typeof customAxios<AsyncTaskResponse>>,) => {
+      return customAxios<AsyncTaskResponse>(
+      {url: `/api/appsettings/manual-import/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: manualImportConfig
+    },
+      options);
+    }
 
 /**
  * get profile
  */
-export type appsettingsMembershipProfileRetrieveResponse200 = {
-  data: MembershipProfile
-  status: 200
-}
+export const appsettingsMembershipProfileRetrieve = (
 
-export type appsettingsMembershipProfileRetrieveResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type appsettingsMembershipProfileRetrieveResponseSuccess = (appsettingsMembershipProfileRetrieveResponse200) & {
-  headers: Headers;
-};
-export type appsettingsMembershipProfileRetrieveResponseError = (appsettingsMembershipProfileRetrieveResponse400) & {
-  headers: Headers;
-};
-
-export type appsettingsMembershipProfileRetrieveResponse = (appsettingsMembershipProfileRetrieveResponseSuccess | appsettingsMembershipProfileRetrieveResponseError)
-
-export const getAppsettingsMembershipProfileRetrieveUrl = () => {
-
-
-
-
-  return `/api/appsettings/membership/profile/`
-}
-
-export const appsettingsMembershipProfileRetrieve = async ( options?: RequestInit): Promise<appsettingsMembershipProfileRetrieveResponse> => {
-
-  const res = await fetch(getAppsettingsMembershipProfileRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsMembershipProfileRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsMembershipProfileRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<MembershipProfile>>,) => {
+      return customAxios<MembershipProfile>(
+      {url: `/api/appsettings/membership/profile/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * post request
  */
-export type appsettingsMembershipSyncCreateResponse200 = {
-  data: void
-  status: 200
-}
+export const appsettingsMembershipSyncCreate = (
 
-export type appsettingsMembershipSyncCreateResponseSuccess = (appsettingsMembershipSyncCreateResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsMembershipSyncCreateResponse = (appsettingsMembershipSyncCreateResponseSuccess)
-
-export const getAppsettingsMembershipSyncCreateUrl = () => {
-
-
-
-
-  return `/api/appsettings/membership/sync/`
-}
-
-export const appsettingsMembershipSyncCreate = async ( options?: RequestInit): Promise<appsettingsMembershipSyncCreateResponse> => {
-
-  const res = await fetch(getAppsettingsMembershipSyncCreateUrl(),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsMembershipSyncCreateResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as appsettingsMembershipSyncCreateResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/appsettings/membership/sync/`, method: 'POST'
+    },
+      options);
+    }
 
 /**
  * get token
  */
-export type appsettingsMembershipTokenRetrieveResponse200 = {
-  data: void
-  status: 200
-}
+export const appsettingsMembershipTokenRetrieve = (
 
-export type appsettingsMembershipTokenRetrieveResponseSuccess = (appsettingsMembershipTokenRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsMembershipTokenRetrieveResponse = (appsettingsMembershipTokenRetrieveResponseSuccess)
-
-export const getAppsettingsMembershipTokenRetrieveUrl = () => {
-
-
-
-
-  return `/api/appsettings/membership/token/`
-}
-
-export const appsettingsMembershipTokenRetrieve = async ( options?: RequestInit): Promise<appsettingsMembershipTokenRetrieveResponse> => {
-
-  const res = await fetch(getAppsettingsMembershipTokenRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsMembershipTokenRetrieveResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as appsettingsMembershipTokenRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/appsettings/membership/token/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * add token
  */
-export type appsettingsMembershipTokenCreateResponse200 = {
-  data: void
-  status: 200
-}
+export const appsettingsMembershipTokenCreate = (
 
-export type appsettingsMembershipTokenCreateResponseSuccess = (appsettingsMembershipTokenCreateResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsMembershipTokenCreateResponse = (appsettingsMembershipTokenCreateResponseSuccess)
-
-export const getAppsettingsMembershipTokenCreateUrl = () => {
-
-
-
-
-  return `/api/appsettings/membership/token/`
-}
-
-export const appsettingsMembershipTokenCreate = async ( options?: RequestInit): Promise<appsettingsMembershipTokenCreateResponse> => {
-
-  const res = await fetch(getAppsettingsMembershipTokenCreateUrl(),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsMembershipTokenCreateResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as appsettingsMembershipTokenCreateResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/appsettings/membership/token/`, method: 'POST'
+    },
+      options);
+    }
 
 /**
  * delete token
  */
-export type appsettingsMembershipTokenDestroyResponse204 = {
-  data: void
-  status: 204
-}
+export const appsettingsMembershipTokenDestroy = (
 
-export type appsettingsMembershipTokenDestroyResponseSuccess = (appsettingsMembershipTokenDestroyResponse204) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsMembershipTokenDestroyResponse = (appsettingsMembershipTokenDestroyResponseSuccess)
-
-export const getAppsettingsMembershipTokenDestroyUrl = () => {
-
-
-
-
-  return `/api/appsettings/membership/token/`
-}
-
-export const appsettingsMembershipTokenDestroy = async ( options?: RequestInit): Promise<appsettingsMembershipTokenDestroyResponse> => {
-
-  const res = await fetch(getAppsettingsMembershipTokenDestroyUrl(),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsMembershipTokenDestroyResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as appsettingsMembershipTokenDestroyResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/appsettings/membership/token/`, method: 'DELETE'
+    },
+      options);
+    }
 
 /**
  * start new task rescan filesystem task
  */
-export type appsettingsRescanFilesystemCreateResponse200 = {
-  data: AsyncTaskResponse
-  status: 200
-}
-
-export type appsettingsRescanFilesystemCreateResponseSuccess = (appsettingsRescanFilesystemCreateResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsRescanFilesystemCreateResponse = (appsettingsRescanFilesystemCreateResponseSuccess)
-
-export const getAppsettingsRescanFilesystemCreateUrl = () => {
-
-
-
-
-  return `/api/appsettings/rescan-filesystem/`
-}
-
-export const appsettingsRescanFilesystemCreate = async (rescanFileSystemConfig: RescanFileSystemConfig, options?: RequestInit): Promise<appsettingsRescanFilesystemCreateResponse> => {
-
-  const res = await fetch(getAppsettingsRescanFilesystemCreateUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      rescanFileSystemConfig,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsRescanFilesystemCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsRescanFilesystemCreateResponse
-}
-
-
+export const appsettingsRescanFilesystemCreate = (
+    rescanFileSystemConfig: RescanFileSystemConfig,
+ options?: SecondParameter<typeof customAxios<AsyncTaskResponse>>,) => {
+      return customAxios<AsyncTaskResponse>(
+      {url: `/api/appsettings/rescan-filesystem/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: rescanFileSystemConfig
+    },
+      options);
+    }
 
 /**
  * get available snapshots with metadata
  */
-export type appsettingsSnapshotRetrieveResponse200 = {
-  data: SnapshotList
-  status: 200
-}
+export const appsettingsSnapshotRetrieve = (
 
-export type appsettingsSnapshotRetrieveResponseSuccess = (appsettingsSnapshotRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsSnapshotRetrieveResponse = (appsettingsSnapshotRetrieveResponseSuccess)
-
-export const getAppsettingsSnapshotRetrieveUrl = () => {
-
-
-
-
-  return `/api/appsettings/snapshot/`
-}
-
-export const appsettingsSnapshotRetrieve = async ( options?: RequestInit): Promise<appsettingsSnapshotRetrieveResponse> => {
-
-  const res = await fetch(getAppsettingsSnapshotRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsSnapshotRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsSnapshotRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<SnapshotList>>,) => {
+      return customAxios<SnapshotList>(
+      {url: `/api/appsettings/snapshot/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * take snapshot now
  */
-export type appsettingsSnapshotCreateResponse200 = {
-  data: SnapshotCreateResponse
-  status: 200
-}
+export const appsettingsSnapshotCreate = (
 
-export type appsettingsSnapshotCreateResponseSuccess = (appsettingsSnapshotCreateResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsSnapshotCreateResponse = (appsettingsSnapshotCreateResponseSuccess)
-
-export const getAppsettingsSnapshotCreateUrl = () => {
-
-
-
-
-  return `/api/appsettings/snapshot/`
-}
-
-export const appsettingsSnapshotCreate = async ( options?: RequestInit): Promise<appsettingsSnapshotCreateResponse> => {
-
-  const res = await fetch(getAppsettingsSnapshotCreateUrl(),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsSnapshotCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsSnapshotCreateResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<SnapshotCreateResponse>>,) => {
+      return customAxios<SnapshotCreateResponse>(
+      {url: `/api/appsettings/snapshot/`, method: 'POST'
+    },
+      options);
+    }
 
 /**
  * handle get request
  */
-export type appsettingsSnapshotRetrieve2Response200 = {
-  data: SnapshotItem
-  status: 200
-}
-
-export type appsettingsSnapshotRetrieve2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type appsettingsSnapshotRetrieve2ResponseSuccess = (appsettingsSnapshotRetrieve2Response200) & {
-  headers: Headers;
-};
-export type appsettingsSnapshotRetrieve2ResponseError = (appsettingsSnapshotRetrieve2Response404) & {
-  headers: Headers;
-};
-
-export type appsettingsSnapshotRetrieve2Response = (appsettingsSnapshotRetrieve2ResponseSuccess | appsettingsSnapshotRetrieve2ResponseError)
-
-export const getAppsettingsSnapshotRetrieve2Url = (snapshotId: string,) => {
-
-
-
-
-  return `/api/appsettings/snapshot/${snapshotId}/`
-}
-
-export const appsettingsSnapshotRetrieve2 = async (snapshotId: string, options?: RequestInit): Promise<appsettingsSnapshotRetrieve2Response> => {
-
-  const res = await fetch(getAppsettingsSnapshotRetrieve2Url(snapshotId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsSnapshotRetrieve2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsSnapshotRetrieve2Response
-}
-
-
+export const appsettingsSnapshotRetrieve2 = (
+    snapshotId: string,
+ options?: SecondParameter<typeof customAxios<SnapshotItem>>,) => {
+      return customAxios<SnapshotItem>(
+      {url: `/api/appsettings/snapshot/${snapshotId}/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * restore snapshot
  */
-export type appsettingsSnapshotCreate2Response200 = {
-  data: SnapshotRestoreResponse
-  status: 200
-}
-
-export type appsettingsSnapshotCreate2Response400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type appsettingsSnapshotCreate2ResponseSuccess = (appsettingsSnapshotCreate2Response200) & {
-  headers: Headers;
-};
-export type appsettingsSnapshotCreate2ResponseError = (appsettingsSnapshotCreate2Response400) & {
-  headers: Headers;
-};
-
-export type appsettingsSnapshotCreate2Response = (appsettingsSnapshotCreate2ResponseSuccess | appsettingsSnapshotCreate2ResponseError)
-
-export const getAppsettingsSnapshotCreate2Url = (snapshotId: string,) => {
-
-
-
-
-  return `/api/appsettings/snapshot/${snapshotId}/`
-}
-
-export const appsettingsSnapshotCreate2 = async (snapshotId: string, options?: RequestInit): Promise<appsettingsSnapshotCreate2Response> => {
-
-  const res = await fetch(getAppsettingsSnapshotCreate2Url(snapshotId),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsSnapshotCreate2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsSnapshotCreate2Response
-}
-
-
+export const appsettingsSnapshotCreate2 = (
+    snapshotId: string,
+ options?: SecondParameter<typeof customAxios<SnapshotRestoreResponse>>,) => {
+      return customAxios<SnapshotRestoreResponse>(
+      {url: `/api/appsettings/snapshot/${snapshotId}/`, method: 'POST'
+    },
+      options);
+    }
 
 /**
  * delete snapshot from index
  */
-export type appsettingsSnapshotDestroyResponse204 = {
-  data: void
-  status: 204
-}
-
-export type appsettingsSnapshotDestroyResponseSuccess = (appsettingsSnapshotDestroyResponse204) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsSnapshotDestroyResponse = (appsettingsSnapshotDestroyResponseSuccess)
-
-export const getAppsettingsSnapshotDestroyUrl = (snapshotId: string,) => {
-
-
-
-
-  return `/api/appsettings/snapshot/${snapshotId}/`
-}
-
-export const appsettingsSnapshotDestroy = async (snapshotId: string, options?: RequestInit): Promise<appsettingsSnapshotDestroyResponse> => {
-
-  const res = await fetch(getAppsettingsSnapshotDestroyUrl(snapshotId),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsSnapshotDestroyResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as appsettingsSnapshotDestroyResponse
-}
-
-
+export const appsettingsSnapshotDestroy = (
+    snapshotId: string,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/appsettings/snapshot/${snapshotId}/`, method: 'DELETE'
+    },
+      options);
+    }
 
 /**
  * get your API token
  */
-export type appsettingsTokenRetrieveResponse200 = {
-  data: TokenResponse
-  status: 200
-}
+export const appsettingsTokenRetrieve = (
 
-export type appsettingsTokenRetrieveResponseSuccess = (appsettingsTokenRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsTokenRetrieveResponse = (appsettingsTokenRetrieveResponseSuccess)
-
-export const getAppsettingsTokenRetrieveUrl = () => {
-
-
-
-
-  return `/api/appsettings/token/`
-}
-
-export const appsettingsTokenRetrieve = async ( options?: RequestInit): Promise<appsettingsTokenRetrieveResponse> => {
-
-  const res = await fetch(getAppsettingsTokenRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsTokenRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as appsettingsTokenRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<TokenResponse>>,) => {
+      return customAxios<TokenResponse>(
+      {url: `/api/appsettings/token/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * delete your API token, new will get created on next get
  */
-export type appsettingsTokenDestroyResponse204 = {
-  data: void
-  status: 204
-}
+export const appsettingsTokenDestroy = (
 
-export type appsettingsTokenDestroyResponseSuccess = (appsettingsTokenDestroyResponse204) & {
-  headers: Headers;
-};
-;
-
-export type appsettingsTokenDestroyResponse = (appsettingsTokenDestroyResponseSuccess)
-
-export const getAppsettingsTokenDestroyUrl = () => {
-
-
-
-
-  return `/api/appsettings/token/`
-}
-
-export const appsettingsTokenDestroy = async ( options?: RequestInit): Promise<appsettingsTokenDestroyResponse> => {
-
-  const res = await fetch(getAppsettingsTokenDestroyUrl(),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: appsettingsTokenDestroyResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as appsettingsTokenDestroyResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/appsettings/token/`, method: 'DELETE'
+    },
+      options);
+    }
 
 /**
  * get request
  */
-export type channelRetrieveResponse200 = {
-  data: ChannelList
-  status: 200
-}
-
-export type channelRetrieveResponseSuccess = (channelRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type channelRetrieveResponse = (channelRetrieveResponseSuccess)
-
-export const getChannelRetrieveUrl = (params?: ChannelRetrieveParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const channelRetrieve = (
+    params?: ChannelRetrieveParams,
+ options?: SecondParameter<typeof customAxios<ChannelList>>,) => {
+      return customAxios<ChannelList>(
+      {url: `/api/channel/`, method: 'GET',
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/channel/?${stringifiedParams}` : `/api/channel/`
-}
-
-export const channelRetrieve = async (params?: ChannelRetrieveParams, options?: RequestInit): Promise<channelRetrieveResponse> => {
-
-  const res = await fetch(getChannelRetrieveUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: channelRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as channelRetrieveResponse
-}
-
-
 
 /**
  * subscribe/unsubscribe to list of channels
  */
-export type channelCreateResponse200 = {
-  data: void
-  status: 200
-}
+export const channelCreate = (
 
-export type channelCreateResponseSuccess = (channelCreateResponse200) & {
-  headers: Headers;
-};
-;
-
-export type channelCreateResponse = (channelCreateResponseSuccess)
-
-export const getChannelCreateUrl = () => {
-
-
-
-
-  return `/api/channel/`
-}
-
-export const channelCreate = async ( options?: RequestInit): Promise<channelCreateResponse> => {
-
-  const res = await fetch(getChannelCreateUrl(),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: channelCreateResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as channelCreateResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/channel/`, method: 'POST'
+    },
+      options);
+    }
 
 /**
  * get channel detail
  */
-export type channelRetrieve2Response200 = {
-  data: Channel
-  status: 200
-}
-
-export type channelRetrieve2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type channelRetrieve2ResponseSuccess = (channelRetrieve2Response200) & {
-  headers: Headers;
-};
-export type channelRetrieve2ResponseError = (channelRetrieve2Response404) & {
-  headers: Headers;
-};
-
-export type channelRetrieve2Response = (channelRetrieve2ResponseSuccess | channelRetrieve2ResponseError)
-
-export const getChannelRetrieve2Url = (channelId: string,) => {
-
-
-
-
-  return `/api/channel/${channelId}/`
-}
-
-export const channelRetrieve2 = async (channelId: string, options?: RequestInit): Promise<channelRetrieve2Response> => {
-
-  const res = await fetch(getChannelRetrieve2Url(channelId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: channelRetrieve2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as channelRetrieve2Response
-}
-
-
+export const channelRetrieve2 = (
+    channelId: string,
+ options?: SecondParameter<typeof customAxios<Channel>>,) => {
+      return customAxios<Channel>(
+      {url: `/api/channel/${channelId}/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * modify channel
  */
-export type channelCreate2Response200 = {
-  data: ChannelUpdate
-  status: 200
-}
-
-export type channelCreate2Response400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type channelCreate2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type channelCreate2ResponseSuccess = (channelCreate2Response200) & {
-  headers: Headers;
-};
-export type channelCreate2ResponseError = (channelCreate2Response400 | channelCreate2Response404) & {
-  headers: Headers;
-};
-
-export type channelCreate2Response = (channelCreate2ResponseSuccess | channelCreate2ResponseError)
-
-export const getChannelCreate2Url = (channelId: string,) => {
-
-
-
-
-  return `/api/channel/${channelId}/`
-}
-
-export const channelCreate2 = async (channelId: string,
-    channelUpdate?: ChannelUpdate, options?: RequestInit): Promise<channelCreate2Response> => {
-
-  const res = await fetch(getChannelCreate2Url(channelId),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      channelUpdate,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: channelCreate2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as channelCreate2Response
-}
-
-
+export const channelCreate2 = (
+    channelId: string,
+    channelUpdate?: ChannelUpdate,
+ options?: SecondParameter<typeof customAxios<ChannelUpdate>>,) => {
+      return customAxios<ChannelUpdate>(
+      {url: `/api/channel/${channelId}/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: channelUpdate
+    },
+      options);
+    }
 
 /**
  * delete channel
  */
-export type channelDestroyResponse204 = {
-  data: void
-  status: 204
-}
-
-export type channelDestroyResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type channelDestroyResponseSuccess = (channelDestroyResponse204) & {
-  headers: Headers;
-};
-export type channelDestroyResponseError = (channelDestroyResponse404) & {
-  headers: Headers;
-};
-
-export type channelDestroyResponse = (channelDestroyResponseSuccess | channelDestroyResponseError)
-
-export const getChannelDestroyUrl = (channelId: string,) => {
-
-
-
-
-  return `/api/channel/${channelId}/`
-}
-
-export const channelDestroy = async (channelId: string, options?: RequestInit): Promise<channelDestroyResponse> => {
-
-  const res = await fetch(getChannelDestroyUrl(channelId),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: channelDestroyResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as channelDestroyResponse
-}
-
-
+export const channelDestroy = (
+    channelId: string,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/channel/${channelId}/`, method: 'DELETE'
+    },
+      options);
+    }
 
 /**
  * get channel aggregations
  */
-export type channelAggsRetrieveResponse200 = {
-  data: ChannelAgg
-  status: 200
-}
-
-export type channelAggsRetrieveResponseSuccess = (channelAggsRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type channelAggsRetrieveResponse = (channelAggsRetrieveResponseSuccess)
-
-export const getChannelAggsRetrieveUrl = (channelId: string,) => {
-
-
-
-
-  return `/api/channel/${channelId}/aggs/`
-}
-
-export const channelAggsRetrieve = async (channelId: string, options?: RequestInit): Promise<channelAggsRetrieveResponse> => {
-
-  const res = await fetch(getChannelAggsRetrieveUrl(channelId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: channelAggsRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as channelAggsRetrieveResponse
-}
-
-
+export const channelAggsRetrieve = (
+    channelId: string,
+ options?: SecondParameter<typeof customAxios<ChannelAgg>>,) => {
+      return customAxios<ChannelAgg>(
+      {url: `/api/channel/${channelId}/aggs/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get navigation
  */
-export type channelNavRetrieveResponse200 = {
-  data: ChannelNav
-  status: 200
-}
-
-export type channelNavRetrieveResponseSuccess = (channelNavRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type channelNavRetrieveResponse = (channelNavRetrieveResponseSuccess)
-
-export const getChannelNavRetrieveUrl = (channelId: string,) => {
-
-
-
-
-  return `/api/channel/${channelId}/nav/`
-}
-
-export const channelNavRetrieve = async (channelId: string, options?: RequestInit): Promise<channelNavRetrieveResponse> => {
-
-  const res = await fetch(getChannelNavRetrieveUrl(channelId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: channelNavRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as channelNavRetrieveResponse
-}
-
-
+export const channelNavRetrieve = (
+    channelId: string,
+ options?: SecondParameter<typeof customAxios<ChannelNav>>,) => {
+      return customAxios<ChannelNav>(
+      {url: `/api/channel/${channelId}/nav/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * search for local channel ID
  */
-export type channelSearchRetrieveResponse200 = {
-  data: Channel
-  status: 200
-}
-
-export type channelSearchRetrieveResponse400 = {
-  data: void
-  status: 400
-}
-
-export type channelSearchRetrieveResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type channelSearchRetrieveResponseSuccess = (channelSearchRetrieveResponse200) & {
-  headers: Headers;
-};
-export type channelSearchRetrieveResponseError = (channelSearchRetrieveResponse400 | channelSearchRetrieveResponse404) & {
-  headers: Headers;
-};
-
-export type channelSearchRetrieveResponse = (channelSearchRetrieveResponseSuccess | channelSearchRetrieveResponseError)
-
-export const getChannelSearchRetrieveUrl = (params: ChannelSearchRetrieveParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const channelSearchRetrieve = (
+    params: ChannelSearchRetrieveParams,
+ options?: SecondParameter<typeof customAxios<Channel>>,) => {
+      return customAxios<Channel>(
+      {url: `/api/channel/search/`, method: 'GET',
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/channel/search/?${stringifiedParams}` : `/api/channel/search/`
-}
-
-export const channelSearchRetrieve = async (params: ChannelSearchRetrieveParams, options?: RequestInit): Promise<channelSearchRetrieveResponse> => {
-
-  const res = await fetch(getChannelSearchRetrieveUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: channelSearchRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as channelSearchRetrieveResponse
-}
-
-
 
 /**
  * get download queue list
  */
-export type downloadRetrieveResponse200 = {
-  data: DownloadList
-  status: 200
-}
-
-export type downloadRetrieveResponseSuccess = (downloadRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type downloadRetrieveResponse = (downloadRetrieveResponseSuccess)
-
-export const getDownloadRetrieveUrl = (params?: DownloadRetrieveParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const downloadRetrieve = (
+    params?: DownloadRetrieveParams,
+ options?: SecondParameter<typeof customAxios<DownloadList>>,) => {
+      return customAxios<DownloadList>(
+      {url: `/api/download/`, method: 'GET',
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/download/?${stringifiedParams}` : `/api/download/`
-}
-
-export const downloadRetrieve = async (params?: DownloadRetrieveParams, options?: RequestInit): Promise<downloadRetrieveResponse> => {
-
-  const res = await fetch(getDownloadRetrieveUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: downloadRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as downloadRetrieveResponse
-}
-
-
 
 /**
  * add list of videos to download queue
  */
-export type downloadCreateResponse200 = {
-  data: AsyncTaskResponse
-  status: 200
-}
-
-export type downloadCreateResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type downloadCreateResponseSuccess = (downloadCreateResponse200) & {
-  headers: Headers;
-};
-export type downloadCreateResponseError = (downloadCreateResponse400) & {
-  headers: Headers;
-};
-
-export type downloadCreateResponse = (downloadCreateResponseSuccess | downloadCreateResponseError)
-
-export const getDownloadCreateUrl = (params?: DownloadCreateParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const downloadCreate = (
+    addToDownloadList: AddToDownloadList,
+    params?: DownloadCreateParams,
+ options?: SecondParameter<typeof customAxios<AsyncTaskResponse>>,) => {
+      return customAxios<AsyncTaskResponse>(
+      {url: `/api/download/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: addToDownloadList,
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/download/?${stringifiedParams}` : `/api/download/`
-}
-
-export const downloadCreate = async (addToDownloadList: AddToDownloadList,
-    params?: DownloadCreateParams, options?: RequestInit): Promise<downloadCreateResponse> => {
-
-  const res = await fetch(getDownloadCreateUrl(params),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      addToDownloadList,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: downloadCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as downloadCreateResponse
-}
-
-
 
 /**
  * bulk update status
  */
-export type downloadPartialUpdateResponse204 = {
-  data: void
-  status: 204
-}
-
-export type downloadPartialUpdateResponseSuccess = (downloadPartialUpdateResponse204) & {
-  headers: Headers;
-};
-;
-
-export type downloadPartialUpdateResponse = (downloadPartialUpdateResponseSuccess)
-
-export const getDownloadPartialUpdateUrl = (params: DownloadPartialUpdateParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const downloadPartialUpdate = (
+    params: DownloadPartialUpdateParams,
+    patchedBulkUpdateDowloadData?: PatchedBulkUpdateDowloadData,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/download/`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: patchedBulkUpdateDowloadData,
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/download/?${stringifiedParams}` : `/api/download/`
-}
-
-export const downloadPartialUpdate = async (params: DownloadPartialUpdateParams,
-    patchedBulkUpdateDowloadData?: PatchedBulkUpdateDowloadData, options?: RequestInit): Promise<downloadPartialUpdateResponse> => {
-
-  const res = await fetch(getDownloadPartialUpdateUrl(params),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      patchedBulkUpdateDowloadData,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: downloadPartialUpdateResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as downloadPartialUpdateResponse
-}
-
-
 
 /**
  * bulk delete download queue items by filter
  */
-export type downloadDestroyResponse204 = {
-  data: void
-  status: 204
-}
-
-export type downloadDestroyResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type downloadDestroyResponseSuccess = (downloadDestroyResponse204) & {
-  headers: Headers;
-};
-export type downloadDestroyResponseError = (downloadDestroyResponse400) & {
-  headers: Headers;
-};
-
-export type downloadDestroyResponse = (downloadDestroyResponseSuccess | downloadDestroyResponseError)
-
-export const getDownloadDestroyUrl = (params: DownloadDestroyParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const downloadDestroy = (
+    params: DownloadDestroyParams,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/download/`, method: 'DELETE',
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/download/?${stringifiedParams}` : `/api/download/`
-}
-
-export const downloadDestroy = async (params: DownloadDestroyParams, options?: RequestInit): Promise<downloadDestroyResponse> => {
-
-  const res = await fetch(getDownloadDestroyUrl(params),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: downloadDestroyResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as downloadDestroyResponse
-}
-
-
 
 /**
  * get download queue item
  */
-export type downloadRetrieve2Response200 = {
-  data: DownloadItem
-  status: 200
-}
-
-export type downloadRetrieve2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type downloadRetrieve2ResponseSuccess = (downloadRetrieve2Response200) & {
-  headers: Headers;
-};
-export type downloadRetrieve2ResponseError = (downloadRetrieve2Response404) & {
-  headers: Headers;
-};
-
-export type downloadRetrieve2Response = (downloadRetrieve2ResponseSuccess | downloadRetrieve2ResponseError)
-
-export const getDownloadRetrieve2Url = (videoId: string,) => {
-
-
-
-
-  return `/api/download/${videoId}/`
-}
-
-export const downloadRetrieve2 = async (videoId: string, options?: RequestInit): Promise<downloadRetrieve2Response> => {
-
-  const res = await fetch(getDownloadRetrieve2Url(videoId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: downloadRetrieve2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as downloadRetrieve2Response
-}
-
-
+export const downloadRetrieve2 = (
+    videoId: string,
+ options?: SecondParameter<typeof customAxios<DownloadItem>>,) => {
+      return customAxios<DownloadItem>(
+      {url: `/api/download/${videoId}/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * post to video to change status
  */
-export type downloadCreate2Response200 = {
-  data: DownloadQueueItemUpdate
-  status: 200
-}
-
-export type downloadCreate2Response400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type downloadCreate2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type downloadCreate2ResponseSuccess = (downloadCreate2Response200) & {
-  headers: Headers;
-};
-export type downloadCreate2ResponseError = (downloadCreate2Response400 | downloadCreate2Response404) & {
-  headers: Headers;
-};
-
-export type downloadCreate2Response = (downloadCreate2ResponseSuccess | downloadCreate2ResponseError)
-
-export const getDownloadCreate2Url = (videoId: string,) => {
-
-
-
-
-  return `/api/download/${videoId}/`
-}
-
-export const downloadCreate2 = async (videoId: string,
-    downloadQueueItemUpdate: DownloadQueueItemUpdate, options?: RequestInit): Promise<downloadCreate2Response> => {
-
-  const res = await fetch(getDownloadCreate2Url(videoId),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      downloadQueueItemUpdate,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: downloadCreate2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as downloadCreate2Response
-}
-
-
+export const downloadCreate2 = (
+    videoId: string,
+    downloadQueueItemUpdate: DownloadQueueItemUpdate,
+ options?: SecondParameter<typeof customAxios<DownloadQueueItemUpdate>>,) => {
+      return customAxios<DownloadQueueItemUpdate>(
+      {url: `/api/download/${videoId}/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: downloadQueueItemUpdate
+    },
+      options);
+    }
 
 /**
  * delete single video from queue
  */
-export type downloadDestroy2Response204 = {
-  data: void
-  status: 204
-}
-
-export type downloadDestroy2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type downloadDestroy2ResponseSuccess = (downloadDestroy2Response204) & {
-  headers: Headers;
-};
-export type downloadDestroy2ResponseError = (downloadDestroy2Response404) & {
-  headers: Headers;
-};
-
-export type downloadDestroy2Response = (downloadDestroy2ResponseSuccess | downloadDestroy2ResponseError)
-
-export const getDownloadDestroy2Url = (videoId: string,) => {
-
-
-
-
-  return `/api/download/${videoId}/`
-}
-
-export const downloadDestroy2 = async (videoId: string, options?: RequestInit): Promise<downloadDestroy2Response> => {
-
-  const res = await fetch(getDownloadDestroy2Url(videoId),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: downloadDestroy2Response['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as downloadDestroy2Response
-}
-
-
+export const downloadDestroy2 = (
+    videoId: string,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/download/${videoId}/`, method: 'DELETE'
+    },
+      options);
+    }
 
 /**
  * get aggs
  */
-export type downloadAggsRetrieveResponse200 = {
-  data: DownloadAggs
-  status: 200
-}
-
-export type downloadAggsRetrieveResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type downloadAggsRetrieveResponseSuccess = (downloadAggsRetrieveResponse200) & {
-  headers: Headers;
-};
-export type downloadAggsRetrieveResponseError = (downloadAggsRetrieveResponse400) & {
-  headers: Headers;
-};
-
-export type downloadAggsRetrieveResponse = (downloadAggsRetrieveResponseSuccess | downloadAggsRetrieveResponseError)
-
-export const getDownloadAggsRetrieveUrl = (params: DownloadAggsRetrieveParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const downloadAggsRetrieve = (
+    params: DownloadAggsRetrieveParams,
+ options?: SecondParameter<typeof customAxios<DownloadAggs>>,) => {
+      return customAxios<DownloadAggs>(
+      {url: `/api/download/aggs/`, method: 'GET',
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/download/aggs/?${stringifiedParams}` : `/api/download/aggs/`
-}
-
-export const downloadAggsRetrieve = async (params: DownloadAggsRetrieveParams, options?: RequestInit): Promise<downloadAggsRetrieveResponse> => {
-
-  const res = await fetch(getDownloadAggsRetrieveUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: downloadAggsRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as downloadAggsRetrieveResponse
-}
-
-
 
 /**
  * health check, no auth needed
  */
-export type healthRetrieveResponse200 = {
-  data: void
-  status: 200
-}
+export const healthRetrieve = (
 
-export type healthRetrieveResponseSuccess = (healthRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type healthRetrieveResponse = (healthRetrieveResponseSuccess)
-
-export const getHealthRetrieveUrl = () => {
-
-
-
-
-  return `/api/health/`
-}
-
-export const healthRetrieve = async ( options?: RequestInit): Promise<healthRetrieveResponse> => {
-
-  const res = await fetch(getHealthRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: healthRetrieveResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as healthRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/health/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get all notifications
  */
-export type notificationRetrieveResponse200 = {
-  data: Notification[]
-  status: 200
-}
-
-export type notificationRetrieveResponseSuccess = (notificationRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type notificationRetrieveResponse = (notificationRetrieveResponseSuccess)
-
-export const getNotificationRetrieveUrl = (params?: NotificationRetrieveParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const notificationRetrieve = (
+    params?: NotificationRetrieveParams,
+ options?: SecondParameter<typeof customAxios<Notification[]>>,) => {
+      return customAxios<Notification[]>(
+      {url: `/api/notification/`, method: 'GET',
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/notification/?${stringifiedParams}` : `/api/notification/`
-}
-
-export const notificationRetrieve = async (params?: NotificationRetrieveParams, options?: RequestInit): Promise<notificationRetrieveResponse> => {
-
-  const res = await fetch(getNotificationRetrieveUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: notificationRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as notificationRetrieveResponse
-}
-
-
 
 /**
  * get pong
  */
-export type pingRetrieveResponse200 = {
-  data: Ping
-  status: 200
-}
+export const pingRetrieve = (
 
-export type pingRetrieveResponseSuccess = (pingRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type pingRetrieveResponse = (pingRetrieveResponseSuccess)
-
-export const getPingRetrieveUrl = () => {
-
-
-
-
-  return `/api/ping/`
-}
-
-export const pingRetrieve = async ( options?: RequestInit): Promise<pingRetrieveResponse> => {
-
-  const res = await fetch(getPingRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: pingRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as pingRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<Ping>>,) => {
+      return customAxios<Ping>(
+      {url: `/api/ping/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get playlist list
  */
-export type playlistRetrieveResponse200 = {
-  data: PlaylistList
-  status: 200
-}
-
-export type playlistRetrieveResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type playlistRetrieveResponseSuccess = (playlistRetrieveResponse200) & {
-  headers: Headers;
-};
-export type playlistRetrieveResponseError = (playlistRetrieveResponse400) & {
-  headers: Headers;
-};
-
-export type playlistRetrieveResponse = (playlistRetrieveResponseSuccess | playlistRetrieveResponseError)
-
-export const getPlaylistRetrieveUrl = (params?: PlaylistRetrieveParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const playlistRetrieve = (
+    params?: PlaylistRetrieveParams,
+ options?: SecondParameter<typeof customAxios<PlaylistList>>,) => {
+      return customAxios<PlaylistList>(
+      {url: `/api/playlist/`, method: 'GET',
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/playlist/?${stringifiedParams}` : `/api/playlist/`
-}
-
-export const playlistRetrieve = async (params?: PlaylistRetrieveParams, options?: RequestInit): Promise<playlistRetrieveResponse> => {
-
-  const res = await fetch(getPlaylistRetrieveUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: playlistRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as playlistRetrieveResponse
-}
-
-
 
 /**
  * async subscribe to list of playlists
  */
-export type playlistCreateResponse200 = {
-  data: AsyncTaskResponse
-  status: 200
-}
-
-export type playlistCreateResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type playlistCreateResponseSuccess = (playlistCreateResponse200) & {
-  headers: Headers;
-};
-export type playlistCreateResponseError = (playlistCreateResponse400) & {
-  headers: Headers;
-};
-
-export type playlistCreateResponse = (playlistCreateResponseSuccess | playlistCreateResponseError)
-
-export const getPlaylistCreateUrl = () => {
-
-
-
-
-  return `/api/playlist/`
-}
-
-export const playlistCreate = async (playlistBulkAdd: PlaylistBulkAdd, options?: RequestInit): Promise<playlistCreateResponse> => {
-
-  const res = await fetch(getPlaylistCreateUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      playlistBulkAdd,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: playlistCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as playlistCreateResponse
-}
-
-
+export const playlistCreate = (
+    playlistBulkAdd: PlaylistBulkAdd,
+ options?: SecondParameter<typeof customAxios<AsyncTaskResponse>>,) => {
+      return customAxios<AsyncTaskResponse>(
+      {url: `/api/playlist/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: playlistBulkAdd
+    },
+      options);
+    }
 
 /**
  * get playlist
  */
-export type playlistRetrieve2Response200 = {
-  data: Playlist
-  status: 200
-}
-
-export type playlistRetrieve2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type playlistRetrieve2ResponseSuccess = (playlistRetrieve2Response200) & {
-  headers: Headers;
-};
-export type playlistRetrieve2ResponseError = (playlistRetrieve2Response404) & {
-  headers: Headers;
-};
-
-export type playlistRetrieve2Response = (playlistRetrieve2ResponseSuccess | playlistRetrieve2ResponseError)
-
-export const getPlaylistRetrieve2Url = (playlistId: string,) => {
-
-
-
-
-  return `/api/playlist/${playlistId}/`
-}
-
-export const playlistRetrieve2 = async (playlistId: string, options?: RequestInit): Promise<playlistRetrieve2Response> => {
-
-  const res = await fetch(getPlaylistRetrieve2Url(playlistId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: playlistRetrieve2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as playlistRetrieve2Response
-}
-
-
+export const playlistRetrieve2 = (
+    playlistId: string,
+ options?: SecondParameter<typeof customAxios<Playlist>>,) => {
+      return customAxios<Playlist>(
+      {url: `/api/playlist/${playlistId}/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * update subscribed state of playlist
  */
-export type playlistCreate2Response200 = {
-  data: Playlist
-  status: 200
-}
-
-export type playlistCreate2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type playlistCreate2ResponseSuccess = (playlistCreate2Response200) & {
-  headers: Headers;
-};
-export type playlistCreate2ResponseError = (playlistCreate2Response404) & {
-  headers: Headers;
-};
-
-export type playlistCreate2Response = (playlistCreate2ResponseSuccess | playlistCreate2ResponseError)
-
-export const getPlaylistCreate2Url = (playlistId: string,) => {
-
-
-
-
-  return `/api/playlist/${playlistId}/`
-}
-
-export const playlistCreate2 = async (playlistId: string,
-    playlistSingleUpdate?: PlaylistSingleUpdate, options?: RequestInit): Promise<playlistCreate2Response> => {
-
-  const res = await fetch(getPlaylistCreate2Url(playlistId),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      playlistSingleUpdate,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: playlistCreate2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as playlistCreate2Response
-}
-
-
+export const playlistCreate2 = (
+    playlistId: string,
+    playlistSingleUpdate?: PlaylistSingleUpdate,
+ options?: SecondParameter<typeof customAxios<Playlist>>,) => {
+      return customAxios<Playlist>(
+      {url: `/api/playlist/${playlistId}/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: playlistSingleUpdate
+    },
+      options);
+    }
 
 /**
  * delete playlist
  */
-export type playlistDestroyResponse204 = {
-  data: void
-  status: 204
-}
-
-export type playlistDestroyResponseSuccess = (playlistDestroyResponse204) & {
-  headers: Headers;
-};
-;
-
-export type playlistDestroyResponse = (playlistDestroyResponseSuccess)
-
-export const getPlaylistDestroyUrl = (playlistId: string,
-    params?: PlaylistDestroyParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const playlistDestroy = (
+    playlistId: string,
+    params?: PlaylistDestroyParams,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/playlist/${playlistId}/`, method: 'DELETE',
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/playlist/${playlistId}/?${stringifiedParams}` : `/api/playlist/${playlistId}/`
-}
-
-export const playlistDestroy = async (playlistId: string,
-    params?: PlaylistDestroyParams, options?: RequestInit): Promise<playlistDestroyResponse> => {
-
-  const res = await fetch(getPlaylistDestroyUrl(playlistId,params),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: playlistDestroyResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as playlistDestroyResponse
-}
-
-
 
 /**
  * create new custom playlist
  */
-export type playlistCustomCreateResponse200 = {
-  data: Playlist
-  status: 200
-}
-
-export type playlistCustomCreateResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type playlistCustomCreateResponseSuccess = (playlistCustomCreateResponse200) & {
-  headers: Headers;
-};
-export type playlistCustomCreateResponseError = (playlistCustomCreateResponse400) & {
-  headers: Headers;
-};
-
-export type playlistCustomCreateResponse = (playlistCustomCreateResponseSuccess | playlistCustomCreateResponseError)
-
-export const getPlaylistCustomCreateUrl = () => {
-
-
-
-
-  return `/api/playlist/custom/`
-}
-
-export const playlistCustomCreate = async (playlistListCustomPost: PlaylistListCustomPost, options?: RequestInit): Promise<playlistCustomCreateResponse> => {
-
-  const res = await fetch(getPlaylistCustomCreateUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      playlistListCustomPost,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: playlistCustomCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as playlistCustomCreateResponse
-}
-
-
+export const playlistCustomCreate = (
+    playlistListCustomPost: PlaylistListCustomPost,
+ options?: SecondParameter<typeof customAxios<Playlist>>,) => {
+      return customAxios<Playlist>(
+      {url: `/api/playlist/custom/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: playlistListCustomPost
+    },
+      options);
+    }
 
 /**
  * modify custom playlist
  */
-export type playlistCustomCreate2Response200 = {
-  data: Playlist
-  status: 200
-}
-
-export type playlistCustomCreate2Response400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type playlistCustomCreate2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type playlistCustomCreate2ResponseSuccess = (playlistCustomCreate2Response200) & {
-  headers: Headers;
-};
-export type playlistCustomCreate2ResponseError = (playlistCustomCreate2Response400 | playlistCustomCreate2Response404) & {
-  headers: Headers;
-};
-
-export type playlistCustomCreate2Response = (playlistCustomCreate2ResponseSuccess | playlistCustomCreate2ResponseError)
-
-export const getPlaylistCustomCreate2Url = (playlistId: string,) => {
-
-
-
-
-  return `/api/playlist/custom/${playlistId}/`
-}
-
-export const playlistCustomCreate2 = async (playlistId: string,
-    playlistCustomPost: PlaylistCustomPost, options?: RequestInit): Promise<playlistCustomCreate2Response> => {
-
-  const res = await fetch(getPlaylistCustomCreate2Url(playlistId),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      playlistCustomPost,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: playlistCustomCreate2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as playlistCustomCreate2Response
-}
-
-
+export const playlistCustomCreate2 = (
+    playlistId: string,
+    playlistCustomPost: PlaylistCustomPost,
+ options?: SecondParameter<typeof customAxios<Playlist>>,) => {
+      return customAxios<Playlist>(
+      {url: `/api/playlist/custom/${playlistId}/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: playlistCustomPost
+    },
+      options);
+    }
 
 /**
  * get refresh status
  */
-export type refreshRetrieveResponse200 = {
-  data: RefreshResponse
-  status: 200
-}
-
-export type refreshRetrieveResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type refreshRetrieveResponseSuccess = (refreshRetrieveResponse200) & {
-  headers: Headers;
-};
-export type refreshRetrieveResponseError = (refreshRetrieveResponse400) & {
-  headers: Headers;
-};
-
-export type refreshRetrieveResponse = (refreshRetrieveResponseSuccess | refreshRetrieveResponseError)
-
-export const getRefreshRetrieveUrl = (params?: RefreshRetrieveParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const refreshRetrieve = (
+    params?: RefreshRetrieveParams,
+ options?: SecondParameter<typeof customAxios<RefreshResponse>>,) => {
+      return customAxios<RefreshResponse>(
+      {url: `/api/refresh/`, method: 'GET',
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/refresh/?${stringifiedParams}` : `/api/refresh/`
-}
-
-export const refreshRetrieve = async (params?: RefreshRetrieveParams, options?: RequestInit): Promise<refreshRetrieveResponse> => {
-
-  const res = await fetch(getRefreshRetrieveUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: refreshRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as refreshRetrieveResponse
-}
-
-
 
 /**
  * add to reindex queue
  */
-export type refreshCreateResponse200 = {
-  data: AsyncTaskResponse
-  status: 200
-}
-
-export type refreshCreateResponseSuccess = (refreshCreateResponse200) & {
-  headers: Headers;
-};
-;
-
-export type refreshCreateResponse = (refreshCreateResponseSuccess)
-
-export const getRefreshCreateUrl = (params?: RefreshCreateParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const refreshCreate = (
+    refreshAddData?: RefreshAddData,
+    params?: RefreshCreateParams,
+ options?: SecondParameter<typeof customAxios<AsyncTaskResponse>>,) => {
+      return customAxios<AsyncTaskResponse>(
+      {url: `/api/refresh/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: refreshAddData,
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/refresh/?${stringifiedParams}` : `/api/refresh/`
-}
-
-export const refreshCreate = async (refreshAddData?: RefreshAddData,
-    params?: RefreshCreateParams, options?: RequestInit): Promise<refreshCreateResponse> => {
-
-  const res = await fetch(getRefreshCreateUrl(params),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      refreshAddData,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: refreshCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as refreshCreateResponse
-}
-
-
 
 /**
  * handle get request
 search through all indexes
  */
-export type searchRetrieveResponse200 = {
-  data: void
-  status: 200
-}
+export const searchRetrieve = (
 
-export type searchRetrieveResponseSuccess = (searchRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type searchRetrieveResponse = (searchRetrieveResponseSuccess)
-
-export const getSearchRetrieveUrl = () => {
-
-
-
-
-  return `/api/search/`
-}
-
-export const searchRetrieve = async ( options?: RequestInit): Promise<searchRetrieveResponse> => {
-
-  const res = await fetch(getSearchRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: searchRetrieveResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as searchRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/search/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get biggest channels stats
  */
-export type statsBiggestchannelsRetrieveResponse200 = {
-  data: BiggestChannelItem[]
-  status: 200
-}
+export const statsBiggestchannelsRetrieve = (
 
-export type statsBiggestchannelsRetrieveResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type statsBiggestchannelsRetrieveResponseSuccess = (statsBiggestchannelsRetrieveResponse200) & {
-  headers: Headers;
-};
-export type statsBiggestchannelsRetrieveResponseError = (statsBiggestchannelsRetrieveResponse400) & {
-  headers: Headers;
-};
-
-export type statsBiggestchannelsRetrieveResponse = (statsBiggestchannelsRetrieveResponseSuccess | statsBiggestchannelsRetrieveResponseError)
-
-export const getStatsBiggestchannelsRetrieveUrl = () => {
-
-
-
-
-  return `/api/stats/biggestchannels/`
-}
-
-export const statsBiggestchannelsRetrieve = async ( options?: RequestInit): Promise<statsBiggestchannelsRetrieveResponse> => {
-
-  const res = await fetch(getStatsBiggestchannelsRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: statsBiggestchannelsRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as statsBiggestchannelsRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<BiggestChannelItem[]>>,) => {
+      return customAxios<BiggestChannelItem[]>(
+      {url: `/api/stats/biggestchannels/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get channel stats
  */
-export type statsChannelRetrieveResponse200 = {
-  data: ChannelStats
-  status: 200
-}
+export const statsChannelRetrieve = (
 
-export type statsChannelRetrieveResponseSuccess = (statsChannelRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type statsChannelRetrieveResponse = (statsChannelRetrieveResponseSuccess)
-
-export const getStatsChannelRetrieveUrl = () => {
-
-
-
-
-  return `/api/stats/channel/`
-}
-
-export const statsChannelRetrieve = async ( options?: RequestInit): Promise<statsChannelRetrieveResponse> => {
-
-  const res = await fetch(getStatsChannelRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: statsChannelRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as statsChannelRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<ChannelStats>>,) => {
+      return customAxios<ChannelStats>(
+      {url: `/api/stats/channel/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get download stats
  */
-export type statsDownloadRetrieveResponse200 = {
-  data: DownloadStats
-  status: 200
-}
+export const statsDownloadRetrieve = (
 
-export type statsDownloadRetrieveResponseSuccess = (statsDownloadRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type statsDownloadRetrieveResponse = (statsDownloadRetrieveResponseSuccess)
-
-export const getStatsDownloadRetrieveUrl = () => {
-
-
-
-
-  return `/api/stats/download/`
-}
-
-export const statsDownloadRetrieve = async ( options?: RequestInit): Promise<statsDownloadRetrieveResponse> => {
-
-  const res = await fetch(getStatsDownloadRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: statsDownloadRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as statsDownloadRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<DownloadStats>>,) => {
+      return customAxios<DownloadStats>(
+      {url: `/api/stats/download/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get download hist items
  */
-export type statsDownloadhistListResponse200 = {
-  data: DownloadHistItem[]
-  status: 200
-}
+export const statsDownloadhistList = (
 
-export type statsDownloadhistListResponseSuccess = (statsDownloadhistListResponse200) & {
-  headers: Headers;
-};
-;
-
-export type statsDownloadhistListResponse = (statsDownloadhistListResponseSuccess)
-
-export const getStatsDownloadhistListUrl = () => {
-
-
-
-
-  return `/api/stats/downloadhist/`
-}
-
-export const statsDownloadhistList = async ( options?: RequestInit): Promise<statsDownloadhistListResponse> => {
-
-  const res = await fetch(getStatsDownloadhistListUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: statsDownloadhistListResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as statsDownloadhistListResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<DownloadHistItem[]>>,) => {
+      return customAxios<DownloadHistItem[]>(
+      {url: `/api/stats/downloadhist/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get playlist stats
  */
-export type statsPlaylistRetrieveResponse200 = {
-  data: PlaylistStats
-  status: 200
-}
+export const statsPlaylistRetrieve = (
 
-export type statsPlaylistRetrieveResponseSuccess = (statsPlaylistRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type statsPlaylistRetrieveResponse = (statsPlaylistRetrieveResponseSuccess)
-
-export const getStatsPlaylistRetrieveUrl = () => {
-
-
-
-
-  return `/api/stats/playlist/`
-}
-
-export const statsPlaylistRetrieve = async ( options?: RequestInit): Promise<statsPlaylistRetrieveResponse> => {
-
-  const res = await fetch(getStatsPlaylistRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: statsPlaylistRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as statsPlaylistRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<PlaylistStats>>,) => {
+      return customAxios<PlaylistStats>(
+      {url: `/api/stats/playlist/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get video stats
  */
-export type statsVideoRetrieveResponse200 = {
-  data: VideoStats
-  status: 200
-}
+export const statsVideoRetrieve = (
 
-export type statsVideoRetrieveResponseSuccess = (statsVideoRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type statsVideoRetrieveResponse = (statsVideoRetrieveResponseSuccess)
-
-export const getStatsVideoRetrieveUrl = () => {
-
-
-
-
-  return `/api/stats/video/`
-}
-
-export const statsVideoRetrieve = async ( options?: RequestInit): Promise<statsVideoRetrieveResponse> => {
-
-  const res = await fetch(getStatsVideoRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: statsVideoRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as statsVideoRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<VideoStats>>,) => {
+      return customAxios<VideoStats>(
+      {url: `/api/stats/video/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get watched stats
  */
-export type statsWatchRetrieveResponse200 = {
-  data: WatchStats
-  status: 200
-}
+export const statsWatchRetrieve = (
 
-export type statsWatchRetrieveResponseSuccess = (statsWatchRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type statsWatchRetrieveResponse = (statsWatchRetrieveResponseSuccess)
-
-export const getStatsWatchRetrieveUrl = () => {
-
-
-
-
-  return `/api/stats/watch/`
-}
-
-export const statsWatchRetrieve = async ( options?: RequestInit): Promise<statsWatchRetrieveResponse> => {
-
-  const res = await fetch(getStatsWatchRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: statsWatchRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as statsWatchRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<WatchStats>>,) => {
+      return customAxios<WatchStats>(
+      {url: `/api/stats/watch/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get task by ID
  */
-export type taskByIdRetrieveResponse200 = {
-  data: TaskResult
-  status: 200
-}
-
-export type taskByIdRetrieveResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type taskByIdRetrieveResponseSuccess = (taskByIdRetrieveResponse200) & {
-  headers: Headers;
-};
-export type taskByIdRetrieveResponseError = (taskByIdRetrieveResponse404) & {
-  headers: Headers;
-};
-
-export type taskByIdRetrieveResponse = (taskByIdRetrieveResponseSuccess | taskByIdRetrieveResponseError)
-
-export const getTaskByIdRetrieveUrl = (taskId: string,) => {
-
-
-
-
-  return `/api/task/by-id/${taskId}/`
-}
-
-export const taskByIdRetrieve = async (taskId: string, options?: RequestInit): Promise<taskByIdRetrieveResponse> => {
-
-  const res = await fetch(getTaskByIdRetrieveUrl(taskId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskByIdRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as taskByIdRetrieveResponse
-}
-
-
+export const taskByIdRetrieve = (
+    taskId: string,
+ options?: SecondParameter<typeof customAxios<TaskResult>>,) => {
+      return customAxios<TaskResult>(
+      {url: `/api/task/by-id/${taskId}/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * post command to task
  */
-export type taskByIdCreateResponse204 = {
-  data: void
-  status: 204
-}
-
-export type taskByIdCreateResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type taskByIdCreateResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type taskByIdCreateResponseSuccess = (taskByIdCreateResponse204) & {
-  headers: Headers;
-};
-export type taskByIdCreateResponseError = (taskByIdCreateResponse400 | taskByIdCreateResponse404) & {
-  headers: Headers;
-};
-
-export type taskByIdCreateResponse = (taskByIdCreateResponseSuccess | taskByIdCreateResponseError)
-
-export const getTaskByIdCreateUrl = (taskId: string,) => {
-
-
-
-
-  return `/api/task/by-id/${taskId}/`
-}
-
-export const taskByIdCreate = async (taskId: string,
-    taskIDData: TaskIDData, options?: RequestInit): Promise<taskByIdCreateResponse> => {
-
-  const res = await fetch(getTaskByIdCreateUrl(taskId),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      taskIDData,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskByIdCreateResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as taskByIdCreateResponse
-}
-
-
+export const taskByIdCreate = (
+    taskId: string,
+    taskIDData: TaskIDData,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/task/by-id/${taskId}/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: taskIDData
+    },
+      options);
+    }
 
 /**
  * get all stored task results
  */
-export type taskByNameListResponse200 = {
-  data: TaskResult[]
-  status: 200
-}
+export const taskByNameList = (
 
-export type taskByNameListResponseSuccess = (taskByNameListResponse200) & {
-  headers: Headers;
-};
-;
-
-export type taskByNameListResponse = (taskByNameListResponseSuccess)
-
-export const getTaskByNameListUrl = () => {
-
-
-
-
-  return `/api/task/by-name/`
-}
-
-export const taskByNameList = async ( options?: RequestInit): Promise<taskByNameListResponse> => {
-
-  const res = await fetch(getTaskByNameListUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskByNameListResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as taskByNameListResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<TaskResult[]>>,) => {
+      return customAxios<TaskResult[]>(
+      {url: `/api/task/by-name/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get stored task by name
  */
-export type taskByNameRetrieveResponse200 = {
-  data: TaskResult[]
-  status: 200
-}
-
-export type taskByNameRetrieveResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type taskByNameRetrieveResponseSuccess = (taskByNameRetrieveResponse200) & {
-  headers: Headers;
-};
-export type taskByNameRetrieveResponseError = (taskByNameRetrieveResponse404) & {
-  headers: Headers;
-};
-
-export type taskByNameRetrieveResponse = (taskByNameRetrieveResponseSuccess | taskByNameRetrieveResponseError)
-
-export const getTaskByNameRetrieveUrl = (taskName: string,) => {
-
-
-
-
-  return `/api/task/by-name/${taskName}/`
-}
-
-export const taskByNameRetrieve = async (taskName: string, options?: RequestInit): Promise<taskByNameRetrieveResponse> => {
-
-  const res = await fetch(getTaskByNameRetrieveUrl(taskName),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskByNameRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as taskByNameRetrieveResponse
-}
-
-
+export const taskByNameRetrieve = (
+    taskName: string,
+ options?: SecondParameter<typeof customAxios<TaskResult[]>>,) => {
+      return customAxios<TaskResult[]>(
+      {url: `/api/task/by-name/${taskName}/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * start new task without args
  */
-export type taskByNameCreateResponse200 = {
-  data: AsyncTaskResponse
-  status: 200
-}
-
-export type taskByNameCreateResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type taskByNameCreateResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type taskByNameCreateResponseSuccess = (taskByNameCreateResponse200) & {
-  headers: Headers;
-};
-export type taskByNameCreateResponseError = (taskByNameCreateResponse400 | taskByNameCreateResponse404) & {
-  headers: Headers;
-};
-
-export type taskByNameCreateResponse = (taskByNameCreateResponseSuccess | taskByNameCreateResponseError)
-
-export const getTaskByNameCreateUrl = (taskName: string,) => {
-
-
-
-
-  return `/api/task/by-name/${taskName}/`
-}
-
-export const taskByNameCreate = async (taskName: string, options?: RequestInit): Promise<taskByNameCreateResponse> => {
-
-  const res = await fetch(getTaskByNameCreateUrl(taskName),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskByNameCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as taskByNameCreateResponse
-}
-
-
+export const taskByNameCreate = (
+    taskName: string,
+ options?: SecondParameter<typeof customAxios<AsyncTaskResponse>>,) => {
+      return customAxios<AsyncTaskResponse>(
+      {url: `/api/task/by-name/${taskName}/`, method: 'POST'
+    },
+      options);
+    }
 
 /**
  * handle get request
  */
-export type taskNotificationRetrieveResponse200 = {
-  data: DynamicDict
-  status: 200
-}
+export const taskNotificationRetrieve = (
 
-export type taskNotificationRetrieveResponseSuccess = (taskNotificationRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type taskNotificationRetrieveResponse = (taskNotificationRetrieveResponseSuccess)
-
-export const getTaskNotificationRetrieveUrl = () => {
-
-
-
-
-  return `/api/task/notification/`
-}
-
-export const taskNotificationRetrieve = async ( options?: RequestInit): Promise<taskNotificationRetrieveResponse> => {
-
-  const res = await fetch(getTaskNotificationRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskNotificationRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as taskNotificationRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<DynamicDict>>,) => {
+      return customAxios<DynamicDict>(
+      {url: `/api/task/notification/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * create notification
  */
-export type taskNotificationCreateResponse200 = {
-  data: DynamicDict
-  status: 200
-}
-
-export type taskNotificationCreateResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type taskNotificationCreateResponseSuccess = (taskNotificationCreateResponse200) & {
-  headers: Headers;
-};
-export type taskNotificationCreateResponseError = (taskNotificationCreateResponse400) & {
-  headers: Headers;
-};
-
-export type taskNotificationCreateResponse = (taskNotificationCreateResponseSuccess | taskNotificationCreateResponseError)
-
-export const getTaskNotificationCreateUrl = () => {
-
-
-
-
-  return `/api/task/notification/`
-}
-
-export const taskNotificationCreate = async (taskNotificationPost: TaskNotificationPost, options?: RequestInit): Promise<taskNotificationCreateResponse> => {
-
-  const res = await fetch(getTaskNotificationCreateUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      taskNotificationPost,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskNotificationCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as taskNotificationCreateResponse
-}
-
-
+export const taskNotificationCreate = (
+    taskNotificationPost: TaskNotificationPost,
+ options?: SecondParameter<typeof customAxios<DynamicDict>>,) => {
+      return customAxios<DynamicDict>(
+      {url: `/api/task/notification/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: taskNotificationPost
+    },
+      options);
+    }
 
 /**
  * delete notification
  */
-export type taskNotificationDestroyResponse204 = {
-  data: void
-  status: 204
-}
+export const taskNotificationDestroy = (
 
-export type taskNotificationDestroyResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type taskNotificationDestroyResponseSuccess = (taskNotificationDestroyResponse204) & {
-  headers: Headers;
-};
-export type taskNotificationDestroyResponseError = (taskNotificationDestroyResponse400) & {
-  headers: Headers;
-};
-
-export type taskNotificationDestroyResponse = (taskNotificationDestroyResponseSuccess | taskNotificationDestroyResponseError)
-
-export const getTaskNotificationDestroyUrl = () => {
-
-
-
-
-  return `/api/task/notification/`
-}
-
-export const taskNotificationDestroy = async ( options?: RequestInit): Promise<taskNotificationDestroyResponse> => {
-
-  const res = await fetch(getTaskNotificationDestroyUrl(),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskNotificationDestroyResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as taskNotificationDestroyResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/task/notification/`, method: 'DELETE'
+    },
+      options);
+    }
 
 /**
  * test notification
  */
-export type taskNotificationTestCreateResponse200 = {
-  data: void
-  status: 200
-}
-
-export type taskNotificationTestCreateResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type taskNotificationTestCreateResponseSuccess = (taskNotificationTestCreateResponse200) & {
-  headers: Headers;
-};
-export type taskNotificationTestCreateResponseError = (taskNotificationTestCreateResponse400) & {
-  headers: Headers;
-};
-
-export type taskNotificationTestCreateResponse = (taskNotificationTestCreateResponseSuccess | taskNotificationTestCreateResponseError)
-
-export const getTaskNotificationTestCreateUrl = () => {
-
-
-
-
-  return `/api/task/notification/test/`
-}
-
-export const taskNotificationTestCreate = async (taskNotificationTest: TaskNotificationTest, options?: RequestInit): Promise<taskNotificationTestCreateResponse> => {
-
-  const res = await fetch(getTaskNotificationTestCreateUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      taskNotificationTest,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskNotificationTestCreateResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as taskNotificationTestCreateResponse
-}
-
-
+export const taskNotificationTestCreate = (
+    taskNotificationTest: TaskNotificationTest,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/task/notification/test/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: taskNotificationTest
+    },
+      options);
+    }
 
 /**
  * get all schedules
  */
-export type taskScheduleRetrieveResponse200 = {
-  data: CustomPeriodicTask[]
-  status: 200
-}
+export const taskScheduleRetrieve = (
 
-export type taskScheduleRetrieveResponseSuccess = (taskScheduleRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type taskScheduleRetrieveResponse = (taskScheduleRetrieveResponseSuccess)
-
-export const getTaskScheduleRetrieveUrl = () => {
-
-
-
-
-  return `/api/task/schedule/`
-}
-
-export const taskScheduleRetrieve = async ( options?: RequestInit): Promise<taskScheduleRetrieveResponse> => {
-
-  const res = await fetch(getTaskScheduleRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskScheduleRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as taskScheduleRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<CustomPeriodicTask[]>>,) => {
+      return customAxios<CustomPeriodicTask[]>(
+      {url: `/api/task/schedule/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get single schedule by task_name
  */
-export type taskScheduleRetrieve2Response200 = {
-  data: CustomPeriodicTask
-  status: 200
-}
-
-export type taskScheduleRetrieve2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type taskScheduleRetrieve2ResponseSuccess = (taskScheduleRetrieve2Response200) & {
-  headers: Headers;
-};
-export type taskScheduleRetrieve2ResponseError = (taskScheduleRetrieve2Response404) & {
-  headers: Headers;
-};
-
-export type taskScheduleRetrieve2Response = (taskScheduleRetrieve2ResponseSuccess | taskScheduleRetrieve2ResponseError)
-
-export const getTaskScheduleRetrieve2Url = (taskName: string,) => {
-
-
-
-
-  return `/api/task/schedule/${taskName}/`
-}
-
-export const taskScheduleRetrieve2 = async (taskName: string, options?: RequestInit): Promise<taskScheduleRetrieve2Response> => {
-
-  const res = await fetch(getTaskScheduleRetrieve2Url(taskName),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskScheduleRetrieve2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as taskScheduleRetrieve2Response
-}
-
-
+export const taskScheduleRetrieve2 = (
+    taskName: string,
+ options?: SecondParameter<typeof customAxios<CustomPeriodicTask>>,) => {
+      return customAxios<CustomPeriodicTask>(
+      {url: `/api/task/schedule/${taskName}/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * create/update schedule for task
  */
-export type taskScheduleCreateResponse200 = {
-  data: CustomPeriodicTask
-  status: 200
-}
-
-export type taskScheduleCreateResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type taskScheduleCreateResponseSuccess = (taskScheduleCreateResponse200) & {
-  headers: Headers;
-};
-export type taskScheduleCreateResponseError = (taskScheduleCreateResponse400) & {
-  headers: Headers;
-};
-
-export type taskScheduleCreateResponse = (taskScheduleCreateResponseSuccess | taskScheduleCreateResponseError)
-
-export const getTaskScheduleCreateUrl = (taskName: string,) => {
-
-
-
-
-  return `/api/task/schedule/${taskName}/`
-}
-
-export const taskScheduleCreate = async (taskName: string,
-    taskCreateData?: TaskCreateData, options?: RequestInit): Promise<taskScheduleCreateResponse> => {
-
-  const res = await fetch(getTaskScheduleCreateUrl(taskName),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      taskCreateData,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskScheduleCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as taskScheduleCreateResponse
-}
-
-
+export const taskScheduleCreate = (
+    taskName: string,
+    taskCreateData?: TaskCreateData,
+ options?: SecondParameter<typeof customAxios<CustomPeriodicTask>>,) => {
+      return customAxios<CustomPeriodicTask>(
+      {url: `/api/task/schedule/${taskName}/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: taskCreateData
+    },
+      options);
+    }
 
 /**
  * delete schedule by task_name
  */
-export type taskScheduleDestroyResponse204 = {
-  data: void
-  status: 204
-}
-
-export type taskScheduleDestroyResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type taskScheduleDestroyResponseSuccess = (taskScheduleDestroyResponse204) & {
-  headers: Headers;
-};
-export type taskScheduleDestroyResponseError = (taskScheduleDestroyResponse404) & {
-  headers: Headers;
-};
-
-export type taskScheduleDestroyResponse = (taskScheduleDestroyResponseSuccess | taskScheduleDestroyResponseError)
-
-export const getTaskScheduleDestroyUrl = (taskName: string,) => {
-
-
-
-
-  return `/api/task/schedule/${taskName}/`
-}
-
-export const taskScheduleDestroy = async (taskName: string, options?: RequestInit): Promise<taskScheduleDestroyResponse> => {
-
-  const res = await fetch(getTaskScheduleDestroyUrl(taskName),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: taskScheduleDestroyResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as taskScheduleDestroyResponse
-}
-
-
+export const taskScheduleDestroy = (
+    taskName: string,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/task/schedule/${taskName}/`, method: 'DELETE'
+    },
+      options);
+    }
 
 /**
  * get user account
  */
-export type userAccountRetrieveResponse200 = {
-  data: Account
-  status: 200
-}
+export const userAccountRetrieve = (
 
-export type userAccountRetrieveResponseSuccess = (userAccountRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type userAccountRetrieveResponse = (userAccountRetrieveResponseSuccess)
-
-export const getUserAccountRetrieveUrl = () => {
-
-
-
-
-  return `/api/user/account/`
-}
-
-export const userAccountRetrieve = async ( options?: RequestInit): Promise<userAccountRetrieveResponse> => {
-
-  const res = await fetch(getUserAccountRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: userAccountRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as userAccountRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<Account>>,) => {
+      return customAxios<Account>(
+      {url: `/api/user/account/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * login with username and password
  */
-export type userLoginCreateResponse204 = {
-  data: void
-  status: 204
-}
-
-export type userLoginCreateResponseSuccess = (userLoginCreateResponse204) & {
-  headers: Headers;
-};
-;
-
-export type userLoginCreateResponse = (userLoginCreateResponseSuccess)
-
-export const getUserLoginCreateUrl = () => {
-
-
-
-
-  return `/api/user/login/`
-}
-
-export const userLoginCreate = async (login: Login, options?: RequestInit): Promise<userLoginCreateResponse> => {
-
-  const res = await fetch(getUserLoginCreateUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      login,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: userLoginCreateResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as userLoginCreateResponse
-}
-
-
+export const userLoginCreate = (
+    login: Login,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/user/login/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: login
+    },
+      options);
+    }
 
 /**
  * logout user from session
  */
-export type userLogoutCreateResponse204 = {
-  data: void
-  status: 204
-}
+export const userLogoutCreate = (
 
-export type userLogoutCreateResponseSuccess = (userLogoutCreateResponse204) & {
-  headers: Headers;
-};
-;
-
-export type userLogoutCreateResponse = (userLogoutCreateResponseSuccess)
-
-export const getUserLogoutCreateUrl = () => {
-
-
-
-
-  return `/api/user/logout/`
-}
-
-export const userLogoutCreate = async ( options?: RequestInit): Promise<userLogoutCreateResponse> => {
-
-  const res = await fetch(getUserLogoutCreateUrl(),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: userLogoutCreateResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as userLogoutCreateResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/user/logout/`, method: 'POST'
+    },
+      options);
+    }
 
 /**
  * get user config
  */
-export type userMeRetrieveResponse200 = {
-  data: UserMeConfig
-  status: 200
-}
+export const userMeRetrieve = (
 
-export type userMeRetrieveResponseSuccess = (userMeRetrieveResponse200) & {
-  headers: Headers;
-};
-;
-
-export type userMeRetrieveResponse = (userMeRetrieveResponseSuccess)
-
-export const getUserMeRetrieveUrl = () => {
-
-
-
-
-  return `/api/user/me/`
-}
-
-export const userMeRetrieve = async ( options?: RequestInit): Promise<userMeRetrieveResponse> => {
-
-  const res = await fetch(getUserMeRetrieveUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: userMeRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as userMeRetrieveResponse
-}
-
-
+ options?: SecondParameter<typeof customAxios<UserMeConfig>>,) => {
+      return customAxios<UserMeConfig>(
+      {url: `/api/user/me/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * update config, allows partial update
  */
-export type userMeCreateResponse200 = {
-  data: UserMeConfig
-  status: 200
-}
-
-export type userMeCreateResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type userMeCreateResponseSuccess = (userMeCreateResponse200) & {
-  headers: Headers;
-};
-export type userMeCreateResponseError = (userMeCreateResponse400) & {
-  headers: Headers;
-};
-
-export type userMeCreateResponse = (userMeCreateResponseSuccess | userMeCreateResponseError)
-
-export const getUserMeCreateUrl = () => {
-
-
-
-
-  return `/api/user/me/`
-}
-
-export const userMeCreate = async (userMeConfig: UserMeConfig, options?: RequestInit): Promise<userMeCreateResponse> => {
-
-  const res = await fetch(getUserMeCreateUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      userMeConfig,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: userMeCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as userMeCreateResponse
-}
-
-
+export const userMeCreate = (
+    userMeConfig: UserMeConfig,
+ options?: SecondParameter<typeof customAxios<UserMeConfig>>,) => {
+      return customAxios<UserMeConfig>(
+      {url: `/api/user/me/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: userMeConfig
+    },
+      options);
+    }
 
 /**
  * get video list
  */
-export type videoRetrieveResponse200 = {
-  data: VideoList
-  status: 200
-}
-
-export type videoRetrieveResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type videoRetrieveResponseSuccess = (videoRetrieveResponse200) & {
-  headers: Headers;
-};
-export type videoRetrieveResponseError = (videoRetrieveResponse400) & {
-  headers: Headers;
-};
-
-export type videoRetrieveResponse = (videoRetrieveResponseSuccess | videoRetrieveResponseError)
-
-export const getVideoRetrieveUrl = (params?: VideoRetrieveParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+export const videoRetrieve = (
+    params?: VideoRetrieveParams,
+ options?: SecondParameter<typeof customAxios<VideoList>>,) => {
+      return customAxios<VideoList>(
+      {url: `/api/video/`, method: 'GET',
+        params
+    },
+      options);
     }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/api/video/?${stringifiedParams}` : `/api/video/`
-}
-
-export const videoRetrieve = async (params?: VideoRetrieveParams, options?: RequestInit): Promise<videoRetrieveResponse> => {
-
-  const res = await fetch(getVideoRetrieveUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: videoRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as videoRetrieveResponse
-}
-
-
 
 /**
  * get video
  */
-export type videoRetrieve2Response200 = {
-  data: Video
-  status: 200
-}
-
-export type videoRetrieve2Response404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type videoRetrieve2ResponseSuccess = (videoRetrieve2Response200) & {
-  headers: Headers;
-};
-export type videoRetrieve2ResponseError = (videoRetrieve2Response404) & {
-  headers: Headers;
-};
-
-export type videoRetrieve2Response = (videoRetrieve2ResponseSuccess | videoRetrieve2ResponseError)
-
-export const getVideoRetrieve2Url = (videoId: string,) => {
-
-
-
-
-  return `/api/video/${videoId}/`
-}
-
-export const videoRetrieve2 = async (videoId: string, options?: RequestInit): Promise<videoRetrieve2Response> => {
-
-  const res = await fetch(getVideoRetrieve2Url(videoId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: videoRetrieve2Response['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as videoRetrieve2Response
-}
-
-
+export const videoRetrieve2 = (
+    videoId: string,
+ options?: SecondParameter<typeof customAxios<Video>>,) => {
+      return customAxios<Video>(
+      {url: `/api/video/${videoId}/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * delete video
  */
-export type videoDestroyResponse204 = {
-  data: void
-  status: 204
-}
-
-export type videoDestroyResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type videoDestroyResponseSuccess = (videoDestroyResponse204) & {
-  headers: Headers;
-};
-export type videoDestroyResponseError = (videoDestroyResponse404) & {
-  headers: Headers;
-};
-
-export type videoDestroyResponse = (videoDestroyResponseSuccess | videoDestroyResponseError)
-
-export const getVideoDestroyUrl = (videoId: string,) => {
-
-
-
-
-  return `/api/video/${videoId}/`
-}
-
-export const videoDestroy = async (videoId: string, options?: RequestInit): Promise<videoDestroyResponse> => {
-
-  const res = await fetch(getVideoDestroyUrl(videoId),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: videoDestroyResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as videoDestroyResponse
-}
-
-
+export const videoDestroy = (
+    videoId: string,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/video/${videoId}/`, method: 'DELETE'
+    },
+      options);
+    }
 
 /**
  * get video comments
  */
-export type videoCommentRetrieveResponse200 = {
-  data: CommentItem
-  status: 200
-}
-
-export type videoCommentRetrieveResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type videoCommentRetrieveResponseSuccess = (videoCommentRetrieveResponse200) & {
-  headers: Headers;
-};
-export type videoCommentRetrieveResponseError = (videoCommentRetrieveResponse404) & {
-  headers: Headers;
-};
-
-export type videoCommentRetrieveResponse = (videoCommentRetrieveResponseSuccess | videoCommentRetrieveResponseError)
-
-export const getVideoCommentRetrieveUrl = (videoId: string,) => {
-
-
-
-
-  return `/api/video/${videoId}/comment/`
-}
-
-export const videoCommentRetrieve = async (videoId: string, options?: RequestInit): Promise<videoCommentRetrieveResponse> => {
-
-  const res = await fetch(getVideoCommentRetrieveUrl(videoId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: videoCommentRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as videoCommentRetrieveResponse
-}
-
-
+export const videoCommentRetrieve = (
+    videoId: string,
+ options?: SecondParameter<typeof customAxios<CommentItem>>,) => {
+      return customAxios<CommentItem>(
+      {url: `/api/video/${videoId}/comment/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * get video playlist nav
  */
-export type videoNavRetrieveResponse200 = {
-  data: PlaylistNavItem
-  status: 200
-}
-
-export type videoNavRetrieveResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type videoNavRetrieveResponseSuccess = (videoNavRetrieveResponse200) & {
-  headers: Headers;
-};
-export type videoNavRetrieveResponseError = (videoNavRetrieveResponse404) & {
-  headers: Headers;
-};
-
-export type videoNavRetrieveResponse = (videoNavRetrieveResponseSuccess | videoNavRetrieveResponseError)
-
-export const getVideoNavRetrieveUrl = (videoId: string,) => {
-
-
-
-
-  return `/api/video/${videoId}/nav/`
-}
-
-export const videoNavRetrieve = async (videoId: string, options?: RequestInit): Promise<videoNavRetrieveResponse> => {
-
-  const res = await fetch(getVideoNavRetrieveUrl(videoId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: videoNavRetrieveResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as videoNavRetrieveResponse
-}
-
-
+export const videoNavRetrieve = (
+    videoId: string,
+ options?: SecondParameter<typeof customAxios<PlaylistNavItem>>,) => {
+      return customAxios<PlaylistNavItem>(
+      {url: `/api/video/${videoId}/nav/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * set video progress position in redis
  */
-export type videoProgressCreateResponse200 = {
-  data: Player
-  status: 200
-}
-
-export type videoProgressCreateResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
-
-export type videoProgressCreateResponseSuccess = (videoProgressCreateResponse200) & {
-  headers: Headers;
-};
-export type videoProgressCreateResponseError = (videoProgressCreateResponse404) & {
-  headers: Headers;
-};
-
-export type videoProgressCreateResponse = (videoProgressCreateResponseSuccess | videoProgressCreateResponseError)
-
-export const getVideoProgressCreateUrl = (videoId: string,) => {
-
-
-
-
-  return `/api/video/${videoId}/progress/`
-}
-
-export const videoProgressCreate = async (videoId: string,
-    videoProgressUpdate?: VideoProgressUpdate, options?: RequestInit): Promise<videoProgressCreateResponse> => {
-
-  const res = await fetch(getVideoProgressCreateUrl(videoId),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      videoProgressUpdate,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: videoProgressCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as videoProgressCreateResponse
-}
-
-
+export const videoProgressCreate = (
+    videoId: string,
+    videoProgressUpdate?: VideoProgressUpdate,
+ options?: SecondParameter<typeof customAxios<Player>>,) => {
+      return customAxios<Player>(
+      {url: `/api/video/${videoId}/progress/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: videoProgressUpdate
+    },
+      options);
+    }
 
 /**
  * delete progress position
  */
-export type videoProgressDestroyResponse204 = {
-  data: void
-  status: 204
-}
-
-export type videoProgressDestroyResponseSuccess = (videoProgressDestroyResponse204) & {
-  headers: Headers;
-};
-;
-
-export type videoProgressDestroyResponse = (videoProgressDestroyResponseSuccess)
-
-export const getVideoProgressDestroyUrl = (videoId: string,) => {
-
-
-
-
-  return `/api/video/${videoId}/progress/`
-}
-
-export const videoProgressDestroy = async (videoId: string, options?: RequestInit): Promise<videoProgressDestroyResponse> => {
-
-  const res = await fetch(getVideoProgressDestroyUrl(videoId),
-  {
-    ...options,
-    method: 'DELETE'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: videoProgressDestroyResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as videoProgressDestroyResponse
-}
-
-
+export const videoProgressDestroy = (
+    videoId: string,
+ options?: SecondParameter<typeof customAxios<void>>,) => {
+      return customAxios<void>(
+      {url: `/api/video/${videoId}/progress/`, method: 'DELETE'
+    },
+      options);
+    }
 
 /**
  * get similar videos
  */
-export type videoSimilarListResponse200 = {
-  data: Video[]
-  status: 200
-}
-
-export type videoSimilarListResponseSuccess = (videoSimilarListResponse200) & {
-  headers: Headers;
-};
-;
-
-export type videoSimilarListResponse = (videoSimilarListResponseSuccess)
-
-export const getVideoSimilarListUrl = (videoId: string,) => {
-
-
-
-
-  return `/api/video/${videoId}/similar/`
-}
-
-export const videoSimilarList = async (videoId: string, options?: RequestInit): Promise<videoSimilarListResponse> => {
-
-  const res = await fetch(getVideoSimilarListUrl(videoId),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: videoSimilarListResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as videoSimilarListResponse
-}
-
-
+export const videoSimilarList = (
+    videoId: string,
+ options?: SecondParameter<typeof customAxios<Video[]>>,) => {
+      return customAxios<Video[]>(
+      {url: `/api/video/${videoId}/similar/`, method: 'GET'
+    },
+      options);
+    }
 
 /**
  * change watched state
  */
-export type watchedCreateResponse200 = {
-  data: WatchedData
-  status: 200
-}
+export const watchedCreate = (
+    watchedData: WatchedData,
+ options?: SecondParameter<typeof customAxios<WatchedData>>,) => {
+      return customAxios<WatchedData>(
+      {url: `/api/watched/`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: watchedData
+    },
+      options);
+    }
 
-export type watchedCreateResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
-
-export type watchedCreateResponseSuccess = (watchedCreateResponse200) & {
-  headers: Headers;
-};
-export type watchedCreateResponseError = (watchedCreateResponse400) & {
-  headers: Headers;
-};
-
-export type watchedCreateResponse = (watchedCreateResponseSuccess | watchedCreateResponseError)
-
-export const getWatchedCreateUrl = () => {
-
-
-
-
-  return `/api/watched/`
-}
-
-export const watchedCreate = async (watchedData: WatchedData, options?: RequestInit): Promise<watchedCreateResponse> => {
-
-  const res = await fetch(getWatchedCreateUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      watchedData,)
-  }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: watchedCreateResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as watchedCreateResponse
-}
-
-
-
+export type AppsettingsBackupRetrieveResult = NonNullable<Awaited<ReturnType<typeof appsettingsBackupRetrieve>>>
+export type AppsettingsBackupCreateResult = NonNullable<Awaited<ReturnType<typeof appsettingsBackupCreate>>>
+export type AppsettingsBackupRetrieve2Result = NonNullable<Awaited<ReturnType<typeof appsettingsBackupRetrieve2>>>
+export type AppsettingsBackupCreate2Result = NonNullable<Awaited<ReturnType<typeof appsettingsBackupCreate2>>>
+export type AppsettingsBackupDestroyResult = NonNullable<Awaited<ReturnType<typeof appsettingsBackupDestroy>>>
+export type AppsettingsConfigRetrieveResult = NonNullable<Awaited<ReturnType<typeof appsettingsConfigRetrieve>>>
+export type AppsettingsConfigCreateResult = NonNullable<Awaited<ReturnType<typeof appsettingsConfigCreate>>>
+export type AppsettingsCookieRetrieveResult = NonNullable<Awaited<ReturnType<typeof appsettingsCookieRetrieve>>>
+export type AppsettingsCookieCreateResult = NonNullable<Awaited<ReturnType<typeof appsettingsCookieCreate>>>
+export type AppsettingsCookieUpdateResult = NonNullable<Awaited<ReturnType<typeof appsettingsCookieUpdate>>>
+export type AppsettingsCookieDestroyResult = NonNullable<Awaited<ReturnType<typeof appsettingsCookieDestroy>>>
+export type AppsettingsManualImportCreateResult = NonNullable<Awaited<ReturnType<typeof appsettingsManualImportCreate>>>
+export type AppsettingsMembershipProfileRetrieveResult = NonNullable<Awaited<ReturnType<typeof appsettingsMembershipProfileRetrieve>>>
+export type AppsettingsMembershipSyncCreateResult = NonNullable<Awaited<ReturnType<typeof appsettingsMembershipSyncCreate>>>
+export type AppsettingsMembershipTokenRetrieveResult = NonNullable<Awaited<ReturnType<typeof appsettingsMembershipTokenRetrieve>>>
+export type AppsettingsMembershipTokenCreateResult = NonNullable<Awaited<ReturnType<typeof appsettingsMembershipTokenCreate>>>
+export type AppsettingsMembershipTokenDestroyResult = NonNullable<Awaited<ReturnType<typeof appsettingsMembershipTokenDestroy>>>
+export type AppsettingsRescanFilesystemCreateResult = NonNullable<Awaited<ReturnType<typeof appsettingsRescanFilesystemCreate>>>
+export type AppsettingsSnapshotRetrieveResult = NonNullable<Awaited<ReturnType<typeof appsettingsSnapshotRetrieve>>>
+export type AppsettingsSnapshotCreateResult = NonNullable<Awaited<ReturnType<typeof appsettingsSnapshotCreate>>>
+export type AppsettingsSnapshotRetrieve2Result = NonNullable<Awaited<ReturnType<typeof appsettingsSnapshotRetrieve2>>>
+export type AppsettingsSnapshotCreate2Result = NonNullable<Awaited<ReturnType<typeof appsettingsSnapshotCreate2>>>
+export type AppsettingsSnapshotDestroyResult = NonNullable<Awaited<ReturnType<typeof appsettingsSnapshotDestroy>>>
+export type AppsettingsTokenRetrieveResult = NonNullable<Awaited<ReturnType<typeof appsettingsTokenRetrieve>>>
+export type AppsettingsTokenDestroyResult = NonNullable<Awaited<ReturnType<typeof appsettingsTokenDestroy>>>
+export type ChannelRetrieveResult = NonNullable<Awaited<ReturnType<typeof channelRetrieve>>>
+export type ChannelCreateResult = NonNullable<Awaited<ReturnType<typeof channelCreate>>>
+export type ChannelRetrieve2Result = NonNullable<Awaited<ReturnType<typeof channelRetrieve2>>>
+export type ChannelCreate2Result = NonNullable<Awaited<ReturnType<typeof channelCreate2>>>
+export type ChannelDestroyResult = NonNullable<Awaited<ReturnType<typeof channelDestroy>>>
+export type ChannelAggsRetrieveResult = NonNullable<Awaited<ReturnType<typeof channelAggsRetrieve>>>
+export type ChannelNavRetrieveResult = NonNullable<Awaited<ReturnType<typeof channelNavRetrieve>>>
+export type ChannelSearchRetrieveResult = NonNullable<Awaited<ReturnType<typeof channelSearchRetrieve>>>
+export type DownloadRetrieveResult = NonNullable<Awaited<ReturnType<typeof downloadRetrieve>>>
+export type DownloadCreateResult = NonNullable<Awaited<ReturnType<typeof downloadCreate>>>
+export type DownloadPartialUpdateResult = NonNullable<Awaited<ReturnType<typeof downloadPartialUpdate>>>
+export type DownloadDestroyResult = NonNullable<Awaited<ReturnType<typeof downloadDestroy>>>
+export type DownloadRetrieve2Result = NonNullable<Awaited<ReturnType<typeof downloadRetrieve2>>>
+export type DownloadCreate2Result = NonNullable<Awaited<ReturnType<typeof downloadCreate2>>>
+export type DownloadDestroy2Result = NonNullable<Awaited<ReturnType<typeof downloadDestroy2>>>
+export type DownloadAggsRetrieveResult = NonNullable<Awaited<ReturnType<typeof downloadAggsRetrieve>>>
+export type HealthRetrieveResult = NonNullable<Awaited<ReturnType<typeof healthRetrieve>>>
+export type NotificationRetrieveResult = NonNullable<Awaited<ReturnType<typeof notificationRetrieve>>>
+export type PingRetrieveResult = NonNullable<Awaited<ReturnType<typeof pingRetrieve>>>
+export type PlaylistRetrieveResult = NonNullable<Awaited<ReturnType<typeof playlistRetrieve>>>
+export type PlaylistCreateResult = NonNullable<Awaited<ReturnType<typeof playlistCreate>>>
+export type PlaylistRetrieve2Result = NonNullable<Awaited<ReturnType<typeof playlistRetrieve2>>>
+export type PlaylistCreate2Result = NonNullable<Awaited<ReturnType<typeof playlistCreate2>>>
+export type PlaylistDestroyResult = NonNullable<Awaited<ReturnType<typeof playlistDestroy>>>
+export type PlaylistCustomCreateResult = NonNullable<Awaited<ReturnType<typeof playlistCustomCreate>>>
+export type PlaylistCustomCreate2Result = NonNullable<Awaited<ReturnType<typeof playlistCustomCreate2>>>
+export type RefreshRetrieveResult = NonNullable<Awaited<ReturnType<typeof refreshRetrieve>>>
+export type RefreshCreateResult = NonNullable<Awaited<ReturnType<typeof refreshCreate>>>
+export type SearchRetrieveResult = NonNullable<Awaited<ReturnType<typeof searchRetrieve>>>
+export type StatsBiggestchannelsRetrieveResult = NonNullable<Awaited<ReturnType<typeof statsBiggestchannelsRetrieve>>>
+export type StatsChannelRetrieveResult = NonNullable<Awaited<ReturnType<typeof statsChannelRetrieve>>>
+export type StatsDownloadRetrieveResult = NonNullable<Awaited<ReturnType<typeof statsDownloadRetrieve>>>
+export type StatsDownloadhistListResult = NonNullable<Awaited<ReturnType<typeof statsDownloadhistList>>>
+export type StatsPlaylistRetrieveResult = NonNullable<Awaited<ReturnType<typeof statsPlaylistRetrieve>>>
+export type StatsVideoRetrieveResult = NonNullable<Awaited<ReturnType<typeof statsVideoRetrieve>>>
+export type StatsWatchRetrieveResult = NonNullable<Awaited<ReturnType<typeof statsWatchRetrieve>>>
+export type TaskByIdRetrieveResult = NonNullable<Awaited<ReturnType<typeof taskByIdRetrieve>>>
+export type TaskByIdCreateResult = NonNullable<Awaited<ReturnType<typeof taskByIdCreate>>>
+export type TaskByNameListResult = NonNullable<Awaited<ReturnType<typeof taskByNameList>>>
+export type TaskByNameRetrieveResult = NonNullable<Awaited<ReturnType<typeof taskByNameRetrieve>>>
+export type TaskByNameCreateResult = NonNullable<Awaited<ReturnType<typeof taskByNameCreate>>>
+export type TaskNotificationRetrieveResult = NonNullable<Awaited<ReturnType<typeof taskNotificationRetrieve>>>
+export type TaskNotificationCreateResult = NonNullable<Awaited<ReturnType<typeof taskNotificationCreate>>>
+export type TaskNotificationDestroyResult = NonNullable<Awaited<ReturnType<typeof taskNotificationDestroy>>>
+export type TaskNotificationTestCreateResult = NonNullable<Awaited<ReturnType<typeof taskNotificationTestCreate>>>
+export type TaskScheduleRetrieveResult = NonNullable<Awaited<ReturnType<typeof taskScheduleRetrieve>>>
+export type TaskScheduleRetrieve2Result = NonNullable<Awaited<ReturnType<typeof taskScheduleRetrieve2>>>
+export type TaskScheduleCreateResult = NonNullable<Awaited<ReturnType<typeof taskScheduleCreate>>>
+export type TaskScheduleDestroyResult = NonNullable<Awaited<ReturnType<typeof taskScheduleDestroy>>>
+export type UserAccountRetrieveResult = NonNullable<Awaited<ReturnType<typeof userAccountRetrieve>>>
+export type UserLoginCreateResult = NonNullable<Awaited<ReturnType<typeof userLoginCreate>>>
+export type UserLogoutCreateResult = NonNullable<Awaited<ReturnType<typeof userLogoutCreate>>>
+export type UserMeRetrieveResult = NonNullable<Awaited<ReturnType<typeof userMeRetrieve>>>
+export type UserMeCreateResult = NonNullable<Awaited<ReturnType<typeof userMeCreate>>>
+export type VideoRetrieveResult = NonNullable<Awaited<ReturnType<typeof videoRetrieve>>>
+export type VideoRetrieve2Result = NonNullable<Awaited<ReturnType<typeof videoRetrieve2>>>
+export type VideoDestroyResult = NonNullable<Awaited<ReturnType<typeof videoDestroy>>>
+export type VideoCommentRetrieveResult = NonNullable<Awaited<ReturnType<typeof videoCommentRetrieve>>>
+export type VideoNavRetrieveResult = NonNullable<Awaited<ReturnType<typeof videoNavRetrieve>>>
+export type VideoProgressCreateResult = NonNullable<Awaited<ReturnType<typeof videoProgressCreate>>>
+export type VideoProgressDestroyResult = NonNullable<Awaited<ReturnType<typeof videoProgressDestroy>>>
+export type VideoSimilarListResult = NonNullable<Awaited<ReturnType<typeof videoSimilarList>>>
+export type WatchedCreateResult = NonNullable<Awaited<ReturnType<typeof watchedCreate>>>
