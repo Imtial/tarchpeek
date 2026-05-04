@@ -4,6 +4,7 @@ import {
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAppContentController } from './src/app/useAppContentController';
 import { ThemeProvider, useTheme } from './src/design/ThemeProvider';
+import { BrowsingTabs } from './src/navigation/BrowsingTabs';
 import { ConnectScreen } from './src/screens/ConnectScreen';
 import { PlayerScreen } from './src/screens/PlayerScreen';
 
@@ -34,6 +35,7 @@ function AppContent() {
     client,
     closePlayer,
     focusedField,
+    hasConnection,
     isHydrating,
     isLoadingVideo,
     isSaving,
@@ -59,6 +61,10 @@ function AppContent() {
         videoDetails={videoDetails}
       />
     );
+  }
+
+  if (hasConnection) {
+    return <BrowsingTabs />;
   }
 
   return (

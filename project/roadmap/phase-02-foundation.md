@@ -1,8 +1,8 @@
 # Phase 02: Foundation
 
-Status: `in_progress`
+Status: `done`
 Owner: `user + OpenCode`
-Last updated: `2026-04-29`
+Last updated: `2026-05-04`
 
 ## Goal
 
@@ -59,4 +59,3 @@ Set up the app architecture, shared primitives, and engineering baseline needed 
 
 - [x] Reduce root `App.tsx` to orchestration-only responsibilities (routing shell + top-level state boundaries).
 - [x] Document Phase 02 architecture conventions for future phases (naming, module ownership, boundary rules).
-- [ ] Confirm subtitle work remains deferred to `project/backlog.md` (`BL-001`) and does not re-enter Phase 02 scope.

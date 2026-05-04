@@ -1,8 +1,8 @@
 # Phase 03: Browsing MVP
 
-Status: `planned`
+Status: `in_progress`
 Owner: `user + OpenCode`
-Last updated: `2026-04-22`
+Last updated: `2026-05-04`
 
 ## Goal
 
@@ -18,6 +18,23 @@ Deliver the non-player content discovery experience with a strong bias toward in
 - Playlists list and playlist detail
 - Search screen with explicit search behavior
 - Hide `Shorts` from navigation and browsing surfaces
+
+## Mobile Specifications (Android Phone)
+
+- Primary navigation uses bottom tabs: `Home`, `Channels`, `Playlists`, `Search`
+- Phone browsing is portrait-first for MVP; tablet-specific layouts are out of scope in this phase
+- Home remains finite and intentional: `Continue Watching` first, then `Recently Added`, then `Unwatched`
+- Each home rail exposes explicit `See more` entry points instead of endless in-place expansion
+- Discovery guardrails are moderate:
+  - No infinite home feed model
+  - No autoplay previews on browsing surfaces
+  - No algorithmic recommendation rail
+  - Deeper browsing transitions are user-initiated and explicit
+- Fluency requirements for phone UX:
+  - Quick return paths to prior browsing context
+  - Consistent back-stack behavior across tabs
+  - Stable scroll restoration per tab
+  - Clear loading, empty, and error states tuned for one-hand use
 
 ## Deliverables
 
@@ -37,6 +54,9 @@ Deliver the non-player content discovery experience with a strong bias toward in
 - No infinite discovery as the primary home model
 - No visual emphasis on novelty over continuity
 - Channels and playlists remain first-class navigation objects
+- Keep first-screen home content finite rather than open-ended
+- Require explicit intent actions for deeper browsing (`See more`, tab switch, or search submit)
+- Do not override continuity signals with novelty-first ranking; `Continue Watching` remains dominant
 
 ## Notes
 

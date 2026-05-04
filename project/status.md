@@ -1,8 +1,8 @@
 # Project Status
 
 Status: `in_progress`
-Current phase: `Phase 02 - Foundation`
-Last updated: `2026-04-29`
+Current phase: `Phase 03 - Browsing MVP`
+Last updated: `2026-05-04`
 
 ## Product Summary
 
@@ -11,10 +11,9 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Current Focus
 
-- Formalize app structure beyond spike code in `/app`
-- Preserve verified auth, playback, and progress-sync behavior from Phase 01
-- Prepare clean baseline for browsing and playback MVP phases
-- Establish token-first design system baseline per `project/decisions/0007-design-system-foundation.md`
+- Start Phase 03 browsing implementation on top of completed Phase 02 foundation work
+- Build home rails and browsing surfaces with `Continue Watching` as top priority
+- Define and implement mobile-targeted browsing specs alongside Android TV parity
 
 ## Active Constraints
 
@@ -31,27 +30,27 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 - Android TV focus quality can regress if not validated continuously
 - TubeArchivist API is usable but not a stable third-party contract
 
-## Phase 02 Kickoff Assumptions
+## Foundation Outcomes (Phase 02)
 
 - Resume source in-app is read from `/api/video/<video_id>/` metadata, not from `GET /api/video/<video_id>/progress/` in the current environment.
 - Progress persistence is validated via `POST /api/video/<video_id>/progress/` and confirmed visible in the TubeArchivist UI.
 - `react-native-video` v7 remains the baseline playback integration direction for this repository/runtime.
+- App root orchestration was reduced and playback/connection concerns were extracted into focused modules.
 
 ## Immediate Next Steps
 
-1. Execute Phase 02 Bundle B in `project/roadmap/phase-02-foundation.md` (playback extraction + parity verification)
-2. Execute Phase 02 Bundle C in `project/roadmap/phase-02-foundation.md` (root orchestration cleanup + conventions)
-3. Apply design tokens progressively as modules are extracted to maintain visual consistency
-4. Keep subtitle verification deferred in `project/backlog.md` (`BL-001`)
+1. Execute Phase 03 initial browsing unit in `project/roadmap/phase-03-browsing-mvp.md` (home rails scaffold + route wiring + bottom-tab mobile routes)
+2. Implement `Continue Watching` as the first-priority home surface
+3. Add channels/playlists/search browsing surfaces incrementally with Android phone fluency checks and Android TV focus checks
 
 ## Phase Summary
 
 | Phase | Name | Status | Outcome |
 | --- | --- | --- | --- |
 | 00 | Product Definition | done | Lock scope, UX principles, and repo conventions |
-| 01 | Feasibility Spike | done | Proved auth, protected playback, and progress sync; subtitle moved to backlog (`BL-001`) |
-| 02 | Foundation | in_progress | Establish app shell and engineering baseline |
-| 03 | Browsing MVP | planned | Deliver intentional discovery and browsing |
+| 01 | Feasibility Spike | done | Proved auth, protected playback, and progress sync |
+| 02 | Foundation | done | App shell extraction, playback isolation, and architecture conventions baseline complete |
+| 03 | Browsing MVP | in_progress | Deliver intentional discovery and browsing |
 | 04 | Playback MVP | planned | Deliver dependable end-to-end viewing |
 | 05 | Hardening | planned | Raise quality to repeat-use stability |
 | 06 | Beta | planned | Dogfood, triage, and prepare first beta |

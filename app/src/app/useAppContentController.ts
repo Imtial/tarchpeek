@@ -20,6 +20,7 @@ function useAppContentController() {
     serverUrl,
     apiToken,
   });
+  const hasConnection = Boolean(serverUrl && apiToken);
 
   useEffect(() => {
     let isMounted = true;
@@ -136,6 +137,7 @@ function useAppContentController() {
     client,
     closePlayer,
     focusedField,
+    hasConnection,
     isHydrating,
     isLoadingVideo,
     isSaving,

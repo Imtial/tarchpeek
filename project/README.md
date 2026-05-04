@@ -20,6 +20,5 @@ This directory is the operating surface for the React Native client project.
 ## Working Rules
 
 - Each phase file owns its scope, deliverables, exit criteria, and blockers.
-- `status.md` is the highest-signal summary and should stay current.
 - Decisions that materially affect scope, architecture, or UX go into `decisions/`.
 - The MVP is consumption-focused. Admin and moderation workflows are intentionally excluded.
