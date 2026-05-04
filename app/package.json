@@ -29,6 +29,7 @@
     "@react-native/eslint-config": "0.85.2",
     "@react-native/metro-config": "0.85.2",
     "@react-native/typescript-config": "0.85.2",
+    "@types/jest": "^30.0.0",
     "@types/react": "^19.2.0",
     "eslint": "^8.19.0",
     "orval": "^8.9.0",

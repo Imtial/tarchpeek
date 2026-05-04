@@ -29,14 +29,6 @@ type TubeArchivistClient = {
   postProgressCheckpoint: (videoId: string, position: number) => Promise<void>;
 };
 
-function resolvePlaybackUrl(mediaUrl: string, serverUrl: string) {
-  const server = new URL(serverUrl);
-  const media = new URL(mediaUrl, server);
-
-  // Always use the configured server origin so emulator/TV can reach the stream host.
-  return new URL(`${media.pathname}${media.search}${media.hash}`, server).toString();
-}
-
 function getVideoId(input: string) {
   const normalizedInput = input.trim();
 
@@ -68,7 +60,7 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
         headers: authHeaders(),
       });
       const video = response.data;
-      const resolvedMediaUrl = resolvePlaybackUrl(video.media_url, connection.serverUrl);
+      const resolvedMediaUrl = new URL(video.media_url, connection.serverUrl).toString();
       const resumePositionSeconds = video.player.position ?? 0;
 
       return {
