@@ -8,19 +8,39 @@ type BrowsingScreenShellProps = {
   title: string;
   subtitle: string;
   children?: ReactNode;
+  useScrollView?: boolean;
 };
 
-function BrowsingScreenShell({ children, subtitle, title }: BrowsingScreenShellProps) {
+function BrowsingScreenShell({
+  children,
+  subtitle,
+  title,
+  useScrollView = true,
+}: BrowsingScreenShellProps) {
   const { theme } = useTheme();
   const { colors } = theme;
+  const header = (
+    <>
+      <Text style={[styles.title, { color: colors.textPrimary }]}>{title}</Text>
+      {subtitle ? <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{subtitle}</Text> : null}
+      <View
+        style={[
+          styles.bodyCard,
+          { backgroundColor: colors.surfaceBackground },
+          !useScrollView ? styles.bodyCardFill : null,
+        ]}>
+        {children}
+      </View>
+    </>
+  );
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.pageBackground }]}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>{title}</Text>
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{subtitle}</Text>
-        <View style={[styles.bodyCard, { backgroundColor: colors.surfaceBackground }]}>{children}</View>
-      </ScrollView>
+      {useScrollView ? (
+        <ScrollView contentContainerStyle={styles.content}>{header}</ScrollView>
+      ) : (
+        <View style={[styles.content, styles.contentFill]}>{header}</View>
+      )}
     </SafeAreaView>
   );
 }
@@ -31,6 +51,10 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     padding: spacing.lg,
   },
+  bodyCardFill: {
+    flex: 1,
+    minHeight: 0,
+  },
   container: {
     flex: 1,
   },
@@ -38,6 +62,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
+  },
+  contentFill: {
+    flex: 1,
+    minHeight: 0,
   },
   subtitle: {
     fontSize: 15,

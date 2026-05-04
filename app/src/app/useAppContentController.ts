@@ -111,13 +111,7 @@ function useAppContentController() {
     setPlaybackStatus('Fetching video metadata...');
 
     try {
-      const resolvedVideoDetails = await client.fetchVideoDetails(videoId);
-      setVideoDetails(resolvedVideoDetails);
-      setPlaybackStatus(
-        resolvedVideoDetails.resumePositionSeconds > 0
-          ? `Metadata loaded. Resume point found at ${resolvedVideoDetails.resumePositionSeconds}s. Opening player...`
-          : 'Metadata loaded. No resume point found. Opening player...',
-      );
+      await openVideoById(videoId);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown video load error';
       setVideoDetails(null);
@@ -125,6 +119,16 @@ function useAppContentController() {
     } finally {
       setIsLoadingVideo(false);
     }
+  }
+
+  async function openVideoById(videoId: string) {
+    const resolvedVideoDetails = await client.fetchVideoDetails(videoId);
+    setVideoDetails(resolvedVideoDetails);
+    setPlaybackStatus(
+      resolvedVideoDetails.resumePositionSeconds > 0
+        ? `Metadata loaded. Resume point found at ${resolvedVideoDetails.resumePositionSeconds}s. Opening player...`
+        : 'Metadata loaded. No resume point found. Opening player...',
+    );
   }
 
   function closePlayer(resultMessage?: string) {
@@ -142,6 +146,7 @@ function useAppContentController() {
     isLoadingVideo,
     isSaving,
     loadTestVideo,
+    openVideoById,
     playbackStatus,
     serverUrl,
     setApiToken,

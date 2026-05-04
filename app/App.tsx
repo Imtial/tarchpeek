@@ -40,6 +40,7 @@ function AppContent() {
     isLoadingVideo,
     isSaving,
     loadTestVideo,
+    openVideoById,
     playbackStatus,
     saveConnection,
     serverUrl,
@@ -64,7 +65,7 @@ function AppContent() {
   }
 
   if (hasConnection) {
-    return <BrowsingTabs />;
+    return <BrowsingTabs client={client} onOpenVideo={openVideoById} />;
   }
 
   return (

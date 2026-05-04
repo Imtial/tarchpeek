@@ -1,10 +1,13 @@
 import { useMemo } from 'react';
 import {
+  channelRetrieve,
+  channelRetrieve2,
+  videoRetrieve,
   videoProgressCreate,
   videoRetrieve2,
 } from '../api/generated/endpoints/tubearchivist';
 import { setApiBaseUrl } from '../api/fetcher';
-import type { VideoProgressUpdate } from '../api/generated/models';
+import type { Video, VideoProgressUpdate } from '../api/generated/models';
 
 type VideoSource = {
   uri: number | string;
@@ -26,7 +29,57 @@ type TubeArchivistConnection = {
 
 type TubeArchivistClient = {
   fetchVideoDetails: (videoId: string) => Promise<VideoDetails>;
+  fetchContinueWatching: (page?: number) => Promise<ContinueWatchingPage>;
+  fetchHomeFeed: (page?: number) => Promise<HomeFeedPage>;
+  fetchChannels: (page?: number) => Promise<ChannelsPage>;
+  fetchChannelDetail: (channelId: string) => Promise<ChannelDetail>;
   postProgressCheckpoint: (videoId: string, position: number) => Promise<void>;
+};
+
+type ContinueWatchingItem = {
+  videoId: string;
+  title: string;
+  published: string;
+  channelName: string;
+  thumbnailUrl: string;
+  resumePositionSeconds: number;
+  durationSeconds: number;
+  durationLabel: string;
+};
+
+type ContinueWatchingPage = {
+  items: ContinueWatchingItem[];
+  currentPage: number;
+  hasNextPage: boolean;
+};
+
+type HomeFeedPage = {
+  items: ContinueWatchingItem[];
+  currentPage: number;
+  hasNextPage: boolean;
+};
+
+type ChannelListItem = {
+  channelId: string;
+  channelName: string;
+  thumbnailUrl: string | null;
+  subscribed: boolean;
+  subscriberCount: number;
+};
+
+type ChannelsPage = {
+  items: ChannelListItem[];
+  currentPage: number;
+  hasNextPage: boolean;
+};
+
+type ChannelDetail = {
+  channelId: string;
+  channelName: string;
+  description: string;
+  thumbnailUrl: string | null;
+  subscriberCount: number;
+  subscribed: boolean;
 };
 
 function getVideoId(input: string) {
@@ -85,12 +138,130 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
       });
     }
 
+    function mapVideoToContinueWatchingItem(video: Video): ContinueWatchingItem {
+      const resolvedThumbnailUrl = new URL(video.vid_thumb_url, connection.serverUrl).toString();
+      return {
+        videoId: video.youtube_id,
+        title: video.title,
+        published: video.published,
+        channelName: video.channel?.channel_name ?? 'Unknown channel',
+        thumbnailUrl: resolvedThumbnailUrl,
+        resumePositionSeconds: video.player.position ?? 0,
+        durationSeconds: video.player.duration ?? 0,
+        durationLabel: video.player.duration_str,
+      };
+    }
+
+    async function fetchContinueWatching(page = 1): Promise<ContinueWatchingPage> {
+      const response = await videoRetrieve(
+        {
+          page,
+          watch: 'continue',
+        },
+        {
+          headers: authHeaders(),
+        },
+      );
+
+      return {
+        items: response.data.data.map(mapVideoToContinueWatchingItem),
+        currentPage: response.data.paginate.current_page,
+        hasNextPage: Boolean(response.data.paginate.next_pages?.length),
+      };
+    }
+
+    async function fetchHomeFeed(page = 1): Promise<HomeFeedPage> {
+      const [continueResponse, recentResponse, unwatchedResponse] = await Promise.all([
+        videoRetrieve({ page, type: 'videos', watch: 'continue' }, { headers: authHeaders() }),
+        videoRetrieve(
+          { page, type: 'videos', sort: 'downloaded', order: 'desc' },
+          { headers: authHeaders() },
+        ),
+        videoRetrieve(
+          { page, type: 'videos', watch: 'unwatched', sort: 'published', order: 'desc' },
+          { headers: authHeaders() },
+        ),
+      ]);
+
+      const merged = [
+        ...continueResponse.data.data,
+        ...recentResponse.data.data,
+        ...unwatchedResponse.data.data,
+      ];
+      const seenVideoIds = new Set<string>();
+      const uniqueItems = merged.filter(video => {
+        if (seenVideoIds.has(video.youtube_id)) {
+          return false;
+        }
+        seenVideoIds.add(video.youtube_id);
+        return true;
+      });
+
+      return {
+        items: uniqueItems.slice(0, 20).map(mapVideoToContinueWatchingItem),
+        currentPage: page,
+        hasNextPage:
+          Boolean(continueResponse.data.paginate.next_pages?.length) ||
+          Boolean(recentResponse.data.paginate.next_pages?.length) ||
+          Boolean(unwatchedResponse.data.paginate.next_pages?.length) ||
+          uniqueItems.length > 20,
+      };
+    }
+
+    function resolveUrl(pathOrUrl: string | null | undefined): string | null {
+      if (!pathOrUrl) {
+        return null;
+      }
+      return new URL(pathOrUrl, connection.serverUrl).toString();
+    }
+
+    async function fetchChannels(page = 1): Promise<ChannelsPage> {
+      const response = await channelRetrieve({ page }, { headers: authHeaders() });
+      return {
+        items: response.data.data.map(channel => ({
+          channelId: channel.channel_id,
+          channelName: channel.channel_name,
+          thumbnailUrl: resolveUrl(channel.channel_thumb_url ?? null),
+          subscribed: channel.channel_subscribed,
+          subscriberCount: channel.channel_subs,
+        })),
+        currentPage: response.data.paginate.current_page,
+        hasNextPage: Boolean(response.data.paginate.next_pages?.length),
+      };
+    }
+
+    async function fetchChannelDetail(channelId: string): Promise<ChannelDetail> {
+      const response = await channelRetrieve2(channelId, { headers: authHeaders() });
+      return {
+        channelId: response.data.channel_id,
+        channelName: response.data.channel_name,
+        description: response.data.channel_description ?? 'No description available.',
+        thumbnailUrl: resolveUrl(response.data.channel_thumb_url ?? null),
+        subscriberCount: response.data.channel_subs,
+        subscribed: response.data.channel_subscribed,
+      };
+    }
+
     return {
       fetchVideoDetails,
+      fetchContinueWatching,
+      fetchHomeFeed,
+      fetchChannels,
+      fetchChannelDetail,
       postProgressCheckpoint,
     };
   }, [connection]);
 }
 
 export { getVideoId, useTubeArchivistClient };
-export type { TubeArchivistClient, TubeArchivistConnection, VideoDetails };
+export type {
+  ContinueWatchingItem,
+  ContinueWatchingPage,
+  ChannelDetail,
+  ChannelListItem,
+  ChannelsPage,
+  HomeFeedPage,
+  TubeArchivistClient,
+  TubeArchivistConnection,
+  VideoDetails,
+};

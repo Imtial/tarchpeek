@@ -14,6 +14,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 - Start Phase 03 browsing implementation on top of completed Phase 02 foundation work
 - Build home rails and browsing surfaces with `Continue Watching` as top priority
 - Define and implement mobile-targeted browsing specs alongside Android TV parity
+- Add mobile card affordances for intentional retrieval (`progress-on-thumbnail` and `New` chips)
 
 ## Active Constraints
 
@@ -41,7 +42,8 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 1. Execute Phase 03 initial browsing unit in `project/roadmap/phase-03-browsing-mvp.md` (home rails scaffold + route wiring + bottom-tab mobile routes)
 2. Implement `Continue Watching` as the first-priority home surface
-3. Add channels/playlists/search browsing surfaces incrementally with Android phone fluency checks and Android TV focus checks
+3. Add thumbnail progress indicators and `New` chips on mobile browsing cards
+4. Add channels/playlists/search browsing surfaces incrementally with Android phone fluency checks and Android TV focus checks
 
 ## Phase Summary
 

@@ -35,6 +35,10 @@ Deliver the non-player content discovery experience with a strong bias toward in
   - Consistent back-stack behavior across tabs
   - Stable scroll restoration per tab
   - Clear loading, empty, and error states tuned for one-hand use
+- Thumbnail treatment for mobile browsing cards:
+  - Continue Watching items show a progress indicator on thumbnail (bar or percentage chip)
+  - Unwatched/new items show a `New` chip on thumbnail when no resume progress exists
+  - Progress and `New` indicators must remain glanceable but low-noise to preserve calm discovery
 
 ## Deliverables
 
@@ -62,3 +66,4 @@ Deliver the non-player content discovery experience with a strong bias toward in
 
 - Search should be explicit, fast, and quiet.
 - Avoid crowding the home screen with low-value rails.
+- Thumbnail progress and `New` chip treatment are part of Phase 03 browsing UI completion, not deferred to playback phase.
