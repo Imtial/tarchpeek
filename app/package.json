@@ -20,6 +20,7 @@
     "react-native-nitro-modules": "^0.35.5",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.24.0",
+    "react-native-vector-icons": "^10.3.0",
     "react-native-video": "^7.0.0-beta.9"
   },
   "devDependencies": {
@@ -35,6 +36,7 @@
     "@react-native/typescript-config": "0.85.2",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.0",
+    "@types/react-native-vector-icons": "^6.4.18",
     "eslint": "^8.19.0",
     "eslint-plugin-deprecation": "^3.0.0",
     "orval": "^8.9.0",
