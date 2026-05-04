@@ -2,7 +2,7 @@
 
 Status: `in_progress`
 Owner: `user + OpenCode`
-Last updated: `2026-05-04`
+Last updated: `2026-05-05`
 
 ## Goal
 
@@ -10,10 +10,8 @@ Deliver the non-player content discovery experience with a strong bias toward in
 
 ## Scope
 
-- Home screen with ordered rails
-- Continue Watching rail as first priority
-- Recently Added rail
-- Unwatched rail
+- Home screen with a sectionless, finite card list
+- Home feed prioritizes Continue Watching items, then Recently Added and Unwatched
 - Channels list and channel detail
 - Playlists list and playlist detail
 - Search screen with explicit search behavior
@@ -23,8 +21,9 @@ Deliver the non-player content discovery experience with a strong bias toward in
 
 - Primary navigation uses bottom tabs: `Home`, `Channels`, `Playlists`, `Search`
 - Phone browsing is portrait-first for MVP; tablet-specific layouts are out of scope in this phase
-- Home remains finite and intentional: `Continue Watching` first, then `Recently Added`, then `Unwatched`
-- Each home rail exposes explicit `See more` entry points instead of endless in-place expansion
+- Home remains finite and intentional: merged list prioritizes `Continue Watching`, then `Recently Added`, then `Unwatched`
+- Home avoids page-level title/subtitle headers; active tab highlight is the primary section indicator
+- Home list is explicit and growable via manual `Load next page` actions
 - Discovery guardrails are moderate:
   - No infinite home feed model
   - No autoplay previews on browsing surfaces

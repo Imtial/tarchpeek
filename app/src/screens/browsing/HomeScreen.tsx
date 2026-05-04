@@ -190,8 +190,7 @@ function HomeScreen({ client, onOpenVideo }: HomeScreenProps) {
   return (
     <BrowsingScreenShell
       subtitle="Intentional retrieval with glanceable progress and newness cues."
-      title="Home"
-      useScrollView={false}>
+      title="Home">
       {isLoadingContinueWatching ? (
         Array.from({ length: 3 }).map((_, index) => (
           <View key={`home-skeleton-${index}`} style={[styles.videoItem, { borderColor: colors.border }]}>
@@ -234,6 +233,7 @@ const styles = StyleSheet.create({
   videoItem: {
     borderRadius: radii.md,
     borderWidth: 1,
+    marginHorizontal: spacing.sm,
     marginTop: spacing.sm,
     padding: spacing.sm,
   },

@@ -98,11 +98,34 @@ function BrowsingTabs({ client, onOpenVideo }: BrowsingTabsProps) {
             headerShown: false,
             tabBarActiveTintColor: colors.accent,
             tabBarInactiveTintColor: colors.textSecondary,
+            tabBarActiveBackgroundColor: colors.surfaceBackground,
+            tabBarItemStyle: {
+              borderRadius: 0,
+              marginHorizontal: 0,
+              marginVertical: 0,
+              paddingVertical: 0,
+            },
+            tabBarLabelStyle: {
+              fontSize: 12,
+              fontWeight: '600',
+            },
             tabBarStyle: {
-              backgroundColor: colors.surfaceBackground,
+              backgroundColor: colors.pageBackground,
               borderTopColor: colors.border,
+              borderTopWidth: 1,
+              elevation: 8,
+              shadowColor: '#000000',
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.12,
+              shadowRadius: 8,
+              paddingBottom: 0,
+              paddingTop: 0,
+              height: 62,
             },
             tabBarIcon: buildTabBarIcon(route.name),
+            tabBarIconStyle: {
+              marginTop: 0,
+            },
           };
         }}
       >
