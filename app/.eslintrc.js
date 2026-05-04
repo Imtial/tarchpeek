@@ -2,6 +2,7 @@ module.exports = {
   root: true,
   extends: '@react-native',
   ignorePatterns: ['src/api/generated/**'],
+  plugins: ['deprecation'],
   rules: {
     'no-restricted-syntax': [
       'error',
@@ -11,4 +12,17 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ['**/*.ts', '**/*.tsx'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: ['./tsconfig.json'],
+        tsconfigRootDir: __dirname,
+      },
+      rules: {
+        'deprecation/deprecation': 'warn',
+      },
+    },
+  ],
 };

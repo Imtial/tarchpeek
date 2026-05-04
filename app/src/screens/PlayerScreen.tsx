@@ -4,9 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEvent, useVideoPlayer, VideoView } from 'react-native-video';
 import { useTheme } from '../design/ThemeProvider';
 import type { TubeArchivistClient, VideoDetails } from '../services/tubeArchivist';
-
-const PROGRESS_SYNC_INTERVAL_SECONDS = 5;
-const PROGRESS_SYNC_MIN_DELTA_SECONDS = 5;
+import {
+  PROGRESS_SYNC_INTERVAL_SECONDS,
+  syncPlaybackProgressCheckpoint,
+} from './playbackProgress';
 
 type PlayerScreenProps = {
   client: TubeArchivistClient;
@@ -67,9 +68,15 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
 
     if (hasReachedIntervalThreshold) {
       syncPlaybackProgressCheckpoint({
+        client,
         force: false,
+        isProgressSyncInFlightRef,
+        lastSyncedProgressRef,
+        latestPlaybackTimeRef,
         reasonLabel: 'interval',
+        setPlaybackStatus,
         shouldUpdateStatus: false,
+        videoId: videoDetails.videoId,
       }).catch(error => {
         const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
         setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
@@ -89,9 +96,15 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
 
     if (!data.isPlaying && !data.isBuffering) {
       syncPlaybackProgressCheckpoint({
+        client,
         force: true,
+        isProgressSyncInFlightRef,
+        lastSyncedProgressRef,
+        latestPlaybackTimeRef,
         reasonLabel: nextStateLabel,
+        setPlaybackStatus,
         shouldUpdateStatus: false,
+        videoId: videoDetails.videoId,
       }).catch(error => {
         const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
         setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
@@ -101,9 +114,15 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
 
   useEvent(player, 'onEnd', () => {
     syncPlaybackProgressCheckpoint({
+      client,
       force: true,
+      isProgressSyncInFlightRef,
+      lastSyncedProgressRef,
+      latestPlaybackTimeRef,
       reasonLabel: 'ended',
+      setPlaybackStatus,
       shouldUpdateStatus: false,
+      videoId: videoDetails.videoId,
     }).catch(error => {
       const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
       setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
@@ -113,52 +132,6 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
   useEvent(player, 'onError', error => {
     setPlaybackStatus(`Playback failed: ${error.message}`);
   });
-
-  async function syncPlaybackProgressCheckpoint({
-    force,
-    reasonLabel,
-    shouldUpdateStatus,
-  }: {
-    force: boolean;
-    reasonLabel: string;
-    shouldUpdateStatus: boolean;
-  }) {
-    const playbackSeconds = Math.max(0, Math.floor(latestPlaybackTimeRef.current));
-
-    if (playbackSeconds <= 0) {
-      return 'Skipped progress sync because no watch time was recorded.';
-    }
-
-    const isNewEnoughCheckpoint =
-      playbackSeconds >= lastSyncedProgressRef.current + PROGRESS_SYNC_MIN_DELTA_SECONDS;
-    if (!force && !isNewEnoughCheckpoint) {
-      return `Skipped ${reasonLabel} sync because progress only moved ${Math.max(0, playbackSeconds - lastSyncedProgressRef.current)}s.`;
-    }
-
-    if (isProgressSyncInFlightRef.current) {
-      return `Skipped ${reasonLabel} sync because another request is in flight.`;
-    }
-
-    isProgressSyncInFlightRef.current = true;
-
-    if (shouldUpdateStatus) {
-      setPlaybackStatus(`Syncing progress checkpoint at ${playbackSeconds}s (${reasonLabel})...`);
-    }
-
-    try {
-      await client.postProgressCheckpoint(videoDetails.videoId, playbackSeconds);
-
-      lastSyncedProgressRef.current = playbackSeconds;
-
-      if (shouldUpdateStatus) {
-        setPlaybackStatus(`Progress checkpoint synced at ${playbackSeconds}s.`);
-      }
-
-      return `Progress checkpoint synced at ${playbackSeconds}s.`;
-    } finally {
-      isProgressSyncInFlightRef.current = false;
-    }
-  }
 
   async function handleBackPress() {
     if (isSyncingProgress) {
@@ -171,9 +144,15 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
 
     try {
       resultMessage = await syncPlaybackProgressCheckpoint({
+        client,
         force: true,
+        isProgressSyncInFlightRef,
+        lastSyncedProgressRef,
+        latestPlaybackTimeRef,
         reasonLabel: 'exit',
+        setPlaybackStatus,
         shouldUpdateStatus: true,
+        videoId: videoDetails.videoId,
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';

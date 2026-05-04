@@ -2,14 +2,6 @@
 
 This directory is the operating surface for the React Native client project.
 
-## Current Status
-
-- Current phase: `Phase 01 - Feasibility Spike`
-- Overall status: `in_progress`
-- App code location: `/app`
-- Primary targets: `Android`, `Android TV`
-- Authentication for MVP: `Server URL + API token`
-
 ## Structure
 
 - `status.md`: single-page dashboard for current phase, blockers, and next steps
