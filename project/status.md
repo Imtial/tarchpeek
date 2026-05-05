@@ -11,11 +11,10 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Current Focus
 
-- Start Phase 03 browsing implementation on top of completed Phase 02 foundation work
-- Build sectionless home browsing feed with `Continue Watching` priority
-- Define and implement mobile-targeted browsing specs alongside Android TV parity
-- Add mobile card affordances for intentional retrieval (`progress-on-thumbnail` and `New` chips)
-- Remove in-screen tab titles/subtitles; use active tab highlight as section indicator
+- Stabilize Home feed runtime behavior (`FlashList`, page-window memory bounds, and pagination reliability)
+- Keep mobile browsing compact and sectionless while preserving `Continue Watching` priority
+- Complete remaining Phase 03 surfaces: Playlists and Search
+- Validate Android TV focus behavior across implemented browsing surfaces
 
 ## Active Constraints
 
@@ -41,9 +40,10 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Immediate Next Steps
 
-1. Stabilize Home growable list behavior (20-item pages, manual load-more, smooth scroll)
-2. Keep Home feed sectionless and compact while preserving Continue Watching priority
-3. Add channels/playlists/search browsing surfaces incrementally with Android phone fluency checks and Android TV focus checks
+1. Stabilize Home growable list behavior on device (20-item pages, manual load-more, smooth scroll, and bounded-memory retention)
+2. Implement Playlists list + detail flow with the same finite, explicit pagination model
+3. Implement Search explicit submit/results flow (no ambient or infinite discovery)
+4. Run Android TV focus checks across Home, Channels, Playlists, and Search surfaces
 
 ## Phase Summary
 

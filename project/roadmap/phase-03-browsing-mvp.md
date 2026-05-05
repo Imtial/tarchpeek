@@ -45,6 +45,20 @@ Deliver the non-player content discovery experience with a strong bias toward in
 - Mobile and TV-compatible browsing screens
 - Search and filtering path aligned with TubeArchivist data model
 
+## Progress Snapshot
+
+- Done:
+  - Bottom-tab navigation scaffold (`Home`, `Channels`, `Playlists`, `Search`)
+  - Sectionless Home feed with manual `Load next page`
+  - Home thumbnail affordances (`progress` indicator + `New` chip + duration chip)
+  - Channels list and channel detail routing/implementation
+  - Page-level title/subtitle headers removed from browsing surfaces in favor of tab-highlight section identity
+- Remaining:
+  - Home feed runtime stabilization on device (smoothness, bounded memory behavior, pagination reliability)
+  - Playlists list + detail implementation
+  - Search explicit submit/results implementation
+  - Android TV focus validation pass across all implemented browsing screens
+
 ## Exit Criteria
 
 - User can find relevant content without using the player screen first
