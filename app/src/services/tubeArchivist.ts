@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import {
   channelRetrieve,
   channelRetrieve2,
+  playlistRetrieve,
+  playlistRetrieve2,
   videoRetrieve,
   videoProgressCreate,
   videoRetrieve2,
@@ -33,6 +35,8 @@ type TubeArchivistClient = {
   fetchHomeFeed: (page?: number) => Promise<HomeFeedPage>;
   fetchChannels: (page?: number) => Promise<ChannelsPage>;
   fetchChannelDetail: (channelId: string) => Promise<ChannelDetail>;
+  fetchPlaylists: (page?: number) => Promise<PlaylistsPage>;
+  fetchPlaylistDetail: (playlistId: string) => Promise<PlaylistDetail>;
   postProgressCheckpoint: (videoId: string, position: number) => Promise<void>;
 };
 
@@ -80,6 +84,40 @@ type ChannelDetail = {
   thumbnailUrl: string | null;
   subscriberCount: number;
   subscribed: boolean;
+};
+
+type PlaylistListItem = {
+  playlistId: string;
+  playlistName: string;
+  channelName: string;
+  thumbnailUrl: string | null;
+  videoCount: number;
+  subscribed: boolean;
+};
+
+type PlaylistsPage = {
+  items: PlaylistListItem[];
+  currentPage: number;
+  hasNextPage: boolean;
+};
+
+type PlaylistVideoEntry = {
+  videoId: string;
+  title: string;
+  uploader: string | null;
+  index: number;
+  downloaded: boolean;
+};
+
+type PlaylistDetail = {
+  playlistId: string;
+  playlistName: string;
+  channelName: string;
+  description: string;
+  thumbnailUrl: string | null;
+  videoCount: number;
+  subscribed: boolean;
+  entries: PlaylistVideoEntry[];
 };
 
 function getVideoId(input: string) {
@@ -242,12 +280,50 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
       };
     }
 
+    async function fetchPlaylists(page = 1): Promise<PlaylistsPage> {
+      const response = await playlistRetrieve({ page }, { headers: authHeaders() });
+      return {
+        items: response.data.data.map(playlist => ({
+          playlistId: playlist.playlist_id,
+          playlistName: playlist.playlist_name,
+          channelName: playlist.playlist_channel,
+          thumbnailUrl: resolveUrl(playlist.playlist_thumbnail),
+          videoCount: playlist.playlist_entries.length,
+          subscribed: playlist.playlist_subscribed,
+        })),
+        currentPage: response.data.paginate.current_page,
+        hasNextPage: Boolean(response.data.paginate.next_pages?.length),
+      };
+    }
+
+    async function fetchPlaylistDetail(playlistId: string): Promise<PlaylistDetail> {
+      const response = await playlistRetrieve2(playlistId, { headers: authHeaders() });
+      return {
+        playlistId: response.data.playlist_id,
+        playlistName: response.data.playlist_name,
+        channelName: response.data.playlist_channel,
+        description: response.data.playlist_description ?? 'No description available.',
+        thumbnailUrl: resolveUrl(response.data.playlist_thumbnail),
+        videoCount: response.data.playlist_entries.length,
+        subscribed: response.data.playlist_subscribed,
+        entries: response.data.playlist_entries.map(entry => ({
+          videoId: entry.youtube_id,
+          title: entry.title,
+          uploader: entry.uploader,
+          index: entry.idx,
+          downloaded: entry.downloaded,
+        })),
+      };
+    }
+
     return {
       fetchVideoDetails,
       fetchContinueWatching,
       fetchHomeFeed,
       fetchChannels,
       fetchChannelDetail,
+      fetchPlaylists,
+      fetchPlaylistDetail,
       postProgressCheckpoint,
     };
   }, [connection]);
@@ -261,6 +337,10 @@ export type {
   ChannelListItem,
   ChannelsPage,
   HomeFeedPage,
+  PlaylistDetail,
+  PlaylistListItem,
+  PlaylistsPage,
+  PlaylistVideoEntry,
   TubeArchivistClient,
   TubeArchivistConnection,
   VideoDetails,

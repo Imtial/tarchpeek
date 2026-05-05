@@ -7,6 +7,7 @@ import { radii, spacing } from '../../design/tokens';
 import { BrowsingScreenShell } from './BrowsingScreenShell';
 
 const HOME_PAGE_WINDOW_SIZE = 3;
+const HOME_LIST_DRAW_DISTANCE = 300;
 
 type HomeScreenProps = {
   client: TubeArchivistClient;
@@ -203,8 +204,10 @@ function HomeScreen({ client, onOpenVideo }: HomeScreenProps) {
         <View style={styles.listWrap}>
           <FlashList
             data={homeItems}
-            keyExtractor={(item, index) => `${item.videoId}-${index}`}
+            drawDistance={HOME_LIST_DRAW_DISTANCE}
+            keyExtractor={item => item.videoId}
             ListFooterComponent={renderLoadMoreFooter}
+            removeClippedSubviews
             renderItem={({ item }) => renderVideoCard(item)}
             showsVerticalScrollIndicator={false}
           />

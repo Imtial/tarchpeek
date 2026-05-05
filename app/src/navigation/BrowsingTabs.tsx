@@ -8,6 +8,7 @@ import { ChannelDetailScreen } from '../screens/browsing/ChannelDetailScreen';
 import { ChannelsScreen } from '../screens/browsing/ChannelsScreen';
 import { ContinueWatchingScreen } from '../screens/browsing/ContinueWatchingScreen';
 import { HomeScreen } from '../screens/browsing/HomeScreen';
+import { PlaylistDetailScreen } from '../screens/browsing/PlaylistDetailScreen';
 import { PlaylistsScreen } from '../screens/browsing/PlaylistsScreen';
 import { SearchScreen } from '../screens/browsing/SearchScreen';
 
@@ -29,6 +30,11 @@ type ChannelsStackParamList = {
   ChannelDetail: { channelId: string };
 };
 const ChannelsStack = createNativeStackNavigator<ChannelsStackParamList>();
+type PlaylistsStackParamList = {
+  PlaylistsRoot: undefined;
+  PlaylistDetail: { playlistId: string };
+};
+const PlaylistsStack = createNativeStackNavigator<PlaylistsStackParamList>();
 const iconNameByRoute: Record<keyof BrowsingTabParamList, string> = {
   Home: 'home-outline',
   Channels: 'television-play',
@@ -85,6 +91,32 @@ function ChannelsTabNavigator({ client }: { client: TubeArchivistClient }) {
   );
 }
 
+function PlaylistsTabNavigator({ client, onOpenVideo }: BrowsingTabsProps) {
+  return (
+    <PlaylistsStack.Navigator screenOptions={{ headerShown: false }}>
+      <PlaylistsStack.Screen name="PlaylistsRoot">
+        {({ navigation }) => (
+          <PlaylistsScreen
+            client={client}
+            onOpenPlaylist={playlistId => {
+              navigation.navigate('PlaylistDetail', { playlistId });
+            }}
+          />
+        )}
+      </PlaylistsStack.Screen>
+      <PlaylistsStack.Screen name="PlaylistDetail">
+        {({ route }) => (
+          <PlaylistDetailScreen
+            client={client}
+            onOpenVideo={onOpenVideo}
+            playlistId={route.params.playlistId}
+          />
+        )}
+      </PlaylistsStack.Screen>
+    </PlaylistsStack.Navigator>
+  );
+}
+
 function BrowsingTabs({ client, onOpenVideo }: BrowsingTabsProps) {
   const { theme } = useTheme();
   const { colors } = theme;
@@ -135,7 +167,9 @@ function BrowsingTabs({ client, onOpenVideo }: BrowsingTabsProps) {
         <Tab.Screen name="Channels">
           {() => <ChannelsTabNavigator client={client} />}
         </Tab.Screen>
-        <Tab.Screen component={PlaylistsScreen} name="Playlists" />
+        <Tab.Screen name="Playlists">
+          {() => <PlaylistsTabNavigator client={client} onOpenVideo={onOpenVideo} />}
+        </Tab.Screen>
         <Tab.Screen component={SearchScreen} name="Search" />
       </Tab.Navigator>
     </NavigationContainer>

@@ -13,7 +13,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 - Stabilize Home feed runtime behavior (`FlashList`, page-window memory bounds, and pagination reliability)
 - Keep mobile browsing compact and sectionless while preserving `Continue Watching` priority
-- Complete remaining Phase 03 surfaces: Playlists and Search
+- Complete remaining Phase 03 surface: Search
 - Validate Android TV focus behavior across implemented browsing surfaces
 
 ## Active Constraints
@@ -41,9 +41,8 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 ## Immediate Next Steps
 
 1. Stabilize Home growable list behavior on device (20-item pages, manual load-more, smooth scroll, and bounded-memory retention)
-2. Implement Playlists list + detail flow with the same finite, explicit pagination model
-3. Implement Search explicit submit/results flow (no ambient or infinite discovery)
-4. Run Android TV focus checks across Home, Channels, Playlists, and Search surfaces
+2. Implement Search explicit submit/results flow (no ambient or infinite discovery)
+3. Run Android TV focus checks across Home, Channels, Playlists, and Search surfaces
 
 ## Phase Summary
 
