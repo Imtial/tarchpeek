@@ -32,6 +32,7 @@ function ThemedApp() {
 function AppContent() {
   const {
     apiToken,
+    browseRefreshKey,
     client,
     closePlayer,
     focusedField,
@@ -65,7 +66,7 @@ function AppContent() {
   }
 
   if (hasConnection) {
-    return <BrowsingTabs client={client} onOpenVideo={openVideoById} />;
+    return <BrowsingTabs browseRefreshKey={browseRefreshKey} client={client} onOpenVideo={openVideoById} />;
   }
 
   return (

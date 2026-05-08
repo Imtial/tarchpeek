@@ -122,17 +122,14 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
           <View style={[styles.thumb, { backgroundColor: colors.surfacePressed }]} />
         )}
         <View style={styles.textWrap}>
-          <Text numberOfLines={1} style={[styles.title, { color: colors.textPrimary }]}>
+          <Text numberOfLines={3} style={[styles.title, styles.titleText, { color: colors.textPrimary }]}>
             {item.playlistName}
           </Text>
-          <Text numberOfLines={1} style={[styles.meta, { color: colors.textSecondary }]}>
+          <Text numberOfLines={2} style={[styles.meta, styles.channelMeta, { color: colors.textSecondary }]}>
             {item.channelName}
           </Text>
           <Text style={[styles.meta, { color: colors.textSecondary }]}>
             {`${item.videoCount.toLocaleString()} videos`}
-          </Text>
-          <Text style={[styles.meta, { color: colors.textSecondary }]}>
-            {item.subscribed ? 'Subscribed' : 'Not subscribed'}
           </Text>
         </View>
       </Pressable>
@@ -175,15 +172,15 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
     <BrowsingScreenShell subtitle="Browse playlists with explicit entry into playlist details." title="Playlists">
       {isLoading
         ? Array.from({ length: 8 }).map((_, index) => (
-            <View key={`playlist-skeleton-${index}`} style={[styles.row, { borderColor: colors.border }]}>
-              <View style={[styles.thumb, { backgroundColor: colors.surfacePressed }]} />
-              <View style={styles.textWrap}>
-                <View style={[styles.skeletonTitle, { backgroundColor: colors.surfacePressed }]} />
-                <View style={[styles.skeletonMeta, { backgroundColor: colors.surfacePressed }]} />
-                <View style={[styles.skeletonMeta, { backgroundColor: colors.surfacePressed }]} />
-              </View>
+          <View key={`playlist-skeleton-${index}`} style={[styles.row, { borderColor: colors.border }]}>
+            <View style={[styles.thumb, { backgroundColor: colors.surfacePressed }]} />
+            <View style={styles.textWrap}>
+              <View style={[styles.skeletonTitle, { backgroundColor: colors.surfacePressed }]} />
+              <View style={[styles.skeletonMeta, { backgroundColor: colors.surfacePressed }]} />
+              <View style={[styles.skeletonMeta, { backgroundColor: colors.surfacePressed }]} />
             </View>
-          ))
+          </View>
+        ))
         : (
           <View style={styles.listWrap}>
             <FlashList
@@ -206,7 +203,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loadMoreButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: radii.md,
     marginTop: spacing.sm,
     paddingHorizontal: spacing.md,
@@ -220,6 +217,9 @@ const styles = StyleSheet.create({
   meta: {
     fontSize: 12,
     marginTop: spacing.xs,
+  },
+  channelMeta: {
+    flexShrink: 1,
   },
   pressed: {
     opacity: 0.92,
@@ -260,6 +260,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '700',
+  },
+  titleText: {
+    flexShrink: 1,
   },
 });
 

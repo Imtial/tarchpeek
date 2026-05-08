@@ -104,7 +104,9 @@ type ChannelDetail = {
 type PlaylistListItem = {
   playlistId: string;
   playlistName: string;
+  channelId: string;
   channelName: string;
+  channelLogoUrl: string | null;
   thumbnailUrl: string | null;
   videoCount: number;
   subscribed: boolean;
@@ -122,12 +124,22 @@ type PlaylistVideoEntry = {
   uploader: string | null;
   index: number;
   downloaded: boolean;
+  thumbnailUrl: string;
+  channelName: string;
+  channelLogoUrl: string | null;
+  viewCount: number;
+  watched: boolean;
+  resumePositionSeconds: number;
+  durationSeconds: number;
+  durationLabel: string;
 };
 
 type PlaylistDetail = {
   playlistId: string;
   playlistName: string;
+  channelId: string;
   channelName: string;
+  channelLogoUrl: string | null;
   description: string;
   thumbnailUrl: string | null;
   videoCount: number;
@@ -351,7 +363,9 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
         items: response.data.data.map(playlist => ({
           playlistId: playlist.playlist_id,
           playlistName: playlist.playlist_name,
+          channelId: playlist.playlist_channel_id,
           channelName: playlist.playlist_channel,
+          channelLogoUrl: null,
           thumbnailUrl: resolveUrl(playlist.playlist_thumbnail),
           videoCount: playlist.playlist_entries.length,
           subscribed: playlist.playlist_subscribed,
@@ -363,21 +377,41 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
 
     async function fetchPlaylistDetail(playlistId: string): Promise<PlaylistDetail> {
       const response = await playlistRetrieve2(playlistId, { headers: authHeaders() });
+      const channelResponse = await channelRetrieve2(response.data.playlist_channel_id, {
+        headers: authHeaders(),
+      });
+      const enrichedEntries = await Promise.all(
+        response.data.playlist_entries.map(async entry => {
+          const entryVideo = await videoRetrieve2(entry.youtube_id, { headers: authHeaders() });
+          const video = entryVideo.data;
+          return {
+            videoId: entry.youtube_id,
+            title: entry.title,
+            uploader: entry.uploader,
+            index: entry.idx,
+            downloaded: entry.downloaded,
+            thumbnailUrl: new URL(video.vid_thumb_url, connection.serverUrl).toString(),
+            channelName: video.channel?.channel_name ?? response.data.playlist_channel,
+            channelLogoUrl: resolveUrl(video.channel?.channel_thumb_url ?? null),
+            viewCount: video.stats.view_count ?? 0,
+            watched: video.player.watched ?? false,
+            resumePositionSeconds: video.player.position ?? 0,
+            durationSeconds: video.player.duration ?? 0,
+            durationLabel: video.player.duration_str,
+          };
+        }),
+      );
       return {
         playlistId: response.data.playlist_id,
         playlistName: response.data.playlist_name,
+        channelId: response.data.playlist_channel_id,
         channelName: response.data.playlist_channel,
+        channelLogoUrl: resolveUrl(channelResponse.data.channel_thumb_url ?? null),
         description: response.data.playlist_description ?? 'No description available.',
         thumbnailUrl: resolveUrl(response.data.playlist_thumbnail),
         videoCount: response.data.playlist_entries.length,
         subscribed: response.data.playlist_subscribed,
-        entries: response.data.playlist_entries.map(entry => ({
-          videoId: entry.youtube_id,
-          title: entry.title,
-          uploader: entry.uploader,
-          index: entry.idx,
-          downloaded: entry.downloaded,
-        })),
+        entries: enrichedEntries,
       };
     }
 

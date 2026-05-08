@@ -12,8 +12,9 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 ## Current Focus
 
 - Deliver dependable browse-to-play flow on Android and Android TV
-- Stabilize resume playback and progress sync behavior in player runtime
-- Add watched/unwatched and playback-adjacent controls needed for repeat-use viewing
+- Stabilize playback runtime quality and list-to-player continuity on Android + Android TV
+- Make playlist browsing surfaces fully functional and layout-correct (playlist list + playlist detail)
+- Preserve Bundle C behavior through regression checks while playlist work lands
 
 ## Active Constraints
 
@@ -39,9 +40,29 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Immediate Next Steps
 
-1. Bundle C (active): In-player watched/unwatched action path with browse-surface reflection
-2. Bundle D: Playlist previous/next navigation inside player when playlist context exists
+1. Bundle D (active): Playlist surfaces functional pass
+   - Remove `Subscribed/Not subscribed` text from playlist list and playlist detail
+   - Prevent destructive channel-name truncation on playlist list cards
+   - Rebuild playlist detail layout:
+     - top edge-to-edge playlist banner (no rounded corners)
+     - channel logo + channel name
+     - video count
+     - playlist title
+     - playlist video list container in server-provided order
+2. Bundle D (next): In-player playlist previous/next navigation when playlist context exists
 3. Bundle E: Android + Android TV playback validation pass and risk notes
+
+## Bundle Progress Notes
+
+- Bundle A: implemented and approved
+- Bundle B: implemented and approved
+- Bundle C: implemented and approved
+  - Implemented: in-player watched toggle with outlined/filled check-circle state
+  - Implemented: watched-last ordering for Home/Continue browse lists (search ordering untouched)
+  - Implemented: conditional refetch-based reflection path on player close (single source of truth)
+  - Implemented: unified video-list/card container shared by Home/Continue/Search
+  - Implemented: browse-card metadata upgrade (channel logo + channel name + human-friendly view count)
+- Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary
 
