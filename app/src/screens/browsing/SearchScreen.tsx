@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTheme } from '../../design/ThemeProvider';
 import type { SearchVideoResult, TubeArchivistClient } from '../../services/tubeArchivist';
 import { radii, spacing } from '../../design/tokens';
 import { BrowsingScreenShell } from './BrowsingScreenShell';
+import { VideoResultsList } from './VideoResultsList';
 
 type SearchScreenProps = {
   client: TubeArchivistClient;
@@ -18,7 +19,6 @@ function SearchScreen({ client, onOpenVideo }: SearchScreenProps) {
   const [results, setResults] = useState<SearchVideoResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
 
   async function submitSearch() {
@@ -38,50 +38,6 @@ function SearchScreen({ client, onOpenVideo }: SearchScreenProps) {
     } finally {
       setIsLoading(false);
     }
-  }
-
-  async function handleOpenVideo(videoId: string) {
-    setActiveVideoId(videoId);
-    try {
-      await onOpenVideo(videoId);
-    } finally {
-      setActiveVideoId(null);
-    }
-  }
-
-  function renderResultCard(item: SearchVideoResult) {
-    return (
-      <Pressable
-        accessibilityRole="button"
-        disabled={activeVideoId === item.videoId}
-        key={item.videoId}
-        onBlur={() => {
-          setFocusedElementId(current => (current === item.videoId ? null : current));
-        }}
-        onFocus={() => {
-          setFocusedElementId(item.videoId);
-        }}
-        onPress={() => {
-          handleOpenVideo(item.videoId).catch(() => {
-            setActiveVideoId(null);
-          });
-        }}
-        style={({ pressed }) => [
-          styles.resultCard,
-          { borderColor: focusedElementId === item.videoId ? colors.accent : colors.border },
-          pressed ? styles.pressed : null,
-        ]}>
-        <View style={styles.thumbnailWrap}>
-          <Image source={{ uri: item.thumbnailUrl }} style={styles.thumbnailImage} />
-        </View>
-        <Text numberOfLines={1} style={[styles.videoTitle, { color: colors.textPrimary }]}>
-          {item.title}
-        </Text>
-        <Text numberOfLines={1} style={[styles.videoMeta, { color: colors.textSecondary }]}>
-          {item.channelName}
-        </Text>
-      </Pressable>
-    );
   }
 
   const hasSubmittedQuery = submittedQuery.length > 0;
@@ -150,14 +106,13 @@ function SearchScreen({ client, onOpenVideo }: SearchScreenProps) {
         </Text>
       ) : null}
 
-      {!hasSubmittedQuery && !isLoading && !isError ? (
-        <Text style={[styles.stateText, { color: colors.textSecondary }]}>
-          Submit a query to search videos.
-        </Text>
-      ) : null}
-
       <View style={styles.resultsWrap}>
-        {results.map(item => renderResultCard(item))}
+        <VideoResultsList
+          isLoading={false}
+          items={results}
+          loadingCount={0}
+          onOpenVideo={onOpenVideo}
+        />
       </View>
     </BrowsingScreenShell>
   );
@@ -176,15 +131,8 @@ const styles = StyleSheet.create({
   focused: {
     transform: [{ scale: 1.02 }],
   },
-  resultCard: {
-    borderRadius: radii.md,
-    borderWidth: 1,
-    marginHorizontal: spacing.sm,
-    marginTop: spacing.sm,
-    padding: spacing.sm,
-  },
   resultsWrap: {
-    paddingBottom: spacing.sm,
+    flex: 1,
   },
   searchButton: {
     alignItems: 'center',
@@ -210,23 +158,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginHorizontal: spacing.sm,
     marginTop: spacing.sm,
-  },
-  thumbnailImage: {
-    aspectRatio: 16 / 9,
-    width: '100%',
-  },
-  thumbnailWrap: {
-    borderRadius: radii.md,
-    marginBottom: spacing.sm,
-    overflow: 'hidden',
-  },
-  videoMeta: {
-    fontSize: 12,
-    marginTop: spacing.xs,
-  },
-  videoTitle: {
-    fontSize: 14,
-    fontWeight: '700',
   },
 });
 

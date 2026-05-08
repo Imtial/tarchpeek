@@ -15,6 +15,7 @@ function useAppContentController() {
   const [statusMessage, setStatusMessage] = useState('Enter a TubeArchivist server and API token.');
   const [playbackStatus, setPlaybackStatus] = useState('No playback attempted yet.');
   const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
+  const [browseRefreshKey, setBrowseRefreshKey] = useState(0);
 
   const client = useTubeArchivistClient({
     serverUrl,
@@ -131,15 +132,19 @@ function useAppContentController() {
     );
   }
 
-  function closePlayer(resultMessage?: string) {
+  function closePlayer(result: { resultMessage?: string; shouldRefreshBrowse: boolean }) {
     setVideoDetails(null);
-    setPlaybackStatus(resultMessage ?? 'No playback attempted yet.');
+    setPlaybackStatus(result.resultMessage ?? 'No playback attempted yet.');
+    if (result.shouldRefreshBrowse) {
+      setBrowseRefreshKey(current => current + 1);
+    }
   }
 
   return {
     apiToken,
     client,
     closePlayer,
+    browseRefreshKey,
     focusedField,
     hasConnection,
     isHydrating,

@@ -57,6 +57,8 @@ type ContinueWatchingItem = {
   title: string;
   published: string;
   channelName: string;
+  channelLogoUrl: string | null;
+  viewCount: number;
   watched: boolean;
   thumbnailUrl: string;
   resumePositionSeconds: number;
@@ -243,6 +245,8 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
         title: video.title,
         published: video.published,
         channelName: video.channel?.channel_name ?? 'Unknown channel',
+        channelLogoUrl: resolveUrl(video.channel?.channel_thumb_url ?? null),
+        viewCount: video.stats.view_count ?? 0,
         watched: video.player.watched ?? false,
         thumbnailUrl: resolvedThumbnailUrl,
         resumePositionSeconds: video.player.position ?? 0,

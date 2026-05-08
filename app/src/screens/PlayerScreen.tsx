@@ -12,7 +12,7 @@ import {
 
 type PlayerScreenProps = {
   client: TubeArchivistClient;
-  onBack: (resultMessage?: string) => void;
+  onBack: (result: { resultMessage?: string; shouldRefreshBrowse: boolean }) => void;
   videoDetails: VideoDetails;
 };
 
@@ -74,6 +74,10 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
   const lastSyncedProgressRef = useRef(0);
   const isProgressSyncInFlightRef = useRef(false);
   const isClosingRef = useRef(false);
+  const didWatchedStateChangeRef = useRef(false);
+  const isPlayingRef = useRef(false);
+  const playSessionStartedAtMsRef = useRef<number | null>(null);
+  const watchedSessionMsRef = useRef(0);
 
   const player = useVideoPlayer(videoDetails.source, currentPlayer => {
     currentPlayer.muted = false;
@@ -136,6 +140,20 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
     const nextStateLabel = data.isBuffering ? 'buffering' : data.isPlaying ? 'playing' : 'paused';
     setPlaybackStatus(`Playback state: ${nextStateLabel}`);
 
+    if (data.isPlaying && !isPlayingRef.current) {
+      isPlayingRef.current = true;
+      playSessionStartedAtMsRef.current = Date.now();
+    }
+
+    if ((!data.isPlaying || data.isBuffering) && isPlayingRef.current) {
+      const startedAt = playSessionStartedAtMsRef.current;
+      if (startedAt) {
+        watchedSessionMsRef.current += Math.max(0, Date.now() - startedAt);
+      }
+      playSessionStartedAtMsRef.current = null;
+      isPlayingRef.current = false;
+    }
+
     if (!data.isPlaying && !data.isBuffering) {
       syncPlaybackProgressCheckpoint({
         client,
@@ -181,6 +199,16 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
     }
 
     isClosingRef.current = true;
+    if (isPlayingRef.current) {
+      const startedAt = playSessionStartedAtMsRef.current;
+      if (startedAt) {
+        watchedSessionMsRef.current += Math.max(0, Date.now() - startedAt);
+      }
+      playSessionStartedAtMsRef.current = null;
+      isPlayingRef.current = false;
+    }
+    const watchedSessionSeconds = Math.floor(watchedSessionMsRef.current / 1000);
+    const shouldRefreshBrowse = watchedSessionSeconds >= 180 || didWatchedStateChangeRef.current;
 
     let resultMessage = 'Playback closed.';
 
@@ -201,7 +229,7 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
       resultMessage = `Progress sync failed: ${errorMessage}`;
       setPlaybackStatus(resultMessage);
     } finally {
-      onBack(resultMessage);
+      onBack({ resultMessage, shouldRefreshBrowse });
     }
   }
 
@@ -228,6 +256,7 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
 
     try {
       await client.setWatchedState(videoDetails.videoId, nextWatched);
+      didWatchedStateChangeRef.current = true;
     } catch (error) {
       setIsWatched(!nextWatched);
       const errorMessage = error instanceof Error ? error.message : 'Unknown watched state update error';

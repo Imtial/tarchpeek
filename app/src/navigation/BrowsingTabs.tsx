@@ -49,23 +49,36 @@ function buildTabBarIcon(routeName: keyof BrowsingTabParamList) {
 }
 
 type BrowsingTabsProps = {
+  browseRefreshKey: number;
   client: TubeArchivistClient;
   onOpenVideo: (videoId: string) => Promise<void>;
 };
 
-function HomeTabNavigator({ client, onOpenVideo }: BrowsingTabsProps) {
+type VideoOpenProps = {
+  client: TubeArchivistClient;
+  onOpenVideo: (videoId: string) => Promise<void>;
+};
+
+function HomeTabNavigator({ browseRefreshKey, client, onOpenVideo }: BrowsingTabsProps) {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="HomeRoot">
         {() => (
           <HomeScreen
+            browseRefreshKey={browseRefreshKey}
             client={client}
             onOpenVideo={onOpenVideo}
           />
         )}
       </HomeStack.Screen>
       <HomeStack.Screen name="ContinueWatching">
-        {() => <ContinueWatchingScreen client={client} onOpenVideo={onOpenVideo} />}
+        {() => (
+          <ContinueWatchingScreen
+            browseRefreshKey={browseRefreshKey}
+            client={client}
+            onOpenVideo={onOpenVideo}
+          />
+        )}
       </HomeStack.Screen>
     </HomeStack.Navigator>
   );
@@ -91,7 +104,7 @@ function ChannelsTabNavigator({ client }: { client: TubeArchivistClient }) {
   );
 }
 
-function PlaylistsTabNavigator({ client, onOpenVideo }: BrowsingTabsProps) {
+function PlaylistsTabNavigator({ client, onOpenVideo }: VideoOpenProps) {
   return (
     <PlaylistsStack.Navigator screenOptions={{ headerShown: false }}>
       <PlaylistsStack.Screen name="PlaylistsRoot">
@@ -117,7 +130,7 @@ function PlaylistsTabNavigator({ client, onOpenVideo }: BrowsingTabsProps) {
   );
 }
 
-function BrowsingTabs({ client, onOpenVideo }: BrowsingTabsProps) {
+function BrowsingTabs({ browseRefreshKey, client, onOpenVideo }: BrowsingTabsProps) {
   const { theme } = useTheme();
   const { colors } = theme;
 
@@ -162,7 +175,7 @@ function BrowsingTabs({ client, onOpenVideo }: BrowsingTabsProps) {
         }}
       >
         <Tab.Screen name="Home">
-          {() => <HomeTabNavigator client={client} onOpenVideo={onOpenVideo} />}
+          {() => <HomeTabNavigator browseRefreshKey={browseRefreshKey} client={client} onOpenVideo={onOpenVideo} />}
         </Tab.Screen>
         <Tab.Screen name="Channels">
           {() => <ChannelsTabNavigator client={client} />}
