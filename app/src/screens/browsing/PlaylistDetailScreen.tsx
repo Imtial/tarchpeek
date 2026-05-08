@@ -16,6 +16,7 @@ function PlaylistDetailScreen({ playlistId, client, onOpenVideo }: PlaylistDetai
   const { colors } = theme;
   const [detail, setDetail] = useState<PlaylistDetail | null>(null);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+  const [focusedEntryId, setFocusedEntryId] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -74,6 +75,12 @@ function PlaylistDetailScreen({ playlistId, client, onOpenVideo }: PlaylistDetai
             accessibilityRole="button"
             disabled={activeVideoId === entry.videoId}
             key={entry.videoId}
+            onBlur={() => {
+              setFocusedEntryId(current => (current === entry.videoId ? null : current));
+            }}
+            onFocus={() => {
+              setFocusedEntryId(entry.videoId);
+            }}
             onPress={() => {
               handleOpenVideo(entry.videoId).catch(() => {
                 setActiveVideoId(null);
@@ -81,7 +88,7 @@ function PlaylistDetailScreen({ playlistId, client, onOpenVideo }: PlaylistDetai
             }}
             style={({ pressed }) => [
               styles.entryRow,
-              { borderColor: colors.border },
+              { borderColor: focusedEntryId === entry.videoId ? colors.accent : colors.border },
               pressed ? styles.pressed : null,
             ]}>
             <View style={styles.entryTextWrap}>

@@ -27,6 +27,7 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
 
   const items = useMemo(() => {
     const seenIds = new Set<string>();
@@ -101,12 +102,18 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
       <Pressable
         accessibilityRole="button"
         key={item.playlistId}
+        onBlur={() => {
+          setFocusedElementId(current => (current === item.playlistId ? null : current));
+        }}
+        onFocus={() => {
+          setFocusedElementId(item.playlistId);
+        }}
         onPress={() => {
           onOpenPlaylist(item.playlistId);
         }}
         style={({ pressed }) => [
           styles.row,
-          { borderColor: colors.border },
+          { borderColor: focusedElementId === item.playlistId ? colors.accent : colors.border },
           pressed ? styles.pressed : null,
         ]}>
         {item.thumbnailUrl ? (
@@ -137,6 +144,12 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
       <Pressable
         accessibilityRole="button"
         disabled={!hasNextPage || isLoadingMore}
+        onBlur={() => {
+          setFocusedElementId(current => (current === 'playlists-load-more' ? null : current));
+        }}
+        onFocus={() => {
+          setFocusedElementId('playlists-load-more');
+        }}
         onPress={() => {
           loadMore().catch(() => undefined);
         }}
@@ -148,6 +161,7 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
                 ? colors.buttonSecondaryBackground
                 : colors.buttonDisabledBackground,
           },
+          focusedElementId === 'playlists-load-more' ? styles.focused : null,
           pressed && hasNextPage && !isLoadingMore ? styles.pressed : null,
         ]}>
         <Text style={[styles.loadMoreLabel, { color: colors.buttonLabel }]}>
@@ -209,6 +223,9 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.92,
+  },
+  focused: {
+    transform: [{ scale: 1.02 }],
   },
   row: {
     borderRadius: radii.md,

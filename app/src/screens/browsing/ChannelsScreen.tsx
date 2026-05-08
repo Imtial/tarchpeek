@@ -18,6 +18,7 @@ function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -84,12 +85,18 @@ function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
             <Pressable
               key={item.channelId}
               accessibilityRole="button"
+              onBlur={() => {
+                setFocusedElementId(current => (current === item.channelId ? null : current));
+              }}
+              onFocus={() => {
+                setFocusedElementId(item.channelId);
+              }}
               onPress={() => {
                 onOpenChannel(item.channelId);
               }}
               style={({ pressed }) => [
                 styles.row,
-                { borderColor: colors.border },
+                { borderColor: focusedElementId === item.channelId ? colors.accent : colors.border },
                 pressed ? styles.pressed : null,
               ]}>
               {item.thumbnailUrl ? (
@@ -110,6 +117,12 @@ function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
       <Pressable
         accessibilityRole="button"
         disabled={!hasNextPage || isLoadingMore}
+        onBlur={() => {
+          setFocusedElementId(current => (current === 'channels-load-more' ? null : current));
+        }}
+        onFocus={() => {
+          setFocusedElementId('channels-load-more');
+        }}
         onPress={() => {
           loadMore().catch(() => undefined);
         }}
@@ -121,6 +134,7 @@ function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
                 ? colors.buttonSecondaryBackground
                 : colors.buttonDisabledBackground,
           },
+          focusedElementId === 'channels-load-more' ? styles.focused : null,
           pressed && hasNextPage && !isLoadingMore ? styles.pressed : null,
         ]}>
         <Text style={[styles.loadMoreLabel, { color: colors.buttonLabel }]}>
@@ -150,6 +164,9 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.92,
+  },
+  focused: {
+    transform: [{ scale: 1.02 }],
   },
   row: {
     borderRadius: radii.md,

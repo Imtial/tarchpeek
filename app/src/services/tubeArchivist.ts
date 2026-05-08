@@ -8,8 +8,10 @@ import {
   videoProgressCreate,
   videoRetrieve2,
 } from '../api/generated/endpoints/tubearchivist';
+import { searchRetrieve } from '../api/search';
 import { setApiBaseUrl } from '../api/fetcher';
 import type { Video, VideoProgressUpdate } from '../api/generated/models';
+import type { SearchFulltextResult, SearchQueryType } from '../api/search';
 
 type VideoSource = {
   uri: number | string;
@@ -37,6 +39,7 @@ type TubeArchivistClient = {
   fetchChannelDetail: (channelId: string) => Promise<ChannelDetail>;
   fetchPlaylists: (page?: number) => Promise<PlaylistsPage>;
   fetchPlaylistDetail: (playlistId: string) => Promise<PlaylistDetail>;
+  searchArchive: (query: string) => Promise<SearchResultsPage>;
   postProgressCheckpoint: (videoId: string, position: number) => Promise<void>;
 };
 
@@ -118,6 +121,33 @@ type PlaylistDetail = {
   videoCount: number;
   subscribed: boolean;
   entries: PlaylistVideoEntry[];
+};
+
+type SearchVideoResult = ContinueWatchingItem;
+
+type SearchChannelResult = {
+  channelId: string;
+  channelName: string;
+  thumbnailUrl: string | null;
+  subscribed: boolean;
+  subscriberCount: number;
+};
+
+type SearchPlaylistResult = {
+  playlistId: string;
+  playlistName: string;
+  channelName: string;
+  thumbnailUrl: string | null;
+  videoCount: number;
+  subscribed: boolean;
+};
+
+type SearchResultsPage = {
+  queryType: SearchQueryType;
+  videoResults: SearchVideoResult[];
+  channelResults: SearchChannelResult[];
+  playlistResults: SearchPlaylistResult[];
+  fulltextResults: SearchFulltextResult[];
 };
 
 function getVideoId(input: string) {
@@ -316,6 +346,30 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
       };
     }
 
+    async function searchArchive(query: string): Promise<SearchResultsPage> {
+      const response = await searchRetrieve(query, { headers: authHeaders() });
+      return {
+        queryType: response.data.queryType,
+        videoResults: response.data.results.video_results.map(mapVideoToContinueWatchingItem),
+        channelResults: response.data.results.channel_results.map(channel => ({
+          channelId: channel.channel_id,
+          channelName: channel.channel_name,
+          thumbnailUrl: resolveUrl(channel.channel_thumb_url ?? null),
+          subscribed: channel.channel_subscribed,
+          subscriberCount: channel.channel_subs,
+        })),
+        playlistResults: response.data.results.playlist_results.map(playlist => ({
+          playlistId: playlist.playlist_id,
+          playlistName: playlist.playlist_name,
+          channelName: playlist.playlist_channel,
+          thumbnailUrl: resolveUrl(playlist.playlist_thumbnail),
+          videoCount: playlist.playlist_entries.length,
+          subscribed: playlist.playlist_subscribed,
+        })),
+        fulltextResults: response.data.results.fulltext_results,
+      };
+    }
+
     return {
       fetchVideoDetails,
       fetchContinueWatching,
@@ -324,6 +378,7 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
       fetchChannelDetail,
       fetchPlaylists,
       fetchPlaylistDetail,
+      searchArchive,
       postProgressCheckpoint,
     };
   }, [connection]);
@@ -341,6 +396,10 @@ export type {
   PlaylistListItem,
   PlaylistsPage,
   PlaylistVideoEntry,
+  SearchChannelResult,
+  SearchPlaylistResult,
+  SearchResultsPage,
+  SearchVideoResult,
   TubeArchivistClient,
   TubeArchivistConnection,
   VideoDetails,

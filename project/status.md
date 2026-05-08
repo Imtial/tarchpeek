@@ -1,8 +1,8 @@
 # Project Status
 
 Status: `in_progress`
-Current phase: `Phase 03 - Browsing MVP`
-Last updated: `2026-05-05`
+Current phase: `Phase 04 - Playback MVP`
+Last updated: `2026-05-08`
 
 ## Product Summary
 
@@ -11,10 +11,9 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Current Focus
 
-- Stabilize Home feed runtime behavior (`FlashList`, page-window memory bounds, and pagination reliability)
-- Keep mobile browsing compact and sectionless while preserving `Continue Watching` priority
-- Complete remaining Phase 03 surface: Search
-- Validate Android TV focus behavior across implemented browsing surfaces
+- Deliver dependable browse-to-play flow on Android and Android TV
+- Stabilize resume playback and progress sync behavior in player runtime
+- Add watched/unwatched and playback-adjacent controls needed for repeat-use viewing
 
 ## Active Constraints
 
@@ -40,9 +39,11 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Immediate Next Steps
 
-1. Stabilize Home growable list behavior on device (20-item pages, manual load-more, smooth scroll, and bounded-memory retention)
-2. Implement Search explicit submit/results flow (no ambient or infinite discovery)
-3. Run Android TV focus checks across Home, Channels, Playlists, and Search surfaces
+1. Implement video detail screen as the explicit pre-play context surface
+2. Harden full-screen player flow with reliable resume-from-progress behavior
+3. Implement watched/unwatched action path and reflect state back into browsing surfaces
+4. Add playlist next/previous playback navigation where data is available
+5. Run Android + Android TV playback session validation for end-to-end browse-to-play reliability
 
 ## Phase Summary
 
@@ -51,7 +52,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 | 00 | Product Definition | done | Lock scope, UX principles, and repo conventions |
 | 01 | Feasibility Spike | done | Proved auth, protected playback, and progress sync |
 | 02 | Foundation | done | App shell extraction, playback isolation, and architecture conventions baseline complete |
-| 03 | Browsing MVP | in_progress | Deliver intentional discovery and browsing |
-| 04 | Playback MVP | planned | Deliver dependable end-to-end viewing |
+| 03 | Browsing MVP | done | Delivered Home, Channels, Playlists, and Search browsing surfaces with explicit interaction and TV focus affordance baseline |
+| 04 | Playback MVP | in_progress | Deliver dependable end-to-end viewing |
 | 05 | Hardening | planned | Raise quality to repeat-use stability |
 | 06 | Beta | planned | Dogfood, triage, and prepare first beta |

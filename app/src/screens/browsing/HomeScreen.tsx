@@ -28,6 +28,7 @@ function HomeScreen({ client, onOpenVideo }: HomeScreenProps) {
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+  const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
   const homeItems = useMemo(() => {
     const seenIds = new Set<string>();
     const merged = pageChunks.flatMap(chunk => chunk.items);
@@ -146,9 +147,15 @@ function HomeScreen({ client, onOpenVideo }: HomeScreenProps) {
             setActiveVideoId(null);
           });
         }}
+        onBlur={() => {
+          setFocusedElementId(current => (current === item.videoId ? null : current));
+        }}
+        onFocus={() => {
+          setFocusedElementId(item.videoId);
+        }}
         style={({ pressed }) => [
           styles.videoItem,
-          { borderColor: colors.border },
+          { borderColor: focusedElementId === item.videoId ? colors.accent : colors.border },
           pressed ? styles.buttonPressed : null,
         ]}>
         <View style={styles.thumbnailWrap}>
@@ -171,6 +178,12 @@ function HomeScreen({ client, onOpenVideo }: HomeScreenProps) {
         onPress={() => {
           loadMore().catch(() => undefined);
         }}
+        onBlur={() => {
+          setFocusedElementId(current => (current === 'home-load-more' ? null : current));
+        }}
+        onFocus={() => {
+          setFocusedElementId('home-load-more');
+        }}
         style={({ pressed }) => [
           styles.seeMoreButton,
           {
@@ -179,6 +192,7 @@ function HomeScreen({ client, onOpenVideo }: HomeScreenProps) {
                 ? colors.buttonSecondaryBackground
                 : colors.buttonDisabledBackground,
           },
+          focusedElementId === 'home-load-more' ? styles.buttonFocused : null,
           pressed && hasNextPage && !isLoadingMore ? styles.buttonPressed : null,
         ]}>
         <Text style={[styles.seeMoreLabel, { color: colors.buttonLabel }]}>
@@ -220,6 +234,9 @@ function HomeScreen({ client, onOpenVideo }: HomeScreenProps) {
 const styles = StyleSheet.create({
   buttonPressed: {
     opacity: 0.92,
+  },
+  buttonFocused: {
+    transform: [{ scale: 1.02 }],
   },
   seeMoreButton: {
     alignSelf: 'flex-start',

@@ -170,7 +170,9 @@ function BrowsingTabs({ client, onOpenVideo }: BrowsingTabsProps) {
         <Tab.Screen name="Playlists">
           {() => <PlaylistsTabNavigator client={client} onOpenVideo={onOpenVideo} />}
         </Tab.Screen>
-        <Tab.Screen component={SearchScreen} name="Search" />
+        <Tab.Screen name="Search">
+          {() => <SearchScreen client={client} onOpenVideo={onOpenVideo} />}
+        </Tab.Screen>
       </Tab.Navigator>
     </NavigationContainer>
   );
