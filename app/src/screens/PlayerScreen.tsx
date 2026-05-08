@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { BackHandler, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEvent, useVideoPlayer, VideoView } from 'react-native-video';
 import { useTheme } from '../design/ThemeProvider';
@@ -15,16 +15,52 @@ type PlayerScreenProps = {
   videoDetails: VideoDetails;
 };
 
+const COLLAPSED_DESCRIPTION_LINES = 4;
+
+function formatViewCount(viewCount: number) {
+  return `${new Intl.NumberFormat('en-US').format(viewCount)} views`;
+}
+
+function formatPublishedDate(published: string) {
+  const publishedDate = new Date(published);
+  if (Number.isNaN(publishedDate.getTime())) {
+    return published;
+  }
+
+  const now = Date.now();
+  const diffMs = now - publishedDate.getTime();
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const absoluteLabel = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(publishedDate);
+
+  if (days < 1) {
+    return `Today • ${absoluteLabel}`;
+  }
+  if (days === 1) {
+    return `1 day ago • ${absoluteLabel}`;
+  }
+  if (days < 30) {
+    return `${days} days ago • ${absoluteLabel}`;
+  }
+
+  const months = Math.floor(days / 30);
+  if (months < 12) {
+    return `${months} month${months === 1 ? '' : 's'} ago • ${absoluteLabel}`;
+  }
+
+  const years = Math.floor(months / 12);
+  return `${years} year${years === 1 ? '' : 's'} ago • ${absoluteLabel}`;
+}
+
 function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
   const { theme } = useTheme();
   const initialResumeSeconds = Math.max(0, Math.floor(videoDetails.resumePositionSeconds));
-  const [playbackTime, setPlaybackTime] = useState(initialResumeSeconds);
-  const [duration, setDuration] = useState(videoDetails.duration ?? 0);
   const [playbackStatus, setPlaybackStatus] = useState('Preparing player...');
-  const [isSyncingProgress, setIsSyncingProgress] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [focusedActionId, setFocusedActionId] = useState<string | null>(null);
   const latestPlaybackTimeRef = useRef(0);
   const lastSyncedProgressRef = useRef(0);
   const isProgressSyncInFlightRef = useRef(false);
+  const isClosingRef = useRef(false);
 
   const player = useVideoPlayer(videoDetails.source, currentPlayer => {
     currentPlayer.muted = false;
@@ -45,8 +81,6 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
   });
 
   useEvent(player, 'onLoad', data => {
-    setDuration(data.duration);
-
     const canResume =
       initialResumeSeconds > 3 &&
       initialResumeSeconds < Math.max(4, Math.floor(data.duration) - 3);
@@ -60,7 +94,6 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
 
   useEvent(player, 'onProgress', data => {
     latestPlaybackTimeRef.current = data.currentTime;
-    setPlaybackTime(data.currentTime);
 
     const playbackSeconds = Math.max(0, Math.floor(data.currentTime));
     const hasReachedIntervalThreshold =
@@ -134,11 +167,11 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
   });
 
   async function handleBackPress() {
-    if (isSyncingProgress) {
+    if (isClosingRef.current) {
       return;
     }
 
-    setIsSyncingProgress(true);
+    isClosingRef.current = true;
 
     let resultMessage = 'Playback closed.';
 
@@ -159,48 +192,119 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
       resultMessage = `Progress sync failed: ${errorMessage}`;
       setPlaybackStatus(resultMessage);
     } finally {
-      setIsSyncingProgress(false);
       onBack(resultMessage);
     }
   }
 
+  useEffect(() => {
+    // Needed to map Android hardware back/gesture to player exit + final progress sync.
+    const backSubscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      handleBackPress().catch(() => undefined);
+      return true;
+    });
+
+    return () => {
+      backSubscription.remove();
+    };
+  }, [client, onBack, videoDetails.videoId]);
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.pageBackground }]}>
-      <View style={styles.playerScreen}>
+      <View style={[styles.playerScreenFrame, { backgroundColor: theme.colors.videoFrameBackground }]}>
+        <VideoView
+          controls
+          player={player}
+          resizeMode="contain"
+          style={styles.playerScreenVideo}
+          surfaceType="surface"
+        />
+      </View>
+      <View style={styles.playerMetadataSection}>
         <View style={styles.playerScreenHeader}>
           <Text style={[styles.videoTitle, { color: theme.colors.textPrimary }]}>{videoDetails.title}</Text>
           <Text style={[styles.videoMeta, { color: theme.colors.textSecondary }]}>
-            {`Progress: ${Math.round(playbackTime)}s${duration ? ` / ${Math.round(duration)}s` : ''}`}
+            {`${formatViewCount(videoDetails.viewCount)} • ${formatPublishedDate(videoDetails.published)}`}
           </Text>
-          <Text style={[styles.videoMeta, { color: theme.colors.textSecondary }]}>{playbackStatus}</Text>
-        </View>
-        <View style={[styles.playerScreenFrame, { backgroundColor: theme.colors.videoFrameBackground }]}>
-          <VideoView
-            controls
-            player={player}
-            resizeMode="contain"
-            style={styles.playerScreenVideo}
-            surfaceType="surface"
-          />
-        </View>
-        <View style={styles.playerScreenActions}>
-          <Pressable
-            accessibilityRole="button"
-            focusable
-            onPress={handleBackPress}
-            style={({ pressed }) => [
-              styles.button,
-              {
-                backgroundColor: isSyncingProgress
-                  ? theme.colors.buttonDisabledBackground
-                  : theme.colors.buttonPrimaryBackground,
-              },
-              pressed && !isSyncingProgress ? styles.buttonPressed : null,
-            ]}>
-            <Text style={[styles.buttonText, { color: theme.colors.buttonLabel }]}>
-              {isSyncingProgress ? 'Syncing progress...' : 'Back to form'}
+          <View style={styles.channelRow}>
+            {videoDetails.channelLogoUrl ? (
+              <Image source={{ uri: videoDetails.channelLogoUrl }} style={styles.channelLogo} />
+            ) : (
+              <View
+                style={[
+                  styles.channelLogoFallback,
+                  { backgroundColor: theme.colors.surfaceBackground, borderColor: theme.colors.border },
+                ]}
+              />
+            )}
+            <Text numberOfLines={1} style={[styles.channelName, { color: theme.colors.textPrimary }]}>
+              {videoDetails.channelName}
             </Text>
-          </Pressable>
+          </View>
+        </View>
+
+        <View style={[styles.metadataCard, { borderColor: theme.colors.border }]}>
+          {isDescriptionExpanded ? (
+            <ScrollView
+              nestedScrollEnabled
+              persistentScrollbar
+              showsVerticalScrollIndicator
+              style={styles.expandedDescriptionScroll}>
+              <Text style={[styles.videoMeta, { color: theme.colors.textPrimary }]}>
+                {videoDetails.description}
+              </Text>
+            </ScrollView>
+          ) : (
+            <Text numberOfLines={COLLAPSED_DESCRIPTION_LINES} style={[styles.videoMeta, { color: theme.colors.textPrimary }]}>
+              {videoDetails.description}
+            </Text>
+          )}
+          {isDescriptionExpanded ? (
+            <Pressable
+              accessibilityRole="button"
+              focusable
+              onBlur={() => {
+                setFocusedActionId(current => (current === 'description-collapse' ? null : current));
+              }}
+              onFocus={() => {
+                setFocusedActionId('description-collapse');
+              }}
+              onPress={() => {
+                setIsDescriptionExpanded(false);
+              }}
+              style={({ pressed }) => [
+                styles.descriptionToggleButton,
+                {
+                  borderColor:
+                    focusedActionId === 'description-collapse' ? theme.colors.accent : 'transparent',
+                },
+                pressed ? styles.buttonPressed : null,
+              ]}>
+              <Text style={[styles.seeMoreLabel, { color: theme.colors.textSecondary }]}>See less...</Text>
+            </Pressable>
+          ) : null}
+          {!isDescriptionExpanded ? (
+            <Pressable
+              accessibilityRole="button"
+              focusable
+              onBlur={() => {
+                setFocusedActionId(current => (current === 'description-toggle' ? null : current));
+              }}
+              onFocus={() => {
+                setFocusedActionId('description-toggle');
+              }}
+              onPress={() => {
+                setIsDescriptionExpanded(true);
+              }}
+              style={({ pressed }) => [
+                styles.descriptionToggleButton,
+                {
+                  borderColor: focusedActionId === 'description-toggle' ? theme.colors.accent : 'transparent',
+                },
+                pressed ? styles.buttonPressed : null,
+              ]}>
+              <Text style={[styles.seeMoreLabel, { color: theme.colors.textSecondary }]}>See more ...</Text>
+            </Pressable>
+          ) : null}
         </View>
       </View>
     </SafeAreaView>
@@ -211,39 +315,63 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  button: {
-    alignItems: 'center',
-    borderRadius: 12,
-    marginTop: 8,
-    minHeight: 48,
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-  },
   buttonPressed: {
     opacity: 0.9,
   },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '700',
+  channelLogo: {
+    borderRadius: 20,
+    height: 40,
+    width: 40,
   },
-  playerScreen: {
+  channelLogoFallback: {
+    borderRadius: 20,
+    borderWidth: 1,
+    height: 40,
+    width: 40,
+  },
+  channelName: {
     flex: 1,
-    gap: 16,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  channelRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+  },
+  descriptionToggleButton: {
+    alignSelf: 'flex-start',
+    borderWidth: 0,
+    marginTop: 8,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+  },
+  playerMetadataSection: {
+    flex: 1,
+    gap: 12,
     paddingHorizontal: 20,
-    paddingVertical: 24,
+    paddingTop: 12,
+    paddingBottom: 16,
   },
   playerScreenHeader: {
-    gap: 8,
+    gap: 10,
   },
   playerScreenFrame: {
-    flex: 1,
-    minHeight: 260,
+    aspectRatio: 16 / 9,
   },
   playerScreenVideo: {
     flex: 1,
   },
-  playerScreenActions: {
-    paddingBottom: 8,
+  metadataCard: {
+    borderRadius: 12,
+    borderWidth: 1,
+    flexShrink: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  expandedDescriptionScroll: {
+    flexGrow: 0,
+    flexShrink: 1,
   },
   videoTitle: {
     fontSize: 18,
@@ -252,6 +380,10 @@ const styles = StyleSheet.create({
   videoMeta: {
     fontSize: 13,
     lineHeight: 18,
+  },
+  seeMoreLabel: {
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
 

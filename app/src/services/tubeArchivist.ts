@@ -23,6 +23,12 @@ type VideoDetails = {
   resumePositionSeconds: number;
   title: string;
   duration?: number;
+  durationLabel: string;
+  viewCount: number;
+  channelName: string;
+  channelLogoUrl: string | null;
+  published: string;
+  description: string;
   source: VideoSource;
 };
 
@@ -189,6 +195,14 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
         resumePositionSeconds,
         title: video.title,
         duration: video.player.duration,
+        durationLabel: video.player.duration_str,
+        viewCount: video.stats.view_count ?? 0,
+        channelName: video.channel?.channel_name ?? 'Unknown channel',
+        channelLogoUrl: video.channel?.channel_thumb_url
+          ? new URL(video.channel.channel_thumb_url, connection.serverUrl).toString()
+          : null,
+        published: video.published,
+        description: video.description ?? 'No description available.',
         source: {
           uri: resolvedMediaUrl,
           headers: authHeaders(),
