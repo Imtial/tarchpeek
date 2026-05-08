@@ -19,6 +19,12 @@ type HomePageChunk = {
   items: ContinueWatchingItem[];
 };
 
+function sortWatchedLast(items: ContinueWatchingItem[]) {
+  const unwatched = items.filter(item => !item.watched);
+  const watched = items.filter(item => item.watched);
+  return [...unwatched, ...watched];
+}
+
 function HomeScreen({ client, onOpenVideo }: HomeScreenProps) {
   const { theme } = useTheme();
   const { colors } = theme;
@@ -32,13 +38,14 @@ function HomeScreen({ client, onOpenVideo }: HomeScreenProps) {
   const homeItems = useMemo(() => {
     const seenIds = new Set<string>();
     const merged = pageChunks.flatMap(chunk => chunk.items);
-    return merged.filter(item => {
+    const uniqueItems = merged.filter(item => {
       if (seenIds.has(item.videoId)) {
         return false;
       }
       seenIds.add(item.videoId);
       return true;
     });
+    return sortWatchedLast(uniqueItems);
   }, [pageChunks]);
 
   useEffect(() => {
@@ -239,7 +246,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1.02 }],
   },
   seeMoreButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: radii.md,
     marginTop: spacing.md,
     paddingHorizontal: spacing.md,

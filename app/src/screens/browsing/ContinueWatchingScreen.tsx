@@ -10,6 +10,12 @@ type ContinueWatchingScreenProps = {
   onOpenVideo: (videoId: string) => Promise<void>;
 };
 
+function sortWatchedLast(items: ContinueWatchingItem[]) {
+  const unwatched = items.filter(item => !item.watched);
+  const watched = items.filter(item => item.watched);
+  return [...unwatched, ...watched];
+}
+
 function ContinueWatchingScreen({ client, onOpenVideo }: ContinueWatchingScreenProps) {
   const { theme } = useTheme();
   const { colors } = theme;
@@ -30,7 +36,7 @@ function ContinueWatchingScreen({ client, onOpenVideo }: ContinueWatchingScreenP
         if (!isMounted) {
           return;
         }
-        setItems(firstPage.items);
+        setItems(sortWatchedLast(firstPage.items));
         setPage(firstPage.currentPage);
         setHasNextPage(firstPage.hasNextPage);
       } catch {
@@ -60,7 +66,7 @@ function ContinueWatchingScreen({ client, onOpenVideo }: ContinueWatchingScreenP
     setIsLoadingMore(true);
     try {
       const response = await client.fetchContinueWatching(nextPage);
-      setItems(currentItems => [...currentItems, ...response.items]);
+      setItems(currentItems => sortWatchedLast([...currentItems, ...response.items]));
       setPage(response.currentPage);
       setHasNextPage(response.hasNextPage);
     } catch {

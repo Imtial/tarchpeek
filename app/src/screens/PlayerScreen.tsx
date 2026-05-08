@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { BackHandler, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEvent, useVideoPlayer, VideoView } from 'react-native-video';
 import { useTheme } from '../design/ThemeProvider';
@@ -16,9 +17,15 @@ type PlayerScreenProps = {
 };
 
 const COLLAPSED_DESCRIPTION_LINES = 4;
+const RESUME_MIN_SECONDS = 3;
+const RESUME_END_BUFFER_SECONDS = 3;
 
 function formatViewCount(viewCount: number) {
-  return `${new Intl.NumberFormat('en-US').format(viewCount)} views`;
+  const compactLabel = new Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(Math.max(0, viewCount));
+  return `${compactLabel} views`;
 }
 
 function formatPublishedDate(published: string) {
@@ -54,7 +61,13 @@ function formatPublishedDate(published: string) {
 function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
   const { theme } = useTheme();
   const initialResumeSeconds = Math.max(0, Math.floor(videoDetails.resumePositionSeconds));
+  const durationSeconds = Math.max(0, Math.floor(videoDetails.duration ?? 0));
+  const canApplyResumePosition =
+    initialResumeSeconds > RESUME_MIN_SECONDS &&
+    (durationSeconds <= 0 || initialResumeSeconds < Math.max(RESUME_MIN_SECONDS + 1, durationSeconds - RESUME_END_BUFFER_SECONDS));
   const [playbackStatus, setPlaybackStatus] = useState('Preparing player...');
+  const [isWatched, setIsWatched] = useState(videoDetails.watched);
+  const [isUpdatingWatchedState, setIsUpdatingWatchedState] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [focusedActionId, setFocusedActionId] = useState<string | null>(null);
   const latestPlaybackTimeRef = useRef(0);
@@ -67,7 +80,7 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
     currentPlayer.volume = 1;
     currentPlayer.loop = false;
 
-    if (initialResumeSeconds > 3) {
+    if (canApplyResumePosition) {
       currentPlayer.currentTime = initialResumeSeconds;
       latestPlaybackTimeRef.current = initialResumeSeconds;
       lastSyncedProgressRef.current = initialResumeSeconds;
@@ -81,12 +94,8 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
   });
 
   useEvent(player, 'onLoad', data => {
-    const canResume =
-      initialResumeSeconds > 3 &&
-      initialResumeSeconds < Math.max(4, Math.floor(data.duration) - 3);
-
     setPlaybackStatus(
-      canResume
+      canApplyResumePosition
         ? `Playback started. Resumed at ${initialResumeSeconds}s.`
         : `Playback started. Duration ${Math.round(data.duration)}s.`,
     );
@@ -208,6 +217,26 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
     };
   }, [client, onBack, videoDetails.videoId]);
 
+  async function handleToggleWatched() {
+    if (isUpdatingWatchedState) {
+      return;
+    }
+
+    const nextWatched = !isWatched;
+    setIsUpdatingWatchedState(true);
+    setIsWatched(nextWatched);
+
+    try {
+      await client.setWatchedState(videoDetails.videoId, nextWatched);
+    } catch (error) {
+      setIsWatched(!nextWatched);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown watched state update error';
+      setPlaybackStatus(`Watched state update failed: ${errorMessage}`);
+    } finally {
+      setIsUpdatingWatchedState(false);
+    }
+  }
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.pageBackground }]}>
       <View style={[styles.playerScreenFrame, { backgroundColor: theme.colors.videoFrameBackground }]}>
@@ -222,9 +251,37 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
       <View style={styles.playerMetadataSection}>
         <View style={styles.playerScreenHeader}>
           <Text style={[styles.videoTitle, { color: theme.colors.textPrimary }]}>{videoDetails.title}</Text>
-          <Text style={[styles.videoMeta, { color: theme.colors.textSecondary }]}>
-            {`${formatViewCount(videoDetails.viewCount)} • ${formatPublishedDate(videoDetails.published)}`}
-          </Text>
+          <View style={styles.videoMetaRow}>
+            <Text numberOfLines={1} style={[styles.videoMetaLine, { color: theme.colors.textSecondary }]}>
+              {`${formatViewCount(videoDetails.viewCount)} • ${formatPublishedDate(videoDetails.published)}`}
+            </Text>
+            <Pressable
+              accessibilityLabel={isWatched ? 'Watched' : 'Mark watched'}
+              accessibilityRole="button"
+              focusable
+              onBlur={() => {
+                setFocusedActionId(current => (current === 'watched-toggle' ? null : current));
+              }}
+              onFocus={() => {
+                setFocusedActionId('watched-toggle');
+              }}
+              onPress={() => {
+                handleToggleWatched().catch(() => undefined);
+              }}
+              style={({ pressed }) => [
+                styles.watchedToggleButton,
+                {
+                  borderColor: focusedActionId === 'watched-toggle' ? theme.colors.accent : 'transparent',
+                },
+                pressed ? styles.buttonPressed : null,
+              ]}>
+              <MaterialCommunityIcons
+                color={isWatched ? theme.colors.accent : theme.colors.textSecondary}
+                name={isWatched ? 'check-circle' : 'check-circle-outline'}
+                size={20}
+              />
+            </Pressable>
+          </View>
           <View style={styles.channelRow}>
             {videoDetails.channelLogoUrl ? (
               <Image source={{ uri: videoDetails.channelLogoUrl }} style={styles.channelLogo} />
@@ -339,6 +396,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
+  videoMetaRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  videoMetaLine: {
+    flex: 1,
+    fontSize: 13,
+    lineHeight: 18,
+  },
   descriptionToggleButton: {
     alignSelf: 'flex-start',
     borderWidth: 0,
@@ -384,6 +451,14 @@ const styles = StyleSheet.create({
   seeMoreLabel: {
     fontSize: 13,
     fontWeight: '600',
+  },
+  watchedToggleButton: {
+    borderRadius: 999,
+    borderWidth: 1,
+    height: 30,
+    width: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

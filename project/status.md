@@ -39,11 +39,9 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Immediate Next Steps
 
-1. Bundle A: Player-as-context foundation (direct browse-to-player, metadata in player UI, TV focusable regions)
-2. Bundle B: Resume and progress hardening (consistent resume start + checkpoint stability)
-3. Bundle C: In-player watched/unwatched action path with browse-surface reflection
-4. Bundle D: Playlist previous/next navigation inside player when playlist context exists
-5. Bundle E: Android + Android TV playback validation pass and risk notes
+1. Bundle C (active): In-player watched/unwatched action path with browse-surface reflection
+2. Bundle D: Playlist previous/next navigation inside player when playlist context exists
+3. Bundle E: Android + Android TV playback validation pass and risk notes
 
 ## Phase Summary
 

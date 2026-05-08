@@ -3,6 +3,14 @@ import type { TubeArchivistClient } from '../services/tubeArchivist';
 
 const PROGRESS_SYNC_INTERVAL_SECONDS = 5;
 const PROGRESS_SYNC_MIN_DELTA_SECONDS = 5;
+const PROGRESS_SYNC_FORCE_WAIT_STEP_MS = 100;
+const PROGRESS_SYNC_FORCE_WAIT_MAX_MS = 1500;
+
+function wait(ms: number) {
+  return new Promise<void>(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
 
 type SyncPlaybackProgressParams = {
   client: TubeArchivistClient;
@@ -37,6 +45,16 @@ async function syncPlaybackProgressCheckpoint({
     playbackSeconds >= lastSyncedProgressRef.current + PROGRESS_SYNC_MIN_DELTA_SECONDS;
   if (!force && !isNewEnoughCheckpoint) {
     return `Skipped ${reasonLabel} sync because progress only moved ${Math.max(0, playbackSeconds - lastSyncedProgressRef.current)}s.`;
+  }
+
+  if (isProgressSyncInFlightRef.current) {
+    if (force) {
+      let elapsedMs = 0;
+      while (isProgressSyncInFlightRef.current && elapsedMs < PROGRESS_SYNC_FORCE_WAIT_MAX_MS) {
+        await wait(PROGRESS_SYNC_FORCE_WAIT_STEP_MS);
+        elapsedMs += PROGRESS_SYNC_FORCE_WAIT_STEP_MS;
+      }
+    }
   }
 
   if (isProgressSyncInFlightRef.current) {

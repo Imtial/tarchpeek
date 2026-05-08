@@ -7,10 +7,11 @@ import {
   videoRetrieve,
   videoProgressCreate,
   videoRetrieve2,
+  watchedCreate,
 } from '../api/generated/endpoints/tubearchivist';
 import { searchRetrieve } from '../api/search';
 import { setApiBaseUrl } from '../api/fetcher';
-import type { Video, VideoProgressUpdate } from '../api/generated/models';
+import type { Video, VideoProgressUpdate, WatchedData } from '../api/generated/models';
 import type { SearchFulltextResult, SearchQueryType } from '../api/search';
 
 type VideoSource = {
@@ -27,6 +28,7 @@ type VideoDetails = {
   viewCount: number;
   channelName: string;
   channelLogoUrl: string | null;
+  watched: boolean;
   published: string;
   description: string;
   source: VideoSource;
@@ -47,6 +49,7 @@ type TubeArchivistClient = {
   fetchPlaylistDetail: (playlistId: string) => Promise<PlaylistDetail>;
   searchArchive: (query: string) => Promise<SearchResultsPage>;
   postProgressCheckpoint: (videoId: string, position: number) => Promise<void>;
+  setWatchedState: (videoId: string, isWatched: boolean) => Promise<void>;
 };
 
 type ContinueWatchingItem = {
@@ -54,6 +57,7 @@ type ContinueWatchingItem = {
   title: string;
   published: string;
   channelName: string;
+  watched: boolean;
   thumbnailUrl: string;
   resumePositionSeconds: number;
   durationSeconds: number;
@@ -201,6 +205,7 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
         channelLogoUrl: video.channel?.channel_thumb_url
           ? new URL(video.channel.channel_thumb_url, connection.serverUrl).toString()
           : null,
+        watched: video.player.watched ?? false,
         published: video.published,
         description: video.description ?? 'No description available.',
         source: {
@@ -220,6 +225,17 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
       });
     }
 
+    async function setWatchedState(videoId: string, isWatched: boolean) {
+      const body: WatchedData = {
+        id: videoId,
+        is_watched: isWatched,
+      };
+
+      await watchedCreate(body, {
+        headers: authHeaders(),
+      });
+    }
+
     function mapVideoToContinueWatchingItem(video: Video): ContinueWatchingItem {
       const resolvedThumbnailUrl = new URL(video.vid_thumb_url, connection.serverUrl).toString();
       return {
@@ -227,6 +243,7 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
         title: video.title,
         published: video.published,
         channelName: video.channel?.channel_name ?? 'Unknown channel',
+        watched: video.player.watched ?? false,
         thumbnailUrl: resolvedThumbnailUrl,
         resumePositionSeconds: video.player.position ?? 0,
         durationSeconds: video.player.duration ?? 0,
@@ -394,6 +411,7 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
       fetchPlaylistDetail,
       searchArchive,
       postProgressCheckpoint,
+      setWatchedState,
     };
   }, [connection]);
 }
