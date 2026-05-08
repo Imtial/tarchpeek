@@ -69,6 +69,7 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
   const [isWatched, setIsWatched] = useState(videoDetails.watched);
   const [isUpdatingWatchedState, setIsUpdatingWatchedState] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [hasExpandableDescription, setHasExpandableDescription] = useState(false);
   const [focusedActionId, setFocusedActionId] = useState<string | null>(null);
   const latestPlaybackTimeRef = useRef(0);
   const lastSyncedProgressRef = useRef(0);
@@ -331,7 +332,14 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
               </Text>
             </ScrollView>
           ) : (
-            <Text numberOfLines={COLLAPSED_DESCRIPTION_LINES} style={[styles.videoMeta, { color: theme.colors.textPrimary }]}>
+            <Text
+              numberOfLines={COLLAPSED_DESCRIPTION_LINES}
+              onTextLayout={event => {
+                setHasExpandableDescription(
+                  event.nativeEvent.lines.length > COLLAPSED_DESCRIPTION_LINES,
+                );
+              }}
+              style={[styles.videoMeta, { color: theme.colors.textPrimary }]}>
               {videoDetails.description}
             </Text>
           )}
@@ -359,7 +367,7 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
               <Text style={[styles.seeMoreLabel, { color: theme.colors.textSecondary }]}>See less...</Text>
             </Pressable>
           ) : null}
-          {!isDescriptionExpanded ? (
+          {!isDescriptionExpanded && hasExpandableDescription ? (
             <Pressable
               accessibilityRole="button"
               focusable
