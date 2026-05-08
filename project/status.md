@@ -39,11 +39,11 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Immediate Next Steps
 
-1. Implement video detail screen as the explicit pre-play context surface
-2. Harden full-screen player flow with reliable resume-from-progress behavior
-3. Implement watched/unwatched action path and reflect state back into browsing surfaces
-4. Add playlist next/previous playback navigation where data is available
-5. Run Android + Android TV playback session validation for end-to-end browse-to-play reliability
+1. Bundle A: Player-as-context foundation (direct browse-to-player, metadata in player UI, TV focusable regions)
+2. Bundle B: Resume and progress hardening (consistent resume start + checkpoint stability)
+3. Bundle C: In-player watched/unwatched action path with browse-surface reflection
+4. Bundle D: Playlist previous/next navigation inside player when playlist context exists
+5. Bundle E: Android + Android TV playback validation pass and risk notes
 
 ## Phase Summary
 

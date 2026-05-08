@@ -1,8 +1,8 @@
 # Phase 04: Playback MVP
 
-Status: `planned`
+Status: `in_progress`
 Owner: `user + OpenCode`
-Last updated: `2026-04-22`
+Last updated: `2026-05-08`
 
 ## Goal
 
@@ -10,8 +10,9 @@ Deliver a dependable viewing flow from content selection to completed playback.
 
 ## Scope
 
-- Video detail screen
+- Direct browse-to-player entry (no intermediate detail screen)
 - Full-screen player
+- Player-as-context metadata presentation (YouTube-style context in player screen)
 - Resume playback from saved progress
 - Mark watched/unwatched
 - Playlist next/previous navigation where available
@@ -20,7 +21,7 @@ Deliver a dependable viewing flow from content selection to completed playback.
 
 ## Deliverables
 
-- End-to-end browse-to-play flow
+- End-to-end direct browse-to-play flow
 - Stable progress sync behavior
 - Watch-state updates reflected back into browsing surfaces
 
@@ -34,3 +35,34 @@ Deliver a dependable viewing flow from content selection to completed playback.
 
 - If subtitle support is unreliable, ship without it and document the limitation.
 - Do not let optional player features delay the core playback path.
+
+## Unit-of-Work TODO Bundles
+
+### Bundle A: Player-as-context foundation
+
+- [ ] Route all browsing video taps directly to player with consistent player-entry params.
+- [ ] Expand player metadata context surface (title, channel, publish/duration context, description preview) in-player.
+- [ ] Ensure Android TV focusable regions are explicit and usable in player metadata/control areas.
+
+### Bundle B: Resume and progress hardening
+
+- [ ] Normalize player start position from server resume metadata across all player entry paths.
+- [ ] Harden checkpoint persistence across pause/background/back/end flows with one consistent strategy.
+- [ ] Validate repeated open/close/reopen cycles preserve expected resume behavior.
+
+### Bundle C: Watched/unwatched action and browse reflection
+
+- [ ] Add explicit watched/unwatched action in player context actions.
+- [ ] Persist watched state via backend endpoint.
+- [ ] Reflect watched-state changes back into browsing surfaces after returning from player.
+
+### Bundle D: Playlist previous/next navigation in player
+
+- [ ] Use playlist navigation data when playback starts from playlist context.
+- [ ] Add explicit previous/next controls in player and handle unavailable edge states.
+- [ ] Keep non-playlist playback behavior unchanged.
+
+### Bundle E: Android + Android TV playback validation
+
+- [ ] Run manual playback sessions on Android and Android TV targets for direct-open, resume, watch-toggle, and playlist-nav flows.
+- [ ] Record pass/fail outcomes and remaining known risks in project tracking.
