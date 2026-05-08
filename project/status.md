@@ -62,6 +62,12 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
   - Implemented: conditional refetch-based reflection path on player close (single source of truth)
   - Implemented: unified video-list/card container shared by Home/Continue/Search
   - Implemented: browse-card metadata upgrade (channel logo + channel name + human-friendly view count)
+- Bundle D: in_progress
+  - Implemented: playlist list + playlist detail layout correction pass
+  - Implemented: preserve browsing tab/stack state when exiting player
+  - Implemented: responsive single-press player back exit (non-blocking final progress sync)
+  - Implemented: centralized app constants in single namespaced module (`TARCHPEEK_CONSTANTS`)
+  - Pending: in-player playlist previous/next navigation when playlist context exists
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary

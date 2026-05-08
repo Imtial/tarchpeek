@@ -1,10 +1,11 @@
 import type { RefObject } from 'react';
+import { TARCHPEEK_CONSTANTS } from '../constants/tarchpeekConstants';
 import type { TubeArchivistClient } from '../services/tubeArchivist';
 
-const PROGRESS_SYNC_INTERVAL_SECONDS = 5;
-const PROGRESS_SYNC_MIN_DELTA_SECONDS = 5;
-const PROGRESS_SYNC_FORCE_WAIT_STEP_MS = 100;
-const PROGRESS_SYNC_FORCE_WAIT_MAX_MS = 1500;
+const PROGRESS_SYNC_INTERVAL_SECONDS = TARCHPEEK_CONSTANTS.playbackProgress.syncIntervalSeconds;
+const PROGRESS_SYNC_MIN_DELTA_SECONDS = TARCHPEEK_CONSTANTS.playbackProgress.minDeltaSeconds;
+const PROGRESS_SYNC_FORCE_WAIT_STEP_MS = TARCHPEEK_CONSTANTS.playbackProgress.forceWaitStepMs;
+const PROGRESS_SYNC_FORCE_WAIT_MAX_MS = TARCHPEEK_CONSTANTS.playbackProgress.forceWaitMaxMs;
 
 function wait(ms: number) {
   return new Promise<void>(resolve => {

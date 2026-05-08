@@ -1,8 +1,9 @@
 import { createAsyncStorage } from '@react-native-async-storage/async-storage';
+import { TARCHPEEK_CONSTANTS } from '../constants/tarchpeekConstants';
 
-const SERVER_URL_KEY = 'serverUrl';
-const API_TOKEN_KEY = 'apiToken';
-const VIDEO_INPUT_KEY = 'testVideoInput';
+const SERVER_URL_KEY = TARCHPEEK_CONSTANTS.storageKeys.serverUrl;
+const API_TOKEN_KEY = TARCHPEEK_CONSTANTS.storageKeys.apiToken;
+const VIDEO_INPUT_KEY = TARCHPEEK_CONSTANTS.storageKeys.testVideoInput;
 
 const storage = createAsyncStorage('tarchpeek');
 

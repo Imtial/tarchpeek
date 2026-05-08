@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
+import { TARCHPEEK_CONSTANTS } from '../../constants/tarchpeekConstants';
 import { useTheme } from '../../design/ThemeProvider';
 import type { PlaylistListItem, TubeArchivistClient } from '../../services/tubeArchivist';
 import { radii, spacing } from '../../design/tokens';
 import { BrowsingScreenShell } from './BrowsingScreenShell';
 
-const PLAYLISTS_PAGE_WINDOW_SIZE = 3;
-const PLAYLISTS_DRAW_DISTANCE = 300;
+const PLAYLISTS_PAGE_WINDOW_SIZE = TARCHPEEK_CONSTANTS.browsing.playlistsPageWindowSize;
+const PLAYLISTS_DRAW_DISTANCE = TARCHPEEK_CONSTANTS.browsing.playlistsDrawDistance;
 
 type PlaylistsScreenProps = {
   client: TubeArchivistClient;

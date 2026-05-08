@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { TARCHPEEK_CONSTANTS } from '../../constants/tarchpeekConstants';
 import { useTheme } from '../../design/ThemeProvider';
 import type { ContinueWatchingItem } from '../../services/tubeArchivist';
 import { radii, spacing } from '../../design/tokens';
 
-const LIST_DRAW_DISTANCE = 300;
-const NEW_CHIP_WINDOW_HOURS = 60;
-const NEW_CHIP_WINDOW_SECONDS = NEW_CHIP_WINDOW_HOURS * 60 * 60;
+const LIST_DRAW_DISTANCE = TARCHPEEK_CONSTANTS.browsing.videoListDrawDistance;
+const NEW_CHIP_WINDOW_HOURS = TARCHPEEK_CONSTANTS.browsing.newChipWindowHours;
+const NEW_CHIP_WINDOW_SECONDS = NEW_CHIP_WINDOW_HOURS * TARCHPEEK_CONSTANTS.browsing.secondsPerHour;
 
 type VideoResultsListProps = {
   items: ContinueWatchingItem[];

@@ -3,6 +3,7 @@ import { BackHandler, Image, Pressable, ScrollView, StyleSheet, Text, View } fro
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEvent, useVideoPlayer, VideoView } from 'react-native-video';
+import { TARCHPEEK_CONSTANTS } from '../constants/tarchpeekConstants';
 import { useTheme } from '../design/ThemeProvider';
 import type { TubeArchivistClient, VideoDetails } from '../services/tubeArchivist';
 import {
@@ -16,9 +17,9 @@ type PlayerScreenProps = {
   videoDetails: VideoDetails;
 };
 
-const COLLAPSED_DESCRIPTION_LINES = 4;
-const RESUME_MIN_SECONDS = 3;
-const RESUME_END_BUFFER_SECONDS = 3;
+const COLLAPSED_DESCRIPTION_LINES = TARCHPEEK_CONSTANTS.player.collapsedDescriptionLines;
+const RESUME_MIN_SECONDS = TARCHPEEK_CONSTANTS.player.resumeMinSeconds;
+const RESUME_END_BUFFER_SECONDS = TARCHPEEK_CONSTANTS.player.resumeEndBufferSeconds;
 
 function formatViewCount(viewCount: number) {
   const compactLabel = new Intl.NumberFormat('en-US', {
@@ -209,7 +210,9 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
       isPlayingRef.current = false;
     }
     const watchedSessionSeconds = Math.floor(watchedSessionMsRef.current / 1000);
-    const shouldRefreshBrowse = watchedSessionSeconds >= 180 || didWatchedStateChangeRef.current;
+    const shouldRefreshBrowse =
+      watchedSessionSeconds >= TARCHPEEK_CONSTANTS.player.browseRefreshWatchThresholdSeconds ||
+      didWatchedStateChangeRef.current;
     onBack({ resultMessage: 'Playback closed.', shouldRefreshBrowse });
 
     syncPlaybackProgressCheckpoint({

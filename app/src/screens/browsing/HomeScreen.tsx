@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
+import { TARCHPEEK_CONSTANTS } from '../../constants/tarchpeekConstants';
 import type { ContinueWatchingItem, TubeArchivistClient } from '../../services/tubeArchivist';
 import { BrowsingScreenShell } from './BrowsingScreenShell';
 import { VideoResultsList } from './VideoResultsList';
 
-const HOME_PAGE_WINDOW_SIZE = 3;
+const HOME_PAGE_WINDOW_SIZE = TARCHPEEK_CONSTANTS.browsing.homePageWindowSize;
 
 type HomeScreenProps = {
   browseRefreshKey: number;
