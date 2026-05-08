@@ -30,6 +30,7 @@ type VideoDetails = {
   channelLogoUrl: string | null;
   watched: boolean;
   published: string;
+  dateDownloaded: number;
   description: string;
   source: VideoSource;
 };
@@ -56,6 +57,7 @@ type ContinueWatchingItem = {
   videoId: string;
   title: string;
   published: string;
+  dateDownloaded: number;
   channelName: string;
   channelLogoUrl: string | null;
   viewCount: number;
@@ -129,6 +131,7 @@ type PlaylistVideoEntry = {
   channelLogoUrl: string | null;
   viewCount: number;
   watched: boolean;
+  dateDownloaded: number;
   resumePositionSeconds: number;
   durationSeconds: number;
   durationLabel: string;
@@ -221,6 +224,7 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
           : null,
         watched: video.player.watched ?? false,
         published: video.published,
+        dateDownloaded: video.date_downloaded ?? 0,
         description: video.description ?? 'No description available.',
         source: {
           uri: resolvedMediaUrl,
@@ -256,6 +260,7 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
         videoId: video.youtube_id,
         title: video.title,
         published: video.published,
+        dateDownloaded: video.date_downloaded ?? 0,
         channelName: video.channel?.channel_name ?? 'Unknown channel',
         channelLogoUrl: resolveUrl(video.channel?.channel_thumb_url ?? null),
         viewCount: video.stats.view_count ?? 0,
@@ -395,6 +400,7 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
             channelLogoUrl: resolveUrl(video.channel?.channel_thumb_url ?? null),
             viewCount: video.stats.view_count ?? 0,
             watched: video.player.watched ?? false,
+            dateDownloaded: video.date_downloaded ?? 0,
             resumePositionSeconds: video.player.position ?? 0,
             durationSeconds: video.player.duration ?? 0,
             durationLabel: video.player.duration_str,
@@ -417,9 +423,19 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
 
     async function searchArchive(query: string): Promise<SearchResultsPage> {
       const response = await searchRetrieve(query, { headers: authHeaders() });
+      const hydratedSearchVideos = await Promise.all(
+        response.data.results.video_results.map(async video => {
+          try {
+            const detailResponse = await videoRetrieve2(video.youtube_id, { headers: authHeaders() });
+            return mapVideoToContinueWatchingItem(detailResponse.data);
+          } catch {
+            return mapVideoToContinueWatchingItem(video);
+          }
+        }),
+      );
       return {
         queryType: response.data.queryType,
-        videoResults: response.data.results.video_results.map(mapVideoToContinueWatchingItem),
+        videoResults: hydratedSearchVideos,
         channelResults: response.data.results.channel_results.map(channel => ({
           channelId: channel.channel_id,
           channelName: channel.channel_name,

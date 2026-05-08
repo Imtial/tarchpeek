@@ -76,6 +76,7 @@ function PlaylistDetailScreen({ playlistId, client, onOpenVideo }: PlaylistDetai
     videoId: entry.videoId,
     title: entry.title,
     published: '',
+    dateDownloaded: entry.dateDownloaded,
     channelName: entry.channelName,
     channelLogoUrl: entry.channelLogoUrl,
     viewCount: entry.viewCount,

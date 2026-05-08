@@ -6,6 +6,8 @@ import type { ContinueWatchingItem } from '../../services/tubeArchivist';
 import { radii, spacing } from '../../design/tokens';
 
 const LIST_DRAW_DISTANCE = 300;
+const NEW_CHIP_WINDOW_HOURS = 60;
+const NEW_CHIP_WINDOW_SECONDS = NEW_CHIP_WINDOW_HOURS * 60 * 60;
 
 type VideoResultsListProps = {
   items: ContinueWatchingItem[];
@@ -22,6 +24,15 @@ function formatViewCount(viewCount: number) {
     notation: 'compact',
     maximumFractionDigits: 1,
   }).format(Math.max(0, viewCount));
+}
+
+function isRecentlyAdded(dateDownloaded: number) {
+  if (!dateDownloaded || dateDownloaded <= 0) {
+    return false;
+  }
+
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  return nowSeconds - dateDownloaded <= NEW_CHIP_WINDOW_SECONDS;
 }
 
 function VideoResultsList({
@@ -51,7 +62,8 @@ function VideoResultsList({
     const duration = Math.max(1, item.durationSeconds);
     const progressRatio = Math.max(0, Math.min(1, item.resumePositionSeconds / duration));
     const progressPercent = Math.round(progressRatio * 100);
-    const isNew = item.resumePositionSeconds <= 0;
+    const isNew = isRecentlyAdded(item.dateDownloaded);
+    const hasContinueProgress = item.resumePositionSeconds > 0;
 
     return (
       <View style={styles.thumbnailOverlay}>
@@ -60,10 +72,12 @@ function VideoResultsList({
             <View style={[styles.badgeChip, { backgroundColor: colors.accent }]}>
               <Text style={[styles.badgeLabel, { color: colors.buttonLabel }]}>New</Text>
             </View>
-          ) : (
+          ) : hasContinueProgress ? (
             <View style={[styles.badgeChip, { backgroundColor: colors.surfaceBackground }]}>
               <Text style={[styles.badgeLabel, { color: colors.textPrimary }]}>{`${progressPercent}%`}</Text>
             </View>
+          ) : (
+            <View style={styles.badgeChipPlaceholder} />
           )}
           <View style={styles.rightChips}>
             {item.watched ? (
@@ -76,9 +90,11 @@ function VideoResultsList({
             </View>
           </View>
         </View>
-        <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
-          <View style={[styles.progressFill, { backgroundColor: colors.accent, width: `${progressPercent}%` }]} />
-        </View>
+        {hasContinueProgress ? (
+          <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
+            <View style={[styles.progressFill, { backgroundColor: colors.accent, width: `${progressPercent}%` }]} />
+          </View>
+        ) : null}
       </View>
     );
   }
@@ -250,6 +266,10 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
+  },
+  badgeChipPlaceholder: {
+    minHeight: 18,
+    minWidth: 28,
   },
   watchedChip: {
     borderRadius: 999,
