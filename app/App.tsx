@@ -1,5 +1,7 @@
 import {
+  StyleSheet,
   StatusBar,
+  View,
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAppContentController } from './src/app/useAppContentController';
@@ -55,18 +57,29 @@ function AppContent() {
   } = useAppContentController();
 
   if (videoDetails) {
-    return (
-      <PlayerScreen
-        client={client}
-        key={videoDetails.videoId}
-        onBack={closePlayer}
-        videoDetails={videoDetails}
-      />
-    );
+    if (!hasConnection) {
+      return (
+        <PlayerScreen
+          client={client}
+          key={videoDetails.videoId}
+          onBack={closePlayer}
+          videoDetails={videoDetails}
+        />
+      );
+    }
   }
 
   if (hasConnection) {
-    return <BrowsingTabs browseRefreshKey={browseRefreshKey} client={client} onOpenVideo={openVideoById} />;
+    return (
+      <View style={styles.connectedRoot}>
+        <BrowsingTabs browseRefreshKey={browseRefreshKey} client={client} onOpenVideo={openVideoById} />
+        {videoDetails ? (
+          <View style={styles.playerOverlay}>
+            <PlayerScreen client={client} key={videoDetails.videoId} onBack={closePlayer} videoDetails={videoDetails} />
+          </View>
+        ) : null}
+      </View>
+    );
   }
 
   return (
@@ -92,5 +105,14 @@ function AppContent() {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  connectedRoot: {
+    flex: 1,
+  },
+  playerOverlay: {
+    ...StyleSheet.absoluteFill,
+  },
+});
 
 export default App;

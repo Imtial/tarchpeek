@@ -209,28 +209,19 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
     }
     const watchedSessionSeconds = Math.floor(watchedSessionMsRef.current / 1000);
     const shouldRefreshBrowse = watchedSessionSeconds >= 180 || didWatchedStateChangeRef.current;
+    onBack({ resultMessage: 'Playback closed.', shouldRefreshBrowse });
 
-    let resultMessage = 'Playback closed.';
-
-    try {
-      resultMessage = await syncPlaybackProgressCheckpoint({
-        client,
-        force: true,
-        isProgressSyncInFlightRef,
-        lastSyncedProgressRef,
-        latestPlaybackTimeRef,
-        reasonLabel: 'exit',
-        setPlaybackStatus,
-        shouldUpdateStatus: true,
-        videoId: videoDetails.videoId,
-      });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
-      resultMessage = `Progress sync failed: ${errorMessage}`;
-      setPlaybackStatus(resultMessage);
-    } finally {
-      onBack({ resultMessage, shouldRefreshBrowse });
-    }
+    syncPlaybackProgressCheckpoint({
+      client,
+      force: true,
+      isProgressSyncInFlightRef,
+      lastSyncedProgressRef,
+      latestPlaybackTimeRef,
+      reasonLabel: 'exit',
+      setPlaybackStatus,
+      shouldUpdateStatus: false,
+      videoId: videoDetails.videoId,
+    }).catch(() => undefined);
   }
 
   useEffect(() => {
