@@ -2,7 +2,7 @@
 
 Status: `in_progress`
 Current phase: `Phase 04 - Playback MVP`
-Last updated: `2026-05-08`
+Last updated: `2026-05-22`
 
 ## Product Summary
 
@@ -49,8 +49,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
      - video count
      - playlist title
      - playlist video list container in server-provided order
-2. Bundle D (next): In-player playlist previous/next navigation when playlist context exists
-3. Bundle E: Android + Android TV playback validation pass and risk notes
+2. Bundle E: Android + Android TV playback validation pass and risk notes
 
 ## Bundle Progress Notes
 
@@ -67,7 +66,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
   - Implemented: preserve browsing tab/stack state when exiting player
   - Implemented: responsive single-press player back exit (non-blocking final progress sync)
   - Implemented: centralized app constants in single namespaced module (`TARCHPEEK_CONSTANTS`)
-  - Pending: in-player playlist previous/next navigation when playlist context exists
+  - Implemented: autoplay next-in-queue on playback end when queue context exists (end-of-queue is no-op)
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary

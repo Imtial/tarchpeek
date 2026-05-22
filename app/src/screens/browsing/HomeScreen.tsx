@@ -9,7 +9,7 @@ const HOME_PAGE_WINDOW_SIZE = TARCHPEEK_CONSTANTS.browsing.homePageWindowSize;
 type HomeScreenProps = {
   browseRefreshKey: number;
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string) => Promise<void>;
+  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
 };
 
 type HomePageChunk = {

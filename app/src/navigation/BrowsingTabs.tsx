@@ -51,12 +51,12 @@ function buildTabBarIcon(routeName: keyof BrowsingTabParamList) {
 type BrowsingTabsProps = {
   browseRefreshKey: number;
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string) => Promise<void>;
+  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
 };
 
 type VideoOpenProps = {
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string) => Promise<void>;
+  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
 };
 
 function HomeTabNavigator({ browseRefreshKey, client, onOpenVideo }: BrowsingTabsProps) {

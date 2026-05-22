@@ -42,6 +42,7 @@ function AppContent() {
     isHydrating,
     isSaving,
     openVideoById,
+    playNextInQueue,
     saveConnection,
     serverUrl,
     setApiToken,
@@ -58,6 +59,7 @@ function AppContent() {
           client={client}
           key={videoDetails.videoId}
           onBack={closePlayer}
+          onPlayNextInQueue={playNextInQueue}
           videoDetails={videoDetails}
         />
       );
@@ -70,7 +72,13 @@ function AppContent() {
         <BrowsingTabs browseRefreshKey={browseRefreshKey} client={client} onOpenVideo={openVideoById} />
         {videoDetails ? (
           <View style={styles.playerOverlay}>
-            <PlayerScreen client={client} key={videoDetails.videoId} onBack={closePlayer} videoDetails={videoDetails} />
+            <PlayerScreen
+              client={client}
+              key={videoDetails.videoId}
+              onBack={closePlayer}
+              onPlayNextInQueue={playNextInQueue}
+              videoDetails={videoDetails}
+            />
           </View>
         ) : null}
       </View>

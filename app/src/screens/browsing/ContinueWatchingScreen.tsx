@@ -6,7 +6,7 @@ import { VideoResultsList } from './VideoResultsList';
 type ContinueWatchingScreenProps = {
   browseRefreshKey: number;
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string) => Promise<void>;
+  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
 };
 
 function sortWatchedLast(items: ContinueWatchingItem[]) {

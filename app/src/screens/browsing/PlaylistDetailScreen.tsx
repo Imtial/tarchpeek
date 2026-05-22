@@ -9,7 +9,7 @@ import { VideoResultsList } from './VideoResultsList';
 type PlaylistDetailScreenProps = {
   playlistId: string;
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string) => Promise<void>;
+  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
 };
 
 function PlaylistDetailScreen({ playlistId, client, onOpenVideo }: PlaylistDetailScreenProps) {

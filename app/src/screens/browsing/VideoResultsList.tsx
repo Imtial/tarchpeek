@@ -14,7 +14,7 @@ type VideoResultsListProps = {
   items: ContinueWatchingItem[];
   isLoading: boolean;
   loadingCount: number;
-  onOpenVideo: (videoId: string) => Promise<void>;
+  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
   hasNextPage?: boolean;
   isLoadingMore?: boolean;
   onLoadMore?: () => Promise<void>;
@@ -52,8 +52,16 @@ function VideoResultsList({
 
   async function handleOpenVideo(videoId: string) {
     setActiveVideoId(videoId);
+    const currentIndex = items.findIndex(item => item.videoId === videoId);
+    const queueContext =
+      currentIndex >= 0
+        ? {
+            videoIds: items.map(item => item.videoId),
+            currentIndex,
+          }
+        : undefined;
     try {
-      await onOpenVideo(videoId);
+      await onOpenVideo(videoId, queueContext);
     } finally {
       setActiveVideoId(null);
     }

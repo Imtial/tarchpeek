@@ -3,6 +3,10 @@ import { useTubeArchivistClient, type VideoDetails } from '../services/tubeArchi
 import { loadStoredConnection, saveStoredConnection } from '../storage/connectionStorage';
 
 type FieldName = 'serverUrl' | 'apiToken' | null;
+type PlaybackQueueContext = {
+  videoIds: string[];
+  currentIndex: number;
+};
 
 function useAppContentController() {
   const [serverUrl, setServerUrl] = useState('');
@@ -12,6 +16,7 @@ function useAppContentController() {
   const [isSaving, setIsSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState('Enter a TubeArchivist server and API token.');
   const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
+  const [playbackQueueContext, setPlaybackQueueContext] = useState<PlaybackQueueContext | null>(null);
   const [browseRefreshKey, setBrowseRefreshKey] = useState(0);
 
   const client = useTubeArchivistClient({
@@ -86,13 +91,43 @@ function useAppContentController() {
     }
   }
 
-  async function openVideoById(videoId: string) {
+  async function openVideoById(videoId: string, queueContext?: PlaybackQueueContext) {
     const resolvedVideoDetails = await client.fetchVideoDetails(videoId);
     setVideoDetails(resolvedVideoDetails);
+    if (
+      queueContext &&
+      queueContext.currentIndex >= 0 &&
+      queueContext.currentIndex < queueContext.videoIds.length
+    ) {
+      setPlaybackQueueContext(queueContext);
+      return;
+    }
+    setPlaybackQueueContext(null);
+  }
+
+  async function playNextInQueue() {
+    if (!playbackQueueContext) {
+      return false;
+    }
+
+    const nextIndex = playbackQueueContext.currentIndex + 1;
+    if (nextIndex >= playbackQueueContext.videoIds.length) {
+      return false;
+    }
+
+    const nextVideoId = playbackQueueContext.videoIds[nextIndex];
+    const resolvedVideoDetails = await client.fetchVideoDetails(nextVideoId);
+    setVideoDetails(resolvedVideoDetails);
+    setPlaybackQueueContext({
+      ...playbackQueueContext,
+      currentIndex: nextIndex,
+    });
+    return true;
   }
 
   function closePlayer(result: { resultMessage?: string; shouldRefreshBrowse: boolean }) {
     setVideoDetails(null);
+    setPlaybackQueueContext(null);
     if (result.shouldRefreshBrowse) {
       setBrowseRefreshKey(current => current + 1);
     }
@@ -108,6 +143,7 @@ function useAppContentController() {
     isHydrating,
     isSaving,
     openVideoById,
+    playNextInQueue,
     serverUrl,
     setApiToken,
     setFocusedField,

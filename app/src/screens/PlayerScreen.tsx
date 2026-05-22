@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BackHandler, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,6 +14,7 @@ import {
 type PlayerScreenProps = {
   client: TubeArchivistClient;
   onBack: (result: { resultMessage?: string; shouldRefreshBrowse: boolean }) => void;
+  onPlayNextInQueue: () => Promise<boolean>;
   videoDetails: VideoDetails;
 };
 
@@ -59,14 +60,14 @@ function formatPublishedDate(published: string) {
   return `${years} year${years === 1 ? '' : 's'} ago • ${absoluteLabel}`;
 }
 
-function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
+function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: PlayerScreenProps) {
   const { theme } = useTheme();
   const initialResumeSeconds = Math.max(0, Math.floor(videoDetails.resumePositionSeconds));
   const durationSeconds = Math.max(0, Math.floor(videoDetails.duration ?? 0));
   const canApplyResumePosition =
     initialResumeSeconds > RESUME_MIN_SECONDS &&
     (durationSeconds <= 0 || initialResumeSeconds < Math.max(RESUME_MIN_SECONDS + 1, durationSeconds - RESUME_END_BUFFER_SECONDS));
-  const [playbackStatus, setPlaybackStatus] = useState('Preparing player...');
+  const [, setPlaybackStatus] = useState('Preparing player...');
   const [isWatched, setIsWatched] = useState(videoDetails.watched);
   const [isUpdatingWatchedState, setIsUpdatingWatchedState] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
@@ -80,6 +81,7 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
   const isPlayingRef = useRef(false);
   const playSessionStartedAtMsRef = useRef<number | null>(null);
   const watchedSessionMsRef = useRef(0);
+  const isAdvancingAfterEndRef = useRef(false);
 
   const player = useVideoPlayer(videoDetails.source, currentPlayer => {
     currentPlayer.muted = false;
@@ -175,6 +177,11 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
   });
 
   useEvent(player, 'onEnd', () => {
+    if (isClosingRef.current || isAdvancingAfterEndRef.current) {
+      return;
+    }
+
+    isAdvancingAfterEndRef.current = true;
     syncPlaybackProgressCheckpoint({
       client,
       force: true,
@@ -185,17 +192,24 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
       setPlaybackStatus,
       shouldUpdateStatus: false,
       videoId: videoDetails.videoId,
-    }).catch(error => {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
-      setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
-    });
+    })
+      .then(async () => {
+        await onPlayNextInQueue();
+      })
+      .catch(error => {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
+        setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
+      })
+      .finally(() => {
+        isAdvancingAfterEndRef.current = false;
+      });
   });
 
   useEvent(player, 'onError', error => {
     setPlaybackStatus(`Playback failed: ${error.message}`);
   });
 
-  async function handleBackPress() {
+  const handleBackPress = useCallback(async () => {
     if (isClosingRef.current) {
       return;
     }
@@ -226,7 +240,7 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
       shouldUpdateStatus: false,
       videoId: videoDetails.videoId,
     }).catch(() => undefined);
-  }
+  }, [client, onBack, videoDetails.videoId]);
 
   useEffect(() => {
     // Needed to map Android hardware back/gesture to player exit + final progress sync.
@@ -238,7 +252,7 @@ function PlayerScreen({ client, onBack, videoDetails }: PlayerScreenProps) {
     return () => {
       backSubscription.remove();
     };
-  }, [client, onBack, videoDetails.videoId]);
+  }, [handleBackPress]);
 
   async function handleToggleWatched() {
     if (isUpdatingWatchedState) {

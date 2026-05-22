@@ -8,7 +8,7 @@ import { VideoResultsList } from './VideoResultsList';
 
 type SearchScreenProps = {
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string) => Promise<void>;
+  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
 };
 
 function SearchScreen({ client, onOpenVideo }: SearchScreenProps) {
