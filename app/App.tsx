@@ -40,19 +40,14 @@ function AppContent() {
     focusedField,
     hasConnection,
     isHydrating,
-    isLoadingVideo,
     isSaving,
-    loadTestVideo,
     openVideoById,
-    playbackStatus,
     saveConnection,
     serverUrl,
     setApiToken,
     setFocusedField,
     setServerUrl,
-    setTestVideoInput,
     statusMessage,
-    testVideoInput,
     videoDetails,
   } = useAppContentController();
 
@@ -87,21 +82,16 @@ function AppContent() {
       apiToken={apiToken}
       focusedField={focusedField}
       isHydrating={isHydrating}
-      isLoadingVideo={isLoadingVideo}
       isSaving={isSaving}
       onApiTokenChange={setApiToken}
       onBlurField={field => {
         setFocusedField(currentField => (currentField === field ? null : currentField));
       }}
       onFocusField={setFocusedField}
-      onLoadTestVideo={loadTestVideo}
       onSaveConnection={saveConnection}
       onServerUrlChange={setServerUrl}
-      onTestVideoInputChange={setTestVideoInput}
-      playbackStatus={playbackStatus}
       serverUrl={serverUrl}
       statusMessage={statusMessage}
-      testVideoInput={testVideoInput}
     />
   );
 }

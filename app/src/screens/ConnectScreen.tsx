@@ -3,25 +3,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../design/ThemeProvider';
 import { radii, spacing } from '../design/tokens';
 
-type FieldName = 'serverUrl' | 'apiToken' | 'testVideo' | null;
+type FieldName = 'serverUrl' | 'apiToken' | null;
 
 type ConnectScreenProps = {
   serverUrl: string;
   apiToken: string;
-  testVideoInput: string;
   focusedField: FieldName;
   isHydrating: boolean;
   isSaving: boolean;
-  isLoadingVideo: boolean;
   statusMessage: string;
-  playbackStatus: string;
   onServerUrlChange: (value: string) => void;
   onApiTokenChange: (value: string) => void;
-  onTestVideoInputChange: (value: string) => void;
   onFocusField: (field: FieldName) => void;
   onBlurField: (field: Exclude<FieldName, null>) => void;
   onSaveConnection: () => void;
-  onLoadTestVideo: () => void;
 };
 
 function ConnectScreen(props: ConnectScreenProps) {
@@ -31,10 +26,9 @@ function ConnectScreen(props: ConnectScreenProps) {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.pageBackground }]}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={[styles.eyebrow, { color: colors.textSecondary }]}>Phase 01 - Feasibility Spike</Text>
         <Text style={[styles.title, { color: colors.textPrimary }]}>TarchPeek</Text>
         <Text style={[styles.body, styles.bodySpacing, { color: colors.textSecondary }]}>
-          Minimal Android and Android TV shell ready for TubeArchivist connection and playback experiments.
+          Connect to your TubeArchivist server.
         </Text>
 
         <View style={[styles.card, { backgroundColor: colors.surfaceBackground }]}> 
@@ -104,37 +98,6 @@ function ConnectScreen(props: ConnectScreenProps) {
             value={props.apiToken}
           />
 
-          <Text style={[styles.label, { color: colors.textPrimary }]}>Test video URL or id</Text>
-          <TextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            editable={!props.isLoadingVideo && !props.isSaving}
-            focusable
-            onBlur={() => {
-              props.onBlurField('testVideo');
-            }}
-            onChangeText={props.onTestVideoInputChange}
-            onFocus={() => {
-              props.onFocusField('testVideo');
-            }}
-            placeholder="https://tube.example.com/video/abc123"
-            placeholderTextColor={colors.inputPlaceholder}
-            returnKeyType="done"
-            selectTextOnFocus
-            style={[
-              styles.input,
-              {
-                backgroundColor: colors.inputBackground,
-                borderColor: colors.inputBorder,
-                color: colors.textPrimary,
-              },
-              props.focusedField === 'testVideo'
-                ? [styles.inputFocused, { borderColor: colors.focusRing }]
-                : null,
-            ]}
-            value={props.testVideoInput}
-          />
-
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ busy: props.isSaving, disabled: props.isSaving }}
@@ -157,34 +120,7 @@ function ConnectScreen(props: ConnectScreenProps) {
             )}
           </Pressable>
 
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{
-              busy: props.isLoadingVideo,
-              disabled: props.isLoadingVideo || props.isSaving,
-            }}
-            disabled={props.isLoadingVideo || props.isSaving}
-            focusable
-            onPress={props.onLoadTestVideo}
-            style={({ pressed }) => [
-              styles.button,
-              {
-                backgroundColor:
-                  props.isLoadingVideo || props.isSaving
-                    ? colors.buttonDisabledBackground
-                    : colors.buttonSecondaryBackground,
-              },
-              pressed && !props.isLoadingVideo && !props.isSaving ? styles.buttonPressed : null,
-            ]}>
-            {props.isLoadingVideo ? (
-              <ActivityIndicator color="#e2e8f0" />
-            ) : (
-              <Text style={[styles.buttonText, { color: colors.buttonLabel }]}>Load test video</Text>
-            )}
-          </Pressable>
-
           <Text style={[styles.status, { color: colors.textSecondary }]}>{props.statusMessage}</Text>
-          <Text style={[styles.status, { color: colors.textSecondary }]}>{props.playbackStatus}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -202,13 +138,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.xxl,
-  },
-  eyebrow: {
-    fontSize: 14,
-    fontWeight: '600',
-    letterSpacing: 1,
-    marginBottom: spacing.md,
-    textTransform: 'uppercase',
   },
   title: {
     fontSize: 40,

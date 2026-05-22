@@ -22,7 +22,6 @@ const TARCHPEEK_CONSTANTS = {
   storageKeys: {
     serverUrl: 'serverUrl',
     apiToken: 'apiToken',
-    testVideoInput: 'testVideoInput',
   },
 } as const;
 
