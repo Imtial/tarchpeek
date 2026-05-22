@@ -2,7 +2,7 @@
 
 Status: `in_progress`
 Owner: `user + OpenCode`
-Last updated: `2026-05-08`
+Last updated: `2026-05-23`
 
 ## Goal
 
@@ -56,13 +56,16 @@ Deliver a dependable viewing flow from content selection to completed playback.
 - [ ] Persist watched state via backend endpoint.
 - [ ] Reflect watched-state changes back into browsing surfaces after returning from player.
 
-### Bundle D: Playlist previous/next navigation in player
+### Bundle D: Playlist continuity in player
 
-- [ ] Use playlist navigation data when playback starts from playlist context.
-- [ ] Add explicit previous/next controls in player and handle unavailable edge states.
-- [ ] Keep non-playlist playback behavior unchanged.
+- [x] Use list/playlist queue context when playback starts from browsing list context.
+- [x] Autoplay next video when playback reaches end and queue has a next entry.
+- [x] Keep end-of-queue behavior as no-op and preserve non-queue behavior.
 
 ### Bundle E: Android + Android TV playback validation
 
-- [ ] Run manual playback sessions on Android and Android TV targets for direct-open, resume, watch-toggle, and playlist-nav flows.
+- [ ] Run manual playback sessions on Android target for direct-open, resume, watch-toggle, and autoplay-next flows.
+- [ ] Seed local persistent TubeArchivist instance using `project/fixtures/tubearchivist-seed-videos.txt`.
+- [ ] Add local Android E2E baseline (no CI) for connect -> open -> play -> end transitions.
+- [ ] Defer Android TV validation until emulator/device reliability is restored and record the risk explicitly.
 - [ ] Record pass/fail outcomes and remaining known risks in project tracking.

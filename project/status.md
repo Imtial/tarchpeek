@@ -2,7 +2,7 @@
 
 Status: `in_progress`
 Current phase: `Phase 04 - Playback MVP`
-Last updated: `2026-05-22`
+Last updated: `2026-05-23`
 
 ## Product Summary
 
@@ -30,6 +30,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 - Local-network HTTP/self-signed setups may introduce Android networking issues
 - Android TV focus quality can regress if not validated continuously
 - TubeArchivist API is usable but not a stable third-party contract
+- Android TV emulator is currently unreliable on local macOS environment, reducing near-term TV validation confidence
 
 ## Foundation Outcomes (Phase 02)
 
@@ -49,7 +50,15 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
      - video count
      - playlist title
      - playlist video list container in server-provided order
-2. Bundle E: Android + Android TV playback validation pass and risk notes
+2. Bundle E (next): Android validation + local E2E bootstrap with persistent seeded TubeArchivist
+   - Validate resume start behavior on partially watched videos
+   - Validate progress checkpoint persistence for pause, back-exit, and playback end
+   - Validate autoplay next-in-queue behavior from Home, Continue Watching, Playlist detail, and Search
+   - Validate end-of-queue no-op behavior
+   - Use local persistent TubeArchivist volume with seed list from `project/fixtures/tubearchivist-seed-videos.txt`
+   - Add Android E2E baseline for connect -> open -> play -> end behavior (local-only, no CI)
+   - Defer Android TV focus/remote validation until emulator/device is reliable again
+   - Capture concrete regressions/risks and classify as Blocker/High/Medium
 
 ## Bundle Progress Notes
 
