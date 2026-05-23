@@ -24,6 +24,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url("$rootDir/../node_modules/detox/Detox-android") }
         maven {
             url = uri(project(":react-native-async-storage_async-storage").file("local_repo"))
         }

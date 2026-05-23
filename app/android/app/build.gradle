@@ -84,6 +84,8 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        testBuildType System.getProperty('testBuildType', 'debug')
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     signingConfigs {
         debug {
@@ -96,6 +98,13 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+        }
+        detox {
+            initWith debug
+            signingConfig signingConfigs.debug
+            applicationIdSuffix ".e2e"
+            matchingFallbacks = ['debug']
+            manifestPlaceholders = [usesCleartextTraffic: "true"]
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -116,4 +125,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    androidTestImplementation('com.wix:detox:20.50.4')
 }
