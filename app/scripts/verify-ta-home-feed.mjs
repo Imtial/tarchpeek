@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(scriptDir, '..');
-const authConfigPath = process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'e2e/.runtime/tubearchivist-auth.json');
+const authConfigPath = process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'maestro/.runtime/tubearchivist-auth.json');
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1']);
 
 function fail(message) {

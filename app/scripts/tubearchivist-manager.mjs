@@ -16,7 +16,7 @@ const taPassword = process.env.TA_PASSWORD ?? 'tarchpeek-local';
 const taApiToken = (process.env.TA_API_TOKEN ?? '').trim();
 const seedFilePath = process.env.TA_SEED_FILE ?? resolve(repoRoot, 'project/fixtures/tubearchivist-seed-videos.txt');
 const taAuthConfigPath =
-  process.env.TA_AUTH_CONFIG_FILE ?? resolve(repoRoot, 'app/e2e/.runtime/tubearchivist-auth.json');
+  process.env.TA_AUTH_CONFIG_FILE ?? resolve(repoRoot, 'app/maestro/.runtime/tubearchivist-auth.json');
 const bootPollIntervalMs = Number(process.env.TA_BOOTSTRAP_POLL_MS ?? 5000);
 const bootPollAttempts = Number(process.env.TA_BOOTSTRAP_ATTEMPTS ?? 120);
 const seedStuckWindowMs = Number(process.env.TA_SEED_STUCK_WINDOW_MS ?? 120000);

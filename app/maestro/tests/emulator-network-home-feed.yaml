@@ -1,0 +1,10 @@
+appId: com.tarchpeek.maestro
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: ../shared/connect-valid.yaml
+- extendedWaitUntil:
+    visible:
+      id: video-card-first
+    timeout: 45000

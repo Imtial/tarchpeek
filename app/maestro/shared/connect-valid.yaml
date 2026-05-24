@@ -1,0 +1,16 @@
+appId: com.tarchpeek.maestro
+---
+- assertVisible:
+    id: connect-screen
+- tapOn:
+    id: connect-server-url-input
+- inputText: ${E2E_TA_URL}
+- tapOn:
+    id: connect-api-token-input
+- inputText: ${E2E_TA_TOKEN}
+- tapOn:
+    id: connect-save-button
+- extendedWaitUntil:
+    notVisible:
+      id: connect-screen
+    timeout: 20000

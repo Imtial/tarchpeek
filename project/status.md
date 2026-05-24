@@ -2,7 +2,7 @@
 
 Status: `in_progress`
 Current phase: `Phase 04 - Playback MVP`
-Last updated: `2026-05-24`
+Last updated: `2026-05-25`
 
 ## Product Summary
 
@@ -11,10 +11,10 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Current Focus
 
-- Deliver dependable browse-to-play flow on Android and Android TV
-- Stabilize playback runtime quality and list-to-player continuity on Android + Android TV
-- Make playlist browsing surfaces fully functional and layout-correct (playlist list + playlist detail)
-- Preserve Bundle C behavior through regression checks while playlist work lands
+- Validate the core Android viewing loop end-to-end against the seeded local TubeArchivist fixture
+- Prove resume, progress sync, and queue continuity behaviors that already exist in the product
+- Capture remaining launch risks explicitly instead of expanding scope with new major features
+- Defer Android TV reliability work until emulator/device validation is practical again
 
 ## Active Constraints
 
@@ -42,6 +42,9 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 ## Immediate Next Steps
 
 1. Bundle E (active): Android validation + local E2E bootstrap with persistent seeded TubeArchivist
+   - Treat feature scope as ready for an initial launch; focus remaining work on validation and risk capture
+   - Add Android E2E coverage for connect -> open -> player visible -> back -> browse restored
+   - Use Maestro as the primary Android E2E lane; avoid test-only product hooks
    - Validate resume start behavior on partially watched videos
    - Validate progress checkpoint persistence for pause, back-exit, and playback end
    - Validate autoplay next-in-queue behavior from Home, Continue Watching, Playlist detail, and Search
@@ -70,8 +73,11 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
   - Implemented: autoplay next-in-queue on playback end when queue context exists (end-of-queue is no-op)
 - Bundle E: local Android emulator home-feed fetch path unblocked
   - Implemented: local TubeArchivist fixture now accepts both `localhost` and `10.0.2.2` host headers via `TA_HOST`
-  - Implemented: dedicated emulator-network verifier now checks the exact emulator-targeted host-header path before Detox runs
-  - Implemented: confirmed Detox `connects and loads first home video card` path renders Home items on emulator
+  - Implemented: dedicated emulator-network verifier now checks the exact emulator-targeted host-header path before Maestro runs
+  - Implemented: connect flow now requires authenticated TubeArchivist validation before entering browse surfaces
+  - Implemented: invalid-token handling now keeps the connect screen visible and shows an explicit error banner
+  - Implemented: Maestro Android lane covering bootstrap connect, home-feed render, invalid-token error, and browse-to-player-back
+  - Validation note: Maestro is now the mainline Android E2E framework for launch-critical flows
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary

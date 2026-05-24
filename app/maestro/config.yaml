@@ -1,0 +1,3 @@
+appId: com.tarchpeek.maestro
+flows:
+  - tests/*.yaml

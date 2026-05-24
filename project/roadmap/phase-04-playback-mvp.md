@@ -2,7 +2,7 @@
 
 Status: `in_progress`
 Owner: `user + OpenCode`
-Last updated: `2026-05-23`
+Last updated: `2026-05-25`
 
 ## Goal
 
@@ -35,6 +35,7 @@ Deliver a dependable viewing flow from content selection to completed playback.
 
 - If subtitle support is unreliable, ship without it and document the limitation.
 - Do not let optional player features delay the core playback path.
+- Current working assumption: feature scope is sufficient for an initial launch; remaining Phase 04 work is validation-first.
 
 ## Unit-of-Work TODO Bundles
 
@@ -64,11 +65,16 @@ Deliver a dependable viewing flow from content selection to completed playback.
 
 ### Bundle E: Android + Android TV playback validation
 
+- [x] Prove emulator-based connect flow reaches authenticated Home rendering without `adb reverse` for API traffic.
+- [x] Ensure invalid credentials stay on the connect screen with an explicit error state.
+- [x] Make Maestro the mainline Android E2E framework for current launch-critical flows without introducing test-only app behavior.
 - [ ] Run manual playback sessions on Android target for direct-open, resume, watch-toggle, and autoplay-next flows.
 - [ ] Seed local persistent TubeArchivist instance using `project/fixtures/tubearchivist-seed-videos.txt`.
 - [ ] Follow local bootstrap runbook in `project/fixtures/tubearchivist-local-bootstrap.md`.
 - [ ] Capture and enforce deterministic seed-volume restore cycle before each test run.
 - [ ] Validate one-command bootstrap path: `npm --prefix app run ta:seed:bootstrap`.
-- [ ] Add local Android E2E baseline (no CI) for connect -> open -> play -> end transitions.
+- [x] Add local Android E2E baseline for connect -> open -> player visible -> back -> browse restored.
+  Maestro passes this flow on Android.
+- [ ] Extend local Android E2E from browse/player loop into connect -> open -> play -> end transitions where seeded media makes that deterministic.
 - [ ] Defer Android TV validation until emulator/device reliability is restored and record the risk explicitly.
 - [ ] Record pass/fail outcomes and remaining known risks in project tracking.

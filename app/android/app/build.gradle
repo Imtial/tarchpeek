@@ -99,10 +99,10 @@ android {
         debug {
             signingConfig signingConfigs.debug
         }
-        detox {
+        maestro {
             initWith debug
             signingConfig signingConfigs.debug
-            applicationIdSuffix ".e2e"
+            applicationIdSuffix ".maestro"
             matchingFallbacks = ['debug']
             manifestPlaceholders = [usesCleartextTraffic: "true"]
         }
@@ -125,6 +125,4 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-    androidTestImplementation('com.wix:detox:20.50.4')
 }

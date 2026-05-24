@@ -5,10 +5,13 @@ import { spawnSync } from 'node:child_process';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(scriptDir, '..');
-const authConfigPath = process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'e2e/.runtime/tubearchivist-auth.json');
+const authConfigPath = process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'maestro/.runtime/tubearchivist-auth.json');
 const emulatorNetworkCheckScriptPath = resolve(scriptDir, 'verify-emulator-ta-network.mjs');
-const detoxConfig = process.argv[2] ?? 'android.emu.debug';
-const extraDetoxArgs = process.argv.slice(3);
+const maestroBinaryPath = process.env.MAESTRO_PATH ?? resolve(process.env.HOME ?? '', '.maestro/bin/maestro');
+const maestroApkPath = resolve(appRoot, 'android/app/build/outputs/apk/maestro/app-maestro.apk');
+const adbPath = process.env.ADB_PATH ?? `${process.env.HOME}/Library/Android/sdk/platform-tools/adb`;
+const maestroTarget = process.argv[2] ?? 'maestro';
+const extraMaestroArgs = process.argv.slice(3);
 const healthPollMs = Number(process.env.TA_E2E_HEALTH_POLL_MS ?? 3000);
 const healthPollAttempts = Number(process.env.TA_E2E_HEALTH_ATTEMPTS ?? 40);
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1']);
@@ -68,18 +71,38 @@ async function verifyToken({ baseUrl, apiToken }) {
   fail(`TubeArchivist API did not become reachable at ${baseUrl}.`);
 }
 
-function runDetox(env) {
-  const result = spawnSync('npx', ['detox', 'test', '-c', detoxConfig, '--cleanup', ...extraDetoxArgs], {
+function verifyMaestroInstalled() {
+  const result = spawnSync(maestroBinaryPath, ['--version'], {
     cwd: appRoot,
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      ...env,
-    },
-    shell: process.platform === 'win32',
+    encoding: 'utf-8',
   });
 
-  process.exit(result.status ?? 1);
+  if (result.status === 0) {
+    return;
+  }
+
+  fail(
+    `Maestro CLI is not installed at ${maestroBinaryPath}. Install it with \`curl -fsSL "https://get.maestro.mobile.dev" | bash\` or \`brew install mobile-dev-inc/tap/maestro\`.`,
+  );
+}
+
+function verifyMaestroApkBuilt() {
+  if (existsSync(maestroApkPath)) {
+    return;
+  }
+
+  fail(`Maestro APK not found at ${maestroApkPath}. Run npm --prefix app run e2e:build:android first.`);
+}
+
+function installMaestroApk() {
+  const result = spawnSync(adbPath, ['install', '-r', '-t', maestroApkPath], {
+    cwd: appRoot,
+    stdio: 'inherit',
+  });
+
+  if (result.status !== 0) {
+    process.exit(result.status ?? 1);
+  }
 }
 
 function verifyEmulatorNetwork() {
@@ -111,10 +134,41 @@ function normalizeBaseUrlForEmulator(baseUrl) {
   return baseUrl;
 }
 
+function runMaestro(env) {
+  const invalidToken = `${env.E2E_TA_TOKEN}-invalid`;
+  const result = spawnSync(
+    maestroBinaryPath,
+    [
+      'test',
+      maestroTarget,
+      '-e',
+      `E2E_TA_URL=${env.E2E_TA_URL}`,
+      '-e',
+      `E2E_TA_TOKEN=${env.E2E_TA_TOKEN}`,
+      '-e',
+      `E2E_TA_INVALID_TOKEN=${invalidToken}`,
+      ...extraMaestroArgs,
+    ],
+    {
+      cwd: appRoot,
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        ...env,
+      },
+    },
+  );
+
+  process.exit(result.status ?? 1);
+}
+
 const auth = loadAuthConfig();
 await verifyToken(auth);
+verifyMaestroInstalled();
+verifyMaestroApkBuilt();
+installMaestroApk();
 verifyEmulatorNetwork();
-runDetox({
+runMaestro({
   E2E_TA_URL: normalizeBaseUrlForEmulator(auth.baseUrl),
   E2E_TA_TOKEN: auth.apiToken,
 });

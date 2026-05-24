@@ -5,7 +5,7 @@ import { spawnSync } from 'node:child_process';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(scriptDir, '..');
-const authConfigPath = process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'e2e/.runtime/tubearchivist-auth.json');
+const authConfigPath = process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'maestro/.runtime/tubearchivist-auth.json');
 function fail(message) {
   console.error(message);
   process.exit(1);

@@ -1,0 +1,29 @@
+appId: com.tarchpeek.maestro
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: connect-screen
+- tapOn:
+    id: connect-server-url-input
+- inputText: ${E2E_TA_URL}
+- tapOn:
+    id: connect-api-token-input
+- inputText: ${E2E_TA_INVALID_TOKEN}
+- tapOn:
+    id: connect-save-button
+- extendedWaitUntil:
+    visible:
+      id: connect-error-banner
+    timeout: 15000
+- repeat:
+    times: 5
+    commands:
+      - assertVisible:
+          id: connect-screen
+      - assertVisible:
+          id: connect-error-banner
+      - assertNotVisible:
+          id: video-card-first
+      - waitForAnimationToEnd:
+          timeout: 2000
