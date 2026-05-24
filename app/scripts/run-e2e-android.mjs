@@ -8,6 +8,7 @@ const appRoot = resolve(scriptDir, '..');
 const authConfigPath = process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'e2e/.runtime/tubearchivist-auth.json');
 const emulatorNetworkCheckScriptPath = resolve(scriptDir, 'verify-emulator-ta-network.mjs');
 const detoxConfig = process.argv[2] ?? 'android.emu.debug';
+const extraDetoxArgs = process.argv.slice(3);
 const healthPollMs = Number(process.env.TA_E2E_HEALTH_POLL_MS ?? 3000);
 const healthPollAttempts = Number(process.env.TA_E2E_HEALTH_ATTEMPTS ?? 40);
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1']);
@@ -68,7 +69,7 @@ async function verifyToken({ baseUrl, apiToken }) {
 }
 
 function runDetox(env) {
-  const result = spawnSync('npx', ['detox', 'test', '-c', detoxConfig, '--cleanup'], {
+  const result = spawnSync('npx', ['detox', 'test', '-c', detoxConfig, '--cleanup', ...extraDetoxArgs], {
     cwd: appRoot,
     stdio: 'inherit',
     env: {

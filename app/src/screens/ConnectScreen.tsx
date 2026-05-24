@@ -8,6 +8,7 @@ type FieldName = 'serverUrl' | 'apiToken' | null;
 type ConnectScreenProps = {
   serverUrl: string;
   apiToken: string;
+  connectionError: string | null;
   focusedField: FieldName;
   isHydrating: boolean;
   isSaving: boolean;
@@ -22,6 +23,7 @@ type ConnectScreenProps = {
 function ConnectScreen(props: ConnectScreenProps) {
   const { theme } = useTheme();
   const { colors } = theme;
+  const hasError = Boolean(props.connectionError);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.pageBackground }]} testID="connect-screen">
@@ -56,12 +58,13 @@ function ConnectScreen(props: ConnectScreenProps) {
               styles.input,
               {
                 backgroundColor: colors.inputBackground,
-                borderColor: colors.inputBorder,
+                borderColor: hasError ? colors.errorBorder : colors.inputBorder,
                 color: colors.textPrimary,
               },
-              props.focusedField === 'serverUrl'
+              props.focusedField === 'serverUrl' && !hasError
                 ? [styles.inputFocused, { borderColor: colors.focusRing }]
                 : null,
+              hasError ? [styles.inputFocused, { borderColor: colors.errorBorder }] : null,
             ]}
             testID="connect-server-url-input"
             value={props.serverUrl}
@@ -89,16 +92,32 @@ function ConnectScreen(props: ConnectScreenProps) {
               styles.input,
               {
                 backgroundColor: colors.inputBackground,
-                borderColor: colors.inputBorder,
+                borderColor: hasError ? colors.errorBorder : colors.inputBorder,
                 color: colors.textPrimary,
               },
-              props.focusedField === 'apiToken'
+              props.focusedField === 'apiToken' && !hasError
                 ? [styles.inputFocused, { borderColor: colors.focusRing }]
                 : null,
+              hasError ? [styles.inputFocused, { borderColor: colors.errorBorder }] : null,
             ]}
             testID="connect-api-token-input"
             value={props.apiToken}
           />
+
+          {props.connectionError ? (
+            <View
+              style={[
+                styles.errorBanner,
+                {
+                  backgroundColor: colors.errorBackground,
+                  borderColor: colors.errorBorder,
+                },
+              ]}
+              testID="connect-error-banner">
+              <Text style={[styles.errorBannerLabel, { color: colors.errorText }]}>Connection failed</Text>
+              <Text style={[styles.errorBannerBody, { color: colors.errorText }]}>{props.connectionError}</Text>
+            </View>
+          ) : null}
 
           <Pressable
             accessibilityRole="button"
@@ -162,6 +181,22 @@ const styles = StyleSheet.create({
     gap: 10,
     maxWidth: 520,
     padding: 20,
+  },
+  errorBanner: {
+    borderRadius: radii.md,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  errorBannerBody: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  errorBannerLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    marginBottom: spacing.xs,
+    textTransform: 'uppercase',
   },
   label: {
     fontSize: 14,

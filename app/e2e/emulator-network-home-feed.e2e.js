@@ -23,6 +23,7 @@ describe('Emulator localhost network to TubeArchivist', () => {
       await waitFor(element(by.id('connect-screen'))).toBeVisible().withTimeout(CONNECT_SCREEN_TIMEOUT_MS);
       await element(by.id('connect-server-url-input')).replaceText(serverUrl);
       await element(by.id('connect-api-token-input')).replaceText(apiToken);
+      await element(by.id('connect-save-button')).tap();
       await waitFor(element(by.id('connect-screen'))).not.toExist().withTimeout(CONNECT_DISMISS_TIMEOUT_MS);
       await waitFor(element(by.id('video-card-first'))).toBeVisible().withTimeout(HOME_CARD_TIMEOUT_MS);
     },

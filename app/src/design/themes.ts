@@ -22,6 +22,9 @@ type AppTheme = {
     inputBorder: string;
     inputPlaceholder: string;
     focusRing: string;
+    errorBackground: string;
+    errorBorder: string;
+    errorText: string;
     videoFrameBackground: string;
   };
 };
@@ -47,6 +50,9 @@ const themes: Record<ThemeId, AppTheme> = {
       inputBorder: '#3b6363',
       inputPlaceholder: '#4DB6AC',
       focusRing: '#4DB6AC',
+      errorBackground: '#4A2F36',
+      errorBorder: '#D97786',
+      errorText: '#F8B4C0',
       videoFrameBackground: '#2E4F4F',
     },
   },
@@ -70,6 +76,9 @@ const themes: Record<ThemeId, AppTheme> = {
       inputBorder: '#9CC5BD',
       inputPlaceholder: '#2E4F4F',
       focusRing: '#2E4F4F',
+      errorBackground: '#FCE7EA',
+      errorBorder: '#D97786',
+      errorText: '#9F1239',
       videoFrameBackground: '#B4D5CE',
     },
   },

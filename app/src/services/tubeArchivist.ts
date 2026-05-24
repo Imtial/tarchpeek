@@ -4,6 +4,7 @@ import {
   channelRetrieve2,
   playlistRetrieve,
   playlistRetrieve2,
+  pingRetrieve,
   videoRetrieve,
   videoProgressCreate,
   videoRetrieve2,
@@ -41,6 +42,7 @@ type TubeArchivistConnection = {
 };
 
 type TubeArchivistClient = {
+  validateConnection: () => Promise<void>;
   fetchVideoDetails: (videoId: string) => Promise<VideoDetails>;
   fetchContinueWatching: (page?: number) => Promise<ContinueWatchingPage>;
   fetchHomeFeed: (page?: number) => Promise<HomeFeedPage>;
@@ -193,6 +195,33 @@ function getVideoId(input: string) {
   return bareIdMatch ? normalizedInput : null;
 }
 
+function normalizeConnection(connection: TubeArchivistConnection): TubeArchivistConnection {
+  return {
+    serverUrl: new URL(connection.serverUrl.trim()).toString(),
+    apiToken: connection.apiToken.trim(),
+  };
+}
+
+async function validateTubeArchivistConnection(connection: TubeArchivistConnection): Promise<void> {
+  const normalizedConnection = normalizeConnection(connection);
+  setApiBaseUrl(new URL(normalizedConnection.serverUrl));
+  const response = await pingRetrieve({
+    headers: {
+      Authorization: `Token ${normalizedConnection.apiToken}`,
+    },
+  });
+
+  if (response.status >= 200 && response.status < 300) {
+    return;
+  }
+
+  if (response.status === 401 || response.status === 403) {
+    throw new Error('TubeArchivist rejected the API token.');
+  }
+
+  throw new Error(`TubeArchivist connection check failed with HTTP ${response.status}.`);
+}
+
 function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchivistClient {
   return useMemo(() => {
     setApiBaseUrl(new URL(connection.serverUrl));
@@ -200,6 +229,10 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
       return {
         Authorization: `Token ${connection.apiToken}`,
       };
+    }
+
+    async function validateConnection() {
+      await validateTubeArchivistConnection(connection);
     }
 
     async function fetchVideoDetails(videoId: string): Promise<VideoDetails> {
@@ -454,6 +487,7 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
     }
 
     return {
+      validateConnection,
       fetchVideoDetails,
       fetchContinueWatching,
       fetchHomeFeed,
@@ -488,3 +522,4 @@ export type {
   TubeArchivistConnection,
   VideoDetails,
 };
+export { validateTubeArchivistConnection };

@@ -37,6 +37,7 @@ function AppContent() {
     browseRefreshKey,
     client,
     closePlayer,
+    connectionError,
     focusedField,
     hasConnection,
     isHydrating,
@@ -88,16 +89,21 @@ function AppContent() {
   return (
     <ConnectScreen
       apiToken={apiToken}
+      connectionError={connectionError}
       focusedField={focusedField}
       isHydrating={isHydrating}
       isSaving={isSaving}
-      onApiTokenChange={setApiToken}
+      onApiTokenChange={value => {
+        setApiToken(value);
+      }}
       onBlurField={field => {
         setFocusedField(currentField => (currentField === field ? null : currentField));
       }}
       onFocusField={setFocusedField}
       onSaveConnection={saveConnection}
-      onServerUrlChange={setServerUrl}
+      onServerUrlChange={value => {
+        setServerUrl(value);
+      }}
       serverUrl={serverUrl}
       statusMessage={statusMessage}
     />

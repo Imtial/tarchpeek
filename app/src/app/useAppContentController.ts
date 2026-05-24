@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useTubeArchivistClient, type VideoDetails } from '../services/tubeArchivist';
-import { loadStoredConnection, saveStoredConnection } from '../storage/connectionStorage';
+import {
+  useTubeArchivistClient,
+  validateTubeArchivistConnection,
+  type TubeArchivistConnection,
+  type VideoDetails,
+} from '../services/tubeArchivist';
+import { loadStoredConnection, saveStoredConnection, type StoredConnection } from '../storage/connectionStorage';
 
 type FieldName = 'serverUrl' | 'apiToken' | null;
 type PlaybackQueueContext = {
@@ -11,19 +16,26 @@ type PlaybackQueueContext = {
 function useAppContentController() {
   const [serverUrl, setServerUrl] = useState('');
   const [apiToken, setApiToken] = useState('');
+  const [activeConnection, setActiveConnection] = useState<TubeArchivistConnection | null>(null);
   const [focusedField, setFocusedField] = useState<FieldName>(null);
   const [isHydrating, setIsHydrating] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState('Enter a TubeArchivist server and API token.');
+  const [connectionError, setConnectionError] = useState<string | null>(null);
   const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
   const [playbackQueueContext, setPlaybackQueueContext] = useState<PlaybackQueueContext | null>(null);
   const [browseRefreshKey, setBrowseRefreshKey] = useState(0);
 
   const client = useTubeArchivistClient({
-    serverUrl,
-    apiToken,
+    serverUrl: activeConnection?.serverUrl ?? 'http://localhost',
+    apiToken: activeConnection?.apiToken ?? '',
   });
-  const hasConnection = Boolean(serverUrl && apiToken);
+  const hasConnection = Boolean(activeConnection);
+
+  async function activateConnection(connection: StoredConnection) {
+    await validateTubeArchivistConnection(connection);
+    setActiveConnection(connection);
+  }
 
   useEffect(() => {
     let isMounted = true;
@@ -44,8 +56,24 @@ function useAppContentController() {
           setApiToken(storedConnection.apiToken);
         }
 
-        if (storedConnection.serverUrl || storedConnection.apiToken) {
-          setStatusMessage('Loaded saved server settings for this device.');
+        if (!storedConnection.serverUrl || !storedConnection.apiToken) {
+          return;
+        }
+
+        setStatusMessage('Checking saved server settings...');
+
+        try {
+          await activateConnection(storedConnection);
+          if (isMounted) {
+            setConnectionError(null);
+            setStatusMessage('Connected using saved server settings.');
+          }
+        } catch (error) {
+          if (isMounted) {
+            const message = error instanceof Error ? error.message : 'Saved server settings could not connect.';
+            setConnectionError(message);
+            setStatusMessage(message);
+          }
         }
       } catch {
         if (isMounted) {
@@ -67,28 +95,47 @@ function useAppContentController() {
 
   async function saveConnection() {
     if (!serverUrl || !apiToken) {
+      setConnectionError(null);
       setStatusMessage('Server URL and API token are both required.');
       return;
     }
 
     setIsSaving(true);
-    setStatusMessage('Saving connection...');
+    setConnectionError(null);
+    setStatusMessage('Checking TubeArchivist connection...');
 
     try {
-      await saveStoredConnection({
+      const nextConnection = {
         serverUrl,
         apiToken,
-      });
+      };
+      await validateTubeArchivistConnection(nextConnection);
+      await saveStoredConnection(nextConnection);
 
       const storedConnection = await loadStoredConnection();
       setServerUrl(storedConnection.serverUrl);
       setApiToken(storedConnection.apiToken);
-      setStatusMessage('Saved locally.');
-    } catch {
-      setStatusMessage('Saving failed. Check local storage availability and try again.');
+      setActiveConnection(storedConnection);
+      setConnectionError(null);
+      setStatusMessage('Connection verified and saved locally.');
+    } catch (error) {
+      setActiveConnection(null);
+      const message = error instanceof Error ? error.message : 'Connection check failed.';
+      setConnectionError(message);
+      setStatusMessage(message);
     } finally {
       setIsSaving(false);
     }
+  }
+
+  function updateServerUrl(value: string) {
+    setConnectionError(null);
+    setServerUrl(value);
+  }
+
+  function updateApiToken(value: string) {
+    setConnectionError(null);
+    setApiToken(value);
   }
 
   async function openVideoById(videoId: string, queueContext?: PlaybackQueueContext) {
@@ -138,6 +185,7 @@ function useAppContentController() {
     client,
     closePlayer,
     browseRefreshKey,
+    connectionError,
     focusedField,
     hasConnection,
     isHydrating,
@@ -145,9 +193,9 @@ function useAppContentController() {
     openVideoById,
     playNextInQueue,
     serverUrl,
-    setApiToken,
+    setApiToken: updateApiToken,
     setFocusedField,
-    setServerUrl,
+    setServerUrl: updateServerUrl,
     statusMessage,
     saveConnection,
     videoDetails,
