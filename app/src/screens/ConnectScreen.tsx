@@ -24,7 +24,7 @@ function ConnectScreen(props: ConnectScreenProps) {
   const { colors } = theme;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.pageBackground }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.pageBackground }]} testID="connect-screen">
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text style={[styles.title, { color: colors.textPrimary }]}>TarchPeek</Text>
         <Text style={[styles.body, styles.bodySpacing, { color: colors.textSecondary }]}>
@@ -63,6 +63,7 @@ function ConnectScreen(props: ConnectScreenProps) {
                 ? [styles.inputFocused, { borderColor: colors.focusRing }]
                 : null,
             ]}
+            testID="connect-server-url-input"
             value={props.serverUrl}
           />
 
@@ -95,6 +96,7 @@ function ConnectScreen(props: ConnectScreenProps) {
                 ? [styles.inputFocused, { borderColor: colors.focusRing }]
                 : null,
             ]}
+            testID="connect-api-token-input"
             value={props.apiToken}
           />
 
@@ -111,8 +113,9 @@ function ConnectScreen(props: ConnectScreenProps) {
                   ? colors.buttonDisabledBackground
                   : colors.buttonPrimaryBackground,
               },
-              pressed && !props.isSaving ? styles.buttonPressed : null,
-            ]}>
+                pressed && !props.isSaving ? styles.buttonPressed : null,
+            ]}
+            testID="connect-save-button">
             {props.isSaving ? (
               <ActivityIndicator color="#e2e8f0" />
             ) : (
@@ -120,7 +123,9 @@ function ConnectScreen(props: ConnectScreenProps) {
             )}
           </Pressable>
 
-          <Text style={[styles.status, { color: colors.textSecondary }]}>{props.statusMessage}</Text>
+          <Text style={[styles.status, { color: colors.textSecondary }]} testID="connect-status-message">
+            {props.statusMessage}
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>

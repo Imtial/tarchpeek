@@ -276,7 +276,7 @@ function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: Playe
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.pageBackground }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.pageBackground }]} testID="player-screen">
       <View style={[styles.playerScreenFrame, { backgroundColor: theme.colors.videoFrameBackground }]}>
         <VideoView
           controls
@@ -284,6 +284,7 @@ function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: Playe
           resizeMode="contain"
           style={styles.playerScreenVideo}
           surfaceType="surface"
+          testID="player-video-view"
         />
       </View>
       <View style={styles.playerMetadataSection}>

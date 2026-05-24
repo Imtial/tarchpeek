@@ -2,7 +2,7 @@
 
 Status: `in_progress`
 Current phase: `Phase 04 - Playback MVP`
-Last updated: `2026-05-23`
+Last updated: `2026-05-24`
 
 ## Product Summary
 
@@ -41,21 +41,13 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Immediate Next Steps
 
-1. Bundle D (active): Playlist surfaces functional pass
-   - Remove `Subscribed/Not subscribed` text from playlist list and playlist detail
-   - Prevent destructive channel-name truncation on playlist list cards
-   - Rebuild playlist detail layout:
-     - top edge-to-edge playlist banner (no rounded corners)
-     - channel logo + channel name
-     - video count
-     - playlist title
-     - playlist video list container in server-provided order
-2. Bundle E (next): Android validation + local E2E bootstrap with persistent seeded TubeArchivist
+1. Bundle E (active): Android validation + local E2E bootstrap with persistent seeded TubeArchivist
    - Validate resume start behavior on partially watched videos
    - Validate progress checkpoint persistence for pause, back-exit, and playback end
    - Validate autoplay next-in-queue behavior from Home, Continue Watching, Playlist detail, and Search
    - Validate end-of-queue no-op behavior
    - Use local persistent TubeArchivist volume with seed list from `project/fixtures/tubearchivist-seed-videos.txt`
+   - Lock deterministic restart state by snapshotting seed volumes and restoring before each run
    - Add Android E2E baseline for connect -> open -> play -> end behavior (local-only, no CI)
    - Defer Android TV focus/remote validation until emulator/device is reliable again
    - Capture concrete regressions/risks and classify as Blocker/High/Medium
@@ -70,12 +62,16 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
   - Implemented: conditional refetch-based reflection path on player close (single source of truth)
   - Implemented: unified video-list/card container shared by Home/Continue/Search
   - Implemented: browse-card metadata upgrade (channel logo + channel name + human-friendly view count)
-- Bundle D: in_progress
+- Bundle D: implemented and approved
   - Implemented: playlist list + playlist detail layout correction pass
   - Implemented: preserve browsing tab/stack state when exiting player
   - Implemented: responsive single-press player back exit (non-blocking final progress sync)
   - Implemented: centralized app constants in single namespaced module (`TARCHPEEK_CONSTANTS`)
   - Implemented: autoplay next-in-queue on playback end when queue context exists (end-of-queue is no-op)
+- Bundle E: local Android emulator home-feed fetch path unblocked
+  - Implemented: local TubeArchivist fixture now accepts both `localhost` and `10.0.2.2` host headers via `TA_HOST`
+  - Implemented: dedicated emulator-network verifier now checks the exact emulator-targeted host-header path before Detox runs
+  - Implemented: confirmed Detox `connects and loads first home video card` path renders Home items on emulator
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary

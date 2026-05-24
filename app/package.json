@@ -9,6 +9,7 @@
     "api:generate": "orval --config ./orval.config.js",
     "start": "react-native start",
     "e2e:build:android": "detox build -c android.emu.debug",
+    "e2e:verify:emulator-network": "node scripts/verify-emulator-ta-network.mjs",
     "e2e:test:android": "node scripts/run-e2e-android.mjs android.att.debug",
     "ta:seed:bootstrap": "node scripts/tubearchivist-manager.mjs bootstrap-seed",
     "ta:seed:capture": "node scripts/tubearchivist-manager.mjs capture-seed",

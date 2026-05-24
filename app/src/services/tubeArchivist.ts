@@ -196,7 +196,6 @@ function getVideoId(input: string) {
 function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchivistClient {
   return useMemo(() => {
     setApiBaseUrl(new URL(connection.serverUrl));
-
     function authHeaders() {
       return {
         Authorization: `Token ${connection.apiToken}`,
@@ -316,7 +315,6 @@ function useTubeArchivistClient(connection: TubeArchivistConnection): TubeArchiv
         seenVideoIds.add(video.youtube_id);
         return true;
       });
-
       return {
         items: uniqueItems.slice(0, 20).map(mapVideoToContinueWatchingItem),
         currentPage: page,

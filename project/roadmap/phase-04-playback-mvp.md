@@ -66,6 +66,9 @@ Deliver a dependable viewing flow from content selection to completed playback.
 
 - [ ] Run manual playback sessions on Android target for direct-open, resume, watch-toggle, and autoplay-next flows.
 - [ ] Seed local persistent TubeArchivist instance using `project/fixtures/tubearchivist-seed-videos.txt`.
+- [ ] Follow local bootstrap runbook in `project/fixtures/tubearchivist-local-bootstrap.md`.
+- [ ] Capture and enforce deterministic seed-volume restore cycle before each test run.
+- [ ] Validate one-command bootstrap path: `npm --prefix app run ta:seed:bootstrap`.
 - [ ] Add local Android E2E baseline (no CI) for connect -> open -> play -> end transitions.
 - [ ] Defer Android TV validation until emulator/device reliability is restored and record the risk explicitly.
 - [ ] Record pass/fail outcomes and remaining known risks in project tracking.

@@ -108,7 +108,7 @@ function VideoResultsList({
     );
   }
 
-  function renderVideoCard(item: ContinueWatchingItem) {
+  function renderVideoCard(item: ContinueWatchingItem, index: number) {
     return (
       <Pressable
         accessibilityRole="button"
@@ -129,7 +129,8 @@ function VideoResultsList({
           styles.videoItem,
           { borderColor: focusedElementId === item.videoId ? colors.accent : colors.border },
           pressed ? styles.buttonPressed : null,
-        ]}>
+        ]}
+        testID={index === 0 ? 'video-card-first' : `video-card-${item.videoId}`}>
         <View style={styles.thumbnailWrap}>
           <Image source={{ uri: item.thumbnailUrl }} style={styles.thumbnailImage} />
           {renderProgress(item)}
@@ -206,7 +207,7 @@ function VideoResultsList({
         keyExtractor={item => item.videoId}
         ListFooterComponent={renderLoadMoreFooter}
         removeClippedSubviews
-        renderItem={({ item }) => renderVideoCard(item)}
+        renderItem={({ item, index }) => renderVideoCard(item, index)}
         showsVerticalScrollIndicator={false}
       />
     </View>
