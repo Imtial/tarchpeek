@@ -1,0 +1,21 @@
+appId: com.tarchpeek.maestro
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: ../shared/connect-valid.yaml
+- extendedWaitUntil:
+    visible:
+      id: ${E2E_RESUME_VIDEO_CARD_ID}
+    timeout: 45000
+- tapOn:
+    id: ${E2E_RESUME_VIDEO_CARD_ID}
+- extendedWaitUntil:
+    visible:
+      id: player-screen
+    timeout: 20000
+- back
+- extendedWaitUntil:
+    notVisible:
+      id: player-screen
+    timeout: 20000

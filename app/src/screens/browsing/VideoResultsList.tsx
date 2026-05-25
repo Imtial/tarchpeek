@@ -50,18 +50,18 @@ function VideoResultsList({
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
 
-  async function handleOpenVideo(videoId: string) {
-    setActiveVideoId(videoId);
-    const currentIndex = items.findIndex(item => item.videoId === videoId);
+  async function handleOpenVideo(item: ContinueWatchingItem) {
+    setActiveVideoId(item.videoId);
+    const currentIndex = items.findIndex(candidate => candidate.videoId === item.videoId);
     const queueContext =
       currentIndex >= 0
         ? {
-            videoIds: items.map(item => item.videoId),
+            videoIds: items.map(video => video.videoId),
             currentIndex,
           }
         : undefined;
     try {
-      await onOpenVideo(videoId, queueContext);
+      await onOpenVideo(item.videoId, queueContext);
     } finally {
       setActiveVideoId(null);
     }
@@ -121,7 +121,7 @@ function VideoResultsList({
           setFocusedElementId(item.videoId);
         }}
         onPress={() => {
-          handleOpenVideo(item.videoId).catch(() => {
+          handleOpenVideo(item).catch(() => {
             setActiveVideoId(null);
           });
         }}

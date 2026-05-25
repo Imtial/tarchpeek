@@ -36,6 +36,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 - Resume source in-app is read from `/api/video/<video_id>/` metadata, not from `GET /api/video/<video_id>/progress/` in the current environment.
 - Progress persistence is validated via `POST /api/video/<video_id>/progress/` and confirmed visible in the TubeArchivist UI.
+- Resume validation is currently blocked in the local TubeArchivist fixture: `POST /api/video/<video_id>/progress/` succeeds, but subsequent `GET /api/video/<video_id>/` and `GET /api/video/?watch=continue` responses omit `player.position`, and `GET /api/video/<video_id>/progress/` returns `405 Method "GET" not allowed.`
 - `react-native-video` v7 remains the baseline playback integration direction for this repository/runtime.
 - App root orchestration was reduced and playback/connection concerns were extracted into focused modules.
 
@@ -45,7 +46,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
    - Treat feature scope as ready for an initial launch; focus remaining work on validation and risk capture
    - Add Android E2E coverage for connect -> open -> player visible -> back -> browse restored
    - Use Maestro as the primary Android E2E lane; avoid test-only product hooks
-   - Validate resume start behavior on partially watched videos
+   - Diagnose and fix resume source before re-attempting resume E2E validation
    - Validate progress checkpoint persistence for pause, back-exit, and playback end
    - Validate autoplay next-in-queue behavior from Home, Continue Watching, Playlist detail, and Search
    - Validate end-of-queue no-op behavior
@@ -77,7 +78,9 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
   - Implemented: connect flow now requires authenticated TubeArchivist validation before entering browse surfaces
   - Implemented: invalid-token handling now keeps the connect screen visible and shows an explicit error banner
   - Implemented: Maestro Android lane covering bootstrap connect, home-feed render, invalid-token error, and browse-to-player-back
+  - Implemented: resume E2E setup now seeds deterministic local progress, verifies persisted position directly from the local Redis-backed TubeArchivist state, and resolves the actual Home card selector used by Maestro
   - Validation note: Maestro is now the mainline Android E2E framework for launch-critical flows
+  - Validation note: `npm run e2e:test:android:resume` now passes against the local seeded fixture
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary

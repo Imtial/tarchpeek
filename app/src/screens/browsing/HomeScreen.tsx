@@ -55,7 +55,7 @@ function HomeScreen({ browseRefreshKey, client, onOpenVideo }: HomeScreenProps) 
         setPageChunks([{ page: homePage.currentPage, items: homePage.items }]);
         setPage(homePage.currentPage);
         setHasNextPage(homePage.hasNextPage);
-      } catch (error) {
+      } catch {
         if (!isMounted) {
           return;
         }

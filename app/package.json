@@ -11,6 +11,7 @@
     "e2e:build:android": "cd android && ./gradlew assembleMaestro && cd ..",
     "e2e:verify:emulator-network": "node scripts/verify-emulator-ta-network.mjs",
     "e2e:test:android": "node scripts/run-maestro-android.mjs maestro",
+    "e2e:test:android:resume": "node scripts/run-maestro-resume-android.mjs",
     "ta:seed:bootstrap": "node scripts/tubearchivist-manager.mjs bootstrap-seed",
     "ta:seed:capture": "node scripts/tubearchivist-manager.mjs capture-seed",
     "ta:seed:reset-start": "node scripts/tubearchivist-manager.mjs reset-and-start",

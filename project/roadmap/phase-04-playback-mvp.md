@@ -75,6 +75,8 @@ Deliver a dependable viewing flow from content selection to completed playback.
 - [ ] Validate one-command bootstrap path: `npm --prefix app run ta:seed:bootstrap`.
 - [x] Add local Android E2E baseline for connect -> open -> player visible -> back -> browse restored.
   Maestro passes this flow on Android.
+- [x] Validate resume start behavior on a partially watched item.
+  Maestro now passes `npm run e2e:test:android:resume` against the local seeded fixture after deterministic host-side progress seeding, Redis-backed state verification, and Home-card targeting fixes. App runtime still uses `videoDetails.player.position` when present and otherwise starts at `0`.
 - [ ] Extend local Android E2E from browse/player loop into connect -> open -> play -> end transitions where seeded media makes that deterministic.
 - [ ] Defer Android TV validation until emulator/device reliability is restored and record the risk explicitly.
 - [ ] Record pass/fail outcomes and remaining known risks in project tracking.
