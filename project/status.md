@@ -2,7 +2,7 @@
 
 Status: `in_progress`
 Current phase: `Phase 04 - Playback MVP`
-Last updated: `2026-05-25`
+Last updated: `2026-05-26`
 
 ## Product Summary
 
@@ -36,7 +36,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 - Resume source in-app is read from `/api/video/<video_id>/` metadata, not from `GET /api/video/<video_id>/progress/` in the current environment.
 - Progress persistence is validated via `POST /api/video/<video_id>/progress/` and confirmed visible in the TubeArchivist UI.
-- Resume validation is currently blocked in the local TubeArchivist fixture: `POST /api/video/<video_id>/progress/` succeeds, but subsequent `GET /api/video/<video_id>/` and `GET /api/video/?watch=continue` responses omit `player.position`, and `GET /api/video/<video_id>/progress/` returns `405 Method "GET" not allowed.`
+- Local TubeArchivist resume/progress read paths are inconsistent for automation: `POST /api/video/<video_id>/progress/` succeeds, but subsequent API reads do not provide one reliable cross-endpoint readback path, so the local resume E2E verifies persisted state from the Redis-backed fixture instead.
 - `react-native-video` v7 remains the baseline playback integration direction for this repository/runtime.
 - App root orchestration was reduced and playback/connection concerns were extracted into focused modules.
 
@@ -45,14 +45,12 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 1. Bundle E (active): Android validation + local E2E bootstrap with persistent seeded TubeArchivist
    - Treat feature scope as ready for an initial launch; focus remaining work on validation and risk capture
    - Use Maestro as the primary Android E2E lane; avoid test-only product hooks
-   - Validate progress checkpoint persistence for pause, back-exit, and playback end
-   - Validate autoplay next-in-queue behavior from Home, Continue Watching, Playlist detail, and Search
-   - Validate end-of-queue no-op behavior
    - Use local persistent TubeArchivist volume with seed list from `project/fixtures/tubearchivist-seed-videos.txt`
    - Lock deterministic restart state by snapshotting seed volumes and restoring before each run
-   - Add Android E2E baseline for connect -> open -> play -> end behavior (local-only, no CI)
+   - Validate one-command bootstrap path and keep the deterministic local fixture healthy
    - Defer Android TV focus/remote validation until emulator/device is reliable again
    - Capture concrete regressions/risks and classify as Blocker/High/Medium
+   - Treat additional Android playback E2E expansions as deferred backlog work unless reprioritized
 
 ## Bundle Progress Notes
 

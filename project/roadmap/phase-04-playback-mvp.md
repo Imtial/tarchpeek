@@ -79,6 +79,5 @@ Deliver a dependable viewing flow from content selection to completed playback.
   Maestro now passes `npm run e2e:test:android:resume` against the local seeded fixture after deterministic host-side progress seeding, Redis-backed state verification, and Home-card targeting fixes. App runtime still uses `videoDetails.player.position` when present and otherwise starts at `0`.
 - [x] Track player back-navigation return-to-origin behavior for reachable browsing surfaces.
   Maestro now passes `node scripts/run-maestro-android.mjs maestro/scenarios/player-back-origin-surfaces.yaml`, covering return to `Home` and `Search` after opening player. Search submit now dismisses the keyboard so first result taps open player instead of only blurring the input.
-- [ ] Extend local Android E2E from browse/player loop into connect -> open -> play -> end transitions where seeded media makes that deterministic.
 - [ ] Defer Android TV validation until emulator/device reliability is restored and record the risk explicitly.
 - [ ] Record pass/fail outcomes and remaining known risks in project tracking.
