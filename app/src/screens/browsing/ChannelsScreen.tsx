@@ -70,7 +70,7 @@ function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
   }
 
   return (
-    <BrowsingScreenShell subtitle="" title="Channels">
+    <BrowsingScreenShell subtitle="" testID="channels-screen" title="Channels">
       {isLoading
         ? Array.from({ length: 8 }).map((_, index) => (
             <View key={`channel-skeleton-${index}`} style={[styles.row, { borderColor: colors.border }]}>

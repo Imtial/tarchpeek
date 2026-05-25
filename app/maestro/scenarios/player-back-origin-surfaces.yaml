@@ -1,0 +1,58 @@
+appId: com.tarchpeek.maestro
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: ../shared/connect-valid.yaml
+- extendedWaitUntil:
+    visible:
+      id: home-screen
+    timeout: 45000
+- extendedWaitUntil:
+    visible:
+      id: video-card-first
+    timeout: 45000
+- tapOn:
+    id: video-card-first
+- extendedWaitUntil:
+    visible:
+      id: player-screen
+    timeout: 20000
+- back
+- extendedWaitUntil:
+    notVisible:
+      id: player-screen
+    timeout: 20000
+- extendedWaitUntil:
+    visible:
+      id: home-screen
+    timeout: 20000
+- tapOn: Search
+- extendedWaitUntil:
+    visible:
+      id: search-screen
+    timeout: 20000
+- tapOn:
+    id: search-query-input
+- inputText: Nature
+- tapOn:
+    id: search-submit-button
+- extendedWaitUntil:
+    visible:
+      id: video-card-first
+    timeout: 20000
+- tapOn:
+    id: video-card-first
+- extendedWaitUntil:
+    visible:
+      id: player-screen
+    timeout: 20000
+- back
+- extendedWaitUntil:
+    notVisible:
+      id: player-screen
+    timeout: 20000
+- extendedWaitUntil:
+    visible:
+      id: search-screen
+    timeout: 20000

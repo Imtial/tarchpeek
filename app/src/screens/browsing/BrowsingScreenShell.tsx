@@ -7,14 +7,15 @@ type BrowsingScreenShellProps = {
   title?: string;
   subtitle?: string;
   children?: ReactNode;
+  testID?: string;
 };
 
-function BrowsingScreenShell({ children }: BrowsingScreenShellProps) {
+function BrowsingScreenShell({ children, testID }: BrowsingScreenShellProps) {
   const { theme } = useTheme();
   const { colors } = theme;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.pageBackground }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.pageBackground }]} testID={testID}>
       <View style={styles.content}>
         <View style={[styles.bodyCard, { backgroundColor: colors.surfaceBackground }]}>{children}</View>
       </View>

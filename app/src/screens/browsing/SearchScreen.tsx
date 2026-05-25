@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTheme } from '../../design/ThemeProvider';
 import type { SearchVideoResult, TubeArchivistClient } from '../../services/tubeArchivist';
 import { radii, spacing } from '../../design/tokens';
@@ -26,6 +26,7 @@ function SearchScreen({ client, onOpenVideo }: SearchScreenProps) {
     if (!query || isLoading) {
       return;
     }
+    Keyboard.dismiss();
     setSubmittedQuery(query);
     setIsLoading(true);
     setIsError(false);
@@ -43,7 +44,7 @@ function SearchScreen({ client, onOpenVideo }: SearchScreenProps) {
   const hasSubmittedQuery = submittedQuery.length > 0;
 
   return (
-    <BrowsingScreenShell subtitle="" title="Search">
+    <BrowsingScreenShell subtitle="" testID="search-screen" title="Search">
       <View style={styles.formWrap}>
         <TextInput
           autoCapitalize="none"
@@ -63,6 +64,7 @@ function SearchScreen({ client, onOpenVideo }: SearchScreenProps) {
               color: colors.textPrimary,
             },
           ]}
+          testID="search-query-input"
           value={queryInput}
         />
         <Pressable
@@ -87,8 +89,9 @@ function SearchScreen({ client, onOpenVideo }: SearchScreenProps) {
             },
             focusedElementId === 'search-submit' ? styles.focused : null,
             pressed && !isLoading && queryInput.trim() ? styles.pressed : null,
-          ]}>
-          <Text style={[styles.searchButtonLabel, { color: colors.buttonLabel }]}>
+          ]}
+          testID="search-submit-button">
+          <Text style={[styles.searchButtonLabel, { color: colors.buttonLabel }]}> 
             {isLoading ? 'Searching...' : 'Search'}
           </Text>
         </Pressable>

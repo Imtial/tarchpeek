@@ -170,7 +170,10 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
   }
 
   return (
-    <BrowsingScreenShell subtitle="Browse playlists with explicit entry into playlist details." title="Playlists">
+    <BrowsingScreenShell
+      subtitle="Browse playlists with explicit entry into playlist details."
+      testID="playlists-screen"
+      title="Playlists">
       {isLoading
         ? Array.from({ length: 8 }).map((_, index) => (
           <View key={`playlist-skeleton-${index}`} style={[styles.row, { borderColor: colors.border }]}>

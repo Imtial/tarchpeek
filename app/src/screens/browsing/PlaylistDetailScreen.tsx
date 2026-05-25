@@ -88,7 +88,7 @@ function PlaylistDetailScreen({ playlistId, client, onOpenVideo }: PlaylistDetai
   }));
 
   return (
-    <BrowsingScreenShell subtitle="" title={detail?.playlistName ?? 'Playlist'}>
+    <BrowsingScreenShell subtitle="" testID="playlist-detail-screen" title={detail?.playlistName ?? 'Playlist'}>
       {renderHeader()}
       <VideoResultsList isLoading={!detail} items={entryItems} loadingCount={5} onOpenVideo={onOpenVideo} />
     </BrowsingScreenShell>

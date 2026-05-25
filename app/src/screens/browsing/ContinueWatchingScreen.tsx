@@ -74,6 +74,7 @@ function ContinueWatchingScreen({ browseRefreshKey, client, onOpenVideo }: Conti
   return (
     <BrowsingScreenShell
       subtitle=""
+      testID="continue-watching-screen"
       title="Continue Watching">
       <VideoResultsList
         hasNextPage={hasNextPage}

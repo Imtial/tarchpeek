@@ -102,6 +102,7 @@ function HomeScreen({ browseRefreshKey, client, onOpenVideo }: HomeScreenProps) 
   return (
     <BrowsingScreenShell
       subtitle="Intentional retrieval with glanceable progress and newness cues."
+      testID="home-screen"
       title="Home">
       <VideoResultsList
         hasNextPage={hasNextPage}

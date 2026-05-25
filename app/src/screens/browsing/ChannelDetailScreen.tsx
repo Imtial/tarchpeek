@@ -38,7 +38,7 @@ function ChannelDetailScreen({ channelId, client }: ChannelDetailScreenProps) {
   }, [channelId, client]);
 
   return (
-    <BrowsingScreenShell subtitle="" title={detail?.channelName ?? 'Channel'}>
+    <BrowsingScreenShell subtitle="" testID="channel-detail-screen" title={detail?.channelName ?? 'Channel'}>
       {detail?.thumbnailUrl ? (
         <Image source={{ uri: detail.thumbnailUrl }} style={styles.banner} />
       ) : (

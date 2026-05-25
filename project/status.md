@@ -44,9 +44,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 1. Bundle E (active): Android validation + local E2E bootstrap with persistent seeded TubeArchivist
    - Treat feature scope as ready for an initial launch; focus remaining work on validation and risk capture
-   - Add Android E2E coverage for connect -> open -> player visible -> back -> browse restored
    - Use Maestro as the primary Android E2E lane; avoid test-only product hooks
-   - Diagnose and fix resume source before re-attempting resume E2E validation
    - Validate progress checkpoint persistence for pause, back-exit, and playback end
    - Validate autoplay next-in-queue behavior from Home, Continue Watching, Playlist detail, and Search
    - Validate end-of-queue no-op behavior
@@ -79,8 +77,11 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
   - Implemented: invalid-token handling now keeps the connect screen visible and shows an explicit error banner
   - Implemented: Maestro Android lane covering bootstrap connect, home-feed render, invalid-token error, and browse-to-player-back
   - Implemented: resume E2E setup now seeds deterministic local progress, verifies persisted position directly from the local Redis-backed TubeArchivist state, and resolves the actual Home card selector used by Maestro
+  - Implemented: screen-level browsing test anchors plus a dedicated player-back lane covering return to `Home` and `Search`
+  - Implemented: search submit now dismisses the keyboard so Android result taps reliably open player after querying
   - Validation note: Maestro is now the mainline Android E2E framework for launch-critical flows
   - Validation note: `npm run e2e:test:android:resume` now passes against the local seeded fixture
+  - Validation note: `node scripts/run-maestro-android.mjs maestro/scenarios/player-back-origin-surfaces.yaml` now passes
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary
