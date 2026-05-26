@@ -191,6 +191,10 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
     - `3A` behavior guard: watched-last ordering preserved via injected merge policy in `ContinueWatchingScreen`
     - `3A` validation: lint clean for changed files via `npx eslint src/screens/browsing/ContinueWatchingScreen.tsx src/screens/browsing/hooks/usePagedResource.ts`
     - `3A` note: package scripts do not provide a standalone TS typecheck command in current app setup; full runtime smoke validation still pending manual pass
+    - `3B` completed: migrated `app/src/screens/browsing/HomeScreen.tsx` to `usePagedResource` with existing home page-window merge semantics preserved
+    - `3B` completed: migrated `app/src/screens/browsing/ChannelsScreen.tsx` to `usePagedResource` with existing append merge semantics preserved
+    - `3B` completed: migrated `app/src/screens/browsing/PlaylistsScreen.tsx` to `usePagedResource` with existing page-window + dedupe semantics preserved
+    - `3B` validation: lint clean for changed files via `npx eslint src/screens/browsing/HomeScreen.tsx src/screens/browsing/ChannelsScreen.tsx src/screens/browsing/PlaylistsScreen.tsx src/screens/browsing/hooks/usePagedResource.ts`
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary

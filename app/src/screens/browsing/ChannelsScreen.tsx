@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../design/ThemeProvider';
 import type { ChannelListItem, TubeArchivistClient } from '../../services/tubeArchivist';
 import { radii, spacing } from '../../design/tokens';
 import { BrowsingScreenShell } from './BrowsingScreenShell';
+import { usePagedResource } from './hooks/usePagedResource';
 
 type ChannelsScreenProps = {
   client: TubeArchivistClient;
@@ -13,61 +14,17 @@ type ChannelsScreenProps = {
 function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
   const { theme } = useTheme();
   const { colors } = theme;
-  const [items, setItems] = useState<ChannelListItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [page, setPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(false);
   const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadFirstPage() {
-      setIsLoading(true);
-      try {
-        const firstPage = await client.fetchChannels(1);
-        if (!isMounted) {
-          return;
-        }
-        setItems(firstPage.items);
-        setPage(firstPage.currentPage);
-        setHasNextPage(firstPage.hasNextPage);
-      } catch {
-        if (!isMounted) {
-          return;
-        }
-        setItems([]);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadFirstPage();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [client]);
-
-  async function loadMore() {
-    if (isLoadingMore || !hasNextPage) {
-      return;
-    }
-    const nextPage = page + 1;
-    setIsLoadingMore(true);
-    try {
-      const response = await client.fetchChannels(nextPage);
-      setItems(currentItems => [...currentItems, ...response.items]);
-      setPage(response.currentPage);
-      setHasNextPage(response.hasNextPage);
-    } catch {
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }
+  const fetchPage = useCallback((page: number) => client.fetchChannels(page), [client]);
+  const mergeItems = useCallback(
+    (currentItems: ChannelListItem[], nextPageItems: ChannelListItem[]) => [...currentItems, ...nextPageItems],
+    [],
+  );
+  const { hasNextPage, isLoading, isLoadingMore, items, loadMore } = usePagedResource<ChannelListItem>({
+    fetchPage,
+    mergeItems,
+    reloadKey: client,
+  });
 
   return (
     <BrowsingScreenShell subtitle="" testID="channels-screen" title="Channels">
