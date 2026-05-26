@@ -204,6 +204,11 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
     - `3C` validation: lint clean (`npx eslint src/services/tubeArchivist.ts src/services/tubeArchivist/*.ts`)
     - `3C` validation: TS compile clean (`npx tsc --noEmit`)
     - `3C` validation: Android Maestro E2E passed (`4/4`, `3m 51s`)
+    - `3D` completed: extracted player session orchestration from `app/src/screens/PlayerScreen.tsx` into `app/src/screens/usePlayerSession.ts`
+    - `3D` behavior guard: kept playback event wiring, progress checkpoint syncing, watched toggle persistence, autoplay-next, and hardware back handling semantics unchanged
+    - `3D` validation: lint clean (`npx eslint src/screens/PlayerScreen.tsx src/screens/usePlayerSession.ts`)
+    - `3D` validation: TS compile clean (`npx tsc --noEmit`)
+    - `3D` validation: Android Maestro E2E passed (`4/4`, `2m 29s`)
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary
