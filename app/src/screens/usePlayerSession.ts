@@ -5,8 +5,10 @@ import { TARCHPEEK_CONSTANTS } from '../constants/tarchpeekConstants';
 import type { TubeArchivistClient, VideoDetails } from '../services/tubeArchivist';
 import { PROGRESS_SYNC_INTERVAL_SECONDS, syncPlaybackProgressCheckpoint } from './playbackProgress';
 import {
+  captureRotationModeContext,
   getFullscreenOrientationLock,
   lockFullscreenOrientation,
+  restoreOrientationAfterFullscreen,
   unlockFullscreenOrientation,
 } from './player/fullscreenOrientation';
 import { getWatchedSessionSeconds, startWatchSession, stopWatchSession } from './player/sessionPolicies';
@@ -42,6 +44,8 @@ function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: U
   const watchedSessionMsRef = useRef(0);
   const isAdvancingAfterEndRef = useRef(false);
   const fullscreenLockRef = useRef<ReturnType<typeof getFullscreenOrientationLock>>(null);
+  const fullscreenRotationContextRef = useRef<Awaited<ReturnType<typeof captureRotationModeContext>> | null>(null);
+  const hasHandledFullscreenExitRef = useRef(true);
 
   const syncProgress = useCallback(
     async (reasonLabel: string, force: boolean) => {
@@ -85,6 +89,14 @@ function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: U
   });
 
   const handleWillEnterFullscreen = useCallback(() => {
+    hasHandledFullscreenExitRef.current = false;
+    captureRotationModeContext()
+      .then(context => {
+        fullscreenRotationContextRef.current = context;
+      })
+      .catch(() => {
+        fullscreenRotationContextRef.current = null;
+      });
     if (fullscreenLockRef.current === null) {
       fullscreenLockRef.current = getFullscreenOrientationLock(videoDetails.streamWidth, videoDetails.streamHeight);
     }
@@ -92,14 +104,24 @@ function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: U
   }, [videoDetails.streamHeight, videoDetails.streamWidth]);
 
   const handleWillExitFullscreen = useCallback(() => {
+    if (hasHandledFullscreenExitRef.current) {
+      return;
+    }
+    hasHandledFullscreenExitRef.current = true;
     fullscreenLockRef.current = null;
-    unlockFullscreenOrientation();
+    restoreOrientationAfterFullscreen(fullscreenRotationContextRef.current);
+    fullscreenRotationContextRef.current = null;
   }, []);
 
   const handleFullscreenChange = useCallback((isFullscreen: boolean) => {
     if (!isFullscreen) {
+      if (hasHandledFullscreenExitRef.current) {
+        return;
+      }
+      hasHandledFullscreenExitRef.current = true;
       fullscreenLockRef.current = null;
-      unlockFullscreenOrientation();
+      restoreOrientationAfterFullscreen(fullscreenRotationContextRef.current);
+      fullscreenRotationContextRef.current = null;
     }
   }, []);
 
