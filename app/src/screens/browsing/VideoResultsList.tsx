@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlashList } from '@shopify/flash-list';
-import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { TARCHPEEK_CONSTANTS } from '../../constants/tarchpeekConstants';
 import { useTheme } from '../../design/ThemeProvider';
 import type { ContinueWatchingItem } from '../../services/tubeArchivist';
 import { radii, spacing } from '../../design/tokens';
+import { PagedFlashList } from './PagedFlashList';
 
 const LIST_DRAW_DISTANCE = TARCHPEEK_CONSTANTS.browsing.videoListDrawDistance;
 const NEW_CHIP_WINDOW_HOURS = TARCHPEEK_CONSTANTS.browsing.newChipWindowHours;
@@ -51,7 +51,6 @@ function VideoResultsList({
   const { colors } = theme;
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
-  const endIndicatorScale = useRef(new Animated.Value(0.92)).current;
   const queueVideoIds = useMemo(() => items.map(video => video.videoId), [items]);
   const queueIndexByVideoId = useMemo(
     () => new Map(queueVideoIds.map((videoId, index) => [videoId, index])),
@@ -74,19 +73,6 @@ function VideoResultsList({
       setActiveVideoId(null);
     }
   }, [onOpenVideo, queueIndexByVideoId, queueVideoIds]);
-
-  useEffect(() => {
-    if (hasNextPage || items.length === 0 || isLoading) {
-      return;
-    }
-    endIndicatorScale.setValue(0.92);
-    Animated.spring(endIndicatorScale, {
-      toValue: 1,
-      useNativeDriver: true,
-      bounciness: 12,
-      speed: 14,
-    }).start();
-  }, [endIndicatorScale, hasNextPage, isLoading, items.length]);
 
   function renderProgress(item: ContinueWatchingItem) {
     const duration = Math.max(1, item.durationSeconds);
@@ -134,7 +120,6 @@ function VideoResultsList({
       <Pressable
         accessibilityRole="button"
         disabled={activeVideoId === item.videoId}
-        key={item.videoId}
         onBlur={() => {
           setFocusedElementId(current => (current === item.videoId ? null : current));
         }}
@@ -156,7 +141,7 @@ function VideoResultsList({
           <Image source={{ uri: item.thumbnailUrl }} style={styles.thumbnailImage} />
           {renderProgress(item)}
         </View>
-        <Text numberOfLines={1} style={[styles.videoTitle, { color: colors.textPrimary }]}>
+        <Text numberOfLines={2} style={[styles.videoTitle, { color: colors.textPrimary }]}>
           {item.title}
         </Text>
         <View style={styles.videoMetaRow}>
@@ -166,50 +151,6 @@ function VideoResultsList({
           </Text>
           <Text style={[styles.videoMetaCount, { color: colors.textSecondary }]}>{`${formatViewCount(item.viewCount)} views`}</Text>
         </View>
-      </Pressable>
-    );
-  }
-
-  function renderLoadMoreFooter() {
-    if (!onLoadMore) {
-      return null;
-    }
-
-    if (!hasNextPage) {
-      return (
-        <Animated.View style={[styles.endOfListWrap, { transform: [{ scale: endIndicatorScale }] }]}>
-          <View style={[styles.endOfListLine, { backgroundColor: colors.border }]} />
-        </Animated.View>
-      );
-    }
-
-    return (
-      <Pressable
-        accessibilityRole="button"
-        disabled={isLoadingMore}
-        onBlur={() => {
-          setFocusedElementId(current => (current === 'video-load-more' ? null : current));
-        }}
-        onFocus={() => {
-          setFocusedElementId('video-load-more');
-        }}
-        onPress={() => {
-          onLoadMore().catch(() => undefined);
-        }}
-        style={({ pressed }) => [
-          styles.loadMoreButton,
-          {
-            backgroundColor:
-              !isLoadingMore
-                ? colors.buttonSecondaryBackground
-                : colors.buttonDisabledBackground,
-          },
-          focusedElementId === 'video-load-more' ? styles.buttonFocused : null,
-          pressed && !isLoadingMore ? styles.buttonPressed : null,
-        ]}>
-        <Text style={[styles.loadMoreLabel, { color: colors.buttonLabel }]}>
-          {isLoadingMore ? 'Loading...' : 'Load next page'}
-        </Text>
       </Pressable>
     );
   }
@@ -230,14 +171,14 @@ function VideoResultsList({
 
   return (
     <View style={styles.listWrap}>
-      <FlashList
+      <PagedFlashList
         data={items}
         drawDistance={LIST_DRAW_DISTANCE}
+        hasNextPage={hasNextPage}
+        isLoadingMore={isLoadingMore}
         keyExtractor={item => item.videoId}
-        ListFooterComponent={renderLoadMoreFooter}
-        removeClippedSubviews
+        onLoadMore={onLoadMore}
         renderItem={({ item, index }) => renderVideoCard(item, index)}
-        showsVerticalScrollIndicator={false}
       />
     </View>
   );
@@ -247,33 +188,8 @@ const styles = StyleSheet.create({
   buttonPressed: {
     opacity: 0.92,
   },
-  buttonFocused: {
-    transform: [{ scale: 1.02 }],
-  },
   listWrap: {
     flex: 1,
-  },
-  loadMoreButton: {
-    alignSelf: 'center',
-    borderRadius: radii.md,
-    marginTop: spacing.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  loadMoreLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-  },
-  endOfListWrap: {
-    alignItems: 'center',
-    marginTop: spacing.md,
-    paddingBottom: spacing.md,
-  },
-  endOfListLine: {
-    borderRadius: 999,
-    height: 5,
-    width: 64,
   },
   videoItem: {
     borderRadius: radii.md,
@@ -342,14 +258,17 @@ const styles = StyleSheet.create({
   progressTrack: {
     borderRadius: 999,
     height: 4,
+    marginBottom: spacing.xs,
     overflow: 'hidden',
+    width: '100%',
   },
   progressFill: {
-    height: 4,
+    height: '100%',
   },
   videoTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '700',
+    marginBottom: spacing.xs,
   },
   videoMetaRow: {
     alignItems: 'center',
@@ -357,33 +276,32 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   channelLogo: {
-    borderRadius: 8,
-    height: 16,
-    marginTop: spacing.xs,
-    width: 16,
+    borderRadius: 999,
+    height: 18,
+    width: 18,
   },
   videoMeta: {
-    flex: 1,
+    flexShrink: 1,
     fontSize: 12,
-    marginTop: spacing.xs,
   },
   videoMetaCount: {
     fontSize: 12,
-    marginTop: spacing.xs,
+    marginLeft: 'auto',
   },
   skeletonBlock: {
     borderRadius: radii.md,
-  },
-  skeletonTitle: {
-    borderRadius: 999,
-    height: 12,
-    marginBottom: spacing.xs,
-    width: '80%',
   },
   skeletonMeta: {
     borderRadius: 999,
     height: 10,
     width: '45%',
+  },
+  skeletonTitle: {
+    borderRadius: 999,
+    height: 14,
+    marginBottom: spacing.xs,
+    marginTop: spacing.sm,
+    width: '85%',
   },
 });
 

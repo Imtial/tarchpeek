@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
 import { TARCHPEEK_CONSTANTS } from '../../constants/tarchpeekConstants';
 import { useTheme } from '../../design/ThemeProvider';
 import type { PlaylistListItem, TubeArchivistClient } from '../../services/tubeArchivist';
 import { radii, spacing } from '../../design/tokens';
 import { BrowsingScreenShell } from './BrowsingScreenShell';
+import { PagedFlashList } from './PagedFlashList';
 import { usePagedResource, type PagedResponse } from './hooks/usePagedResource';
 
 const PLAYLISTS_PAGE_WINDOW_SIZE = TARCHPEEK_CONSTANTS.browsing.playlistsPageWindowSize;
@@ -104,38 +104,6 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
     );
   }
 
-  function renderLoadMoreFooter() {
-    return (
-      <Pressable
-        accessibilityRole="button"
-        disabled={!hasNextPage || isLoadingMore}
-        onBlur={() => {
-          setFocusedElementId(current => (current === 'playlists-load-more' ? null : current));
-        }}
-        onFocus={() => {
-          setFocusedElementId('playlists-load-more');
-        }}
-        onPress={() => {
-          loadMore().catch(() => undefined);
-        }}
-        style={({ pressed }) => [
-          styles.loadMoreButton,
-          {
-            backgroundColor:
-              hasNextPage && !isLoadingMore
-                ? colors.buttonSecondaryBackground
-                : colors.buttonDisabledBackground,
-          },
-          focusedElementId === 'playlists-load-more' ? styles.focused : null,
-          pressed && hasNextPage && !isLoadingMore ? styles.pressed : null,
-        ]}>
-        <Text style={[styles.loadMoreLabel, { color: colors.buttonLabel }]}>
-          {isLoadingMore ? 'Loading...' : hasNextPage ? 'Load next page' : 'No more pages'}
-        </Text>
-      </Pressable>
-    );
-  }
-
   return (
     <BrowsingScreenShell
       subtitle="Browse playlists with explicit entry into playlist details."
@@ -154,14 +122,14 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
         ))
         : (
           <View style={styles.listWrap}>
-            <FlashList
+            <PagedFlashList
               data={items}
               drawDistance={PLAYLISTS_DRAW_DISTANCE}
+              hasNextPage={hasNextPage}
+              isLoadingMore={isLoadingMore}
               keyExtractor={item => item.playlistId}
-              ListFooterComponent={renderLoadMoreFooter}
-              removeClippedSubviews
+              onLoadMore={loadMore}
               renderItem={({ item }) => renderPlaylistCard(item)}
-              showsVerticalScrollIndicator={false}
             />
           </View>
         )}
@@ -173,18 +141,6 @@ const styles = StyleSheet.create({
   listWrap: {
     flex: 1,
   },
-  loadMoreButton: {
-    alignSelf: 'center',
-    borderRadius: radii.md,
-    marginTop: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  loadMoreLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-  },
   meta: {
     fontSize: 12,
     marginTop: spacing.xs,
@@ -194,9 +150,6 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.92,
-  },
-  focused: {
-    transform: [{ scale: 1.02 }],
   },
   row: {
     borderRadius: radii.md,

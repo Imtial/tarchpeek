@@ -38,6 +38,7 @@ function AppContent() {
     client,
     closePlayer,
     connectionError,
+    connectionFieldErrors,
     focusedField,
     hasConnection,
     isHydrating,
@@ -49,7 +50,6 @@ function AppContent() {
     setApiToken,
     setFocusedField,
     setServerUrl,
-    statusMessage,
     videoDetails,
   } = useAppContentController();
 
@@ -72,6 +72,7 @@ function AppContent() {
     <ConnectScreen
       apiToken={apiToken}
       connectionError={connectionError}
+      connectionFieldErrors={connectionFieldErrors}
       focusedField={focusedField}
       isHydrating={isHydrating}
       isSaving={isSaving}
@@ -87,7 +88,6 @@ function AppContent() {
         setServerUrl(value);
       }}
       serverUrl={serverUrl}
-      statusMessage={statusMessage}
     />
   );
 }

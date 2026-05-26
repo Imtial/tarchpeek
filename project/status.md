@@ -218,6 +218,30 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
     - Findings:
       - `Medium`: mapper boundary drift in `app/src/services/tubeArchivist/taMappers.ts` from duplicated anonymous input shapes and `unknown[]` contracts
       - `Medium`: `app/src/screens/usePlayerSession.ts` still dense as one orchestration state-machine hook (event wiring + watch clock + sync policy + exit policy + watched mutation)
+  - Bundle H: end-of-list animation stabilization (completed)
+    - Replaced token-driven footer animation plumbing by removing `endReachedAnimationToken` from `usePagedResource` and all browsing consumers
+    - Converted shared video browse list footer rendering to typed terminal rows (`pagination_control` and `end_indicator`) so footer visibility and animation eligibility share one state machine
+    - Switched end-indicator spring trigger to `onViewableItemsChanged` transition (`not viewable -> viewable`) with one-shot session guard scoped to current dataset identity
+    - Added deterministic session reset support via `datasetIdentityKey` on `VideoResultsList` and wired keys for Home/Continue/Channel detail contexts
+    - Preserved both pagination controls (`onEndReached` auto-load and explicit load-more button) with mutually exclusive terminal rows
+    - Validation: lint clean (`npx eslint src/screens/browsing/VideoResultsList.tsx src/screens/browsing/PagedListFooter.tsx src/screens/browsing/HomeScreen.tsx src/screens/browsing/ContinueWatchingScreen.tsx src/screens/browsing/ChannelDetailScreen.tsx src/screens/browsing/ChannelsScreen.tsx src/screens/browsing/PlaylistsScreen.tsx src/screens/browsing/hooks/usePagedResource.ts src/screens/browsing/hooks/useChannelDetailResource.ts`)
+    - Validation: TS compile clean (`npx tsc --noEmit`)
+  - Bundle I: false top-of-list end-indicator animation fix (implemented, awaiting approval)
+    - Replaced the terminal-row approach in `VideoResultsList` with a shared `PagedFlashList` wrapper that keeps the end indicator in `ListFooterComponent` instead of list data.
+    - Moved common paging/footer behavior for video, channels, and playlists into `PagedFlashList`, preserving auto-load on scroll and explicit load-more controls while giving all paged lists one footer state machine.
+    - Removed the end-of-list animation entirely from `PagedListFooter` and deleted the shared wrapper trigger/session plumbing from `PagedFlashList`.
+    - Removed now-dead dataset identity wiring from video/channel browsing callers after dropping animation-specific state.
+    - Validation: lint clean (`npx eslint src/screens/browsing/PagedListFooter.tsx src/screens/browsing/PagedFlashList.tsx src/screens/browsing/VideoResultsList.tsx src/screens/browsing/HomeScreen.tsx src/screens/browsing/ContinueWatchingScreen.tsx src/screens/browsing/ChannelDetailScreen.tsx src/screens/browsing/ChannelsScreen.tsx src/screens/browsing/PlaylistsScreen.tsx`)
+    - Validation: TS compile clean (`npx tsc --noEmit`)
+ - Bundle H: video-list scroll-position stabilization + title readability baseline (implemented, awaiting approval)
+  - Investigation result: failing Maestro selectors were consistent with Home/video lists sometimes presenting at non-zero offset.
+  - Implemented: `VideoResultsList` now removes row-level explicit `key` usage inside FlashList item render path.
+  - Implemented: `VideoResultsList` sets `maintainVisibleContentPosition={{ disabled: true }}` to prevent offset preservation during list data churn.
+  - Implemented: baseline title readability update by changing video title clamp from `1` line to `2` lines across shared video lists.
+  - Implemented: title block now has stable rhythm (`lineHeight: 20`, `minHeight: 40`) to avoid card-height jitter.
+  - Validation: lint clean (`npx eslint src/screens/browsing/VideoResultsList.tsx`)
+  - Validation: TS compile clean (`npx tsc --noEmit`)
+  - Validation: Android Maestro E2E passed (`5/5`, `2m 49s`)
       - `Low`: `Intl.NumberFormat` creation on each call in `app/src/screens/PlayerScreen.tsx` `formatViewCount`
     - Immediate fix unit (completed):
       - Replaced anonymous mapper input contracts with generated model types (`Channel`, `Playlist`, `PlaylistEntry`) in `taMappers`

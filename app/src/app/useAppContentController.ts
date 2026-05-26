@@ -12,6 +12,10 @@ type PlaybackQueueContext = {
   videoIds: string[];
   currentIndex: number;
 };
+type ConnectionFieldErrors = {
+  serverUrl: string | null;
+  apiToken: string | null;
+};
 
 function useAppContentController() {
   const [serverUrl, setServerUrl] = useState('');
@@ -20,8 +24,11 @@ function useAppContentController() {
   const [focusedField, setFocusedField] = useState<FieldName>(null);
   const [isHydrating, setIsHydrating] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState('Enter a TubeArchivist server and API token.');
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [connectionFieldErrors, setConnectionFieldErrors] = useState<ConnectionFieldErrors>({
+    serverUrl: null,
+    apiToken: null,
+  });
   const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
   const [playbackQueueContext, setPlaybackQueueContext] = useState<PlaybackQueueContext | null>(null);
   const [browseRefreshKey, setBrowseRefreshKey] = useState(0);
@@ -60,25 +67,23 @@ function useAppContentController() {
           return;
         }
 
-        setStatusMessage('Checking saved server settings...');
-
         try {
           await activateConnection(storedConnection);
           if (isMounted) {
             setConnectionError(null);
-            setStatusMessage('Connected using saved server settings.');
+            setConnectionFieldErrors({
+              serverUrl: null,
+              apiToken: null,
+            });
           }
         } catch (error) {
           if (isMounted) {
             const message = error instanceof Error ? error.message : 'Saved server settings could not connect.';
             setConnectionError(message);
-            setStatusMessage(message);
           }
         }
       } catch {
-        if (isMounted) {
-          setStatusMessage('Could not load saved settings on this device.');
-        }
+        return;
       } finally {
         if (isMounted) {
           setIsHydrating(false);
@@ -94,20 +99,30 @@ function useAppContentController() {
   }, []);
 
   async function saveConnection() {
-    if (!serverUrl || !apiToken) {
+    const trimmedServerUrl = serverUrl.trim();
+    const trimmedApiToken = apiToken.trim();
+    const nextFieldErrors: ConnectionFieldErrors = {
+      serverUrl: trimmedServerUrl ? null : 'Server URL is required.',
+      apiToken: trimmedApiToken ? null : 'API token is required.',
+    };
+
+    if (nextFieldErrors.serverUrl || nextFieldErrors.apiToken) {
+      setConnectionFieldErrors(nextFieldErrors);
       setConnectionError(null);
-      setStatusMessage('Server URL and API token are both required.');
       return;
     }
 
     setIsSaving(true);
     setConnectionError(null);
-    setStatusMessage('Checking TubeArchivist connection...');
+    setConnectionFieldErrors({
+      serverUrl: null,
+      apiToken: null,
+    });
 
     try {
       const nextConnection = {
-        serverUrl,
-        apiToken,
+        serverUrl: trimmedServerUrl,
+        apiToken: trimmedApiToken,
       };
       await validateTubeArchivistConnection(nextConnection);
       await saveStoredConnection(nextConnection);
@@ -117,12 +132,10 @@ function useAppContentController() {
       setApiToken(storedConnection.apiToken);
       setActiveConnection(storedConnection);
       setConnectionError(null);
-      setStatusMessage('Connection verified and saved locally.');
     } catch (error) {
       setActiveConnection(null);
       const message = error instanceof Error ? error.message : 'Connection check failed.';
       setConnectionError(message);
-      setStatusMessage(message);
     } finally {
       setIsSaving(false);
     }
@@ -130,11 +143,19 @@ function useAppContentController() {
 
   function updateServerUrl(value: string) {
     setConnectionError(null);
+    setConnectionFieldErrors(currentErrors => ({
+      ...currentErrors,
+      serverUrl: value.trim() ? null : currentErrors.serverUrl,
+    }));
     setServerUrl(value);
   }
 
   function updateApiToken(value: string) {
     setConnectionError(null);
+    setConnectionFieldErrors(currentErrors => ({
+      ...currentErrors,
+      apiToken: value.trim() ? null : currentErrors.apiToken,
+    }));
     setApiToken(value);
   }
 
@@ -196,8 +217,8 @@ function useAppContentController() {
     setApiToken: updateApiToken,
     setFocusedField,
     setServerUrl: updateServerUrl,
-    statusMessage,
     saveConnection,
+    connectionFieldErrors,
     videoDetails,
   };
 }
