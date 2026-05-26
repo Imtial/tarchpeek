@@ -106,7 +106,7 @@ function HomeScreen({ browseRefreshKey, client, onOpenVideo }: HomeScreenProps) 
       title="Home">
       <VideoResultsList
         hasNextPage={hasNextPage}
-        isLoading={isLoadingContinueWatching}
+        isLoading={isLoadingContinueWatching && homeItems.length === 0}
         isLoadingMore={isLoadingMore}
         items={homeItems}
         loadingCount={3}

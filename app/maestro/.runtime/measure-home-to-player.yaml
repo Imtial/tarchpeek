@@ -1,0 +1,17 @@
+appId: com.tarchpeek.maestro
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: home-screen
+    timeout: 45000
+- extendedWaitUntil:
+    visible:
+      id: video-card-first
+    timeout: 45000
+- tapOn:
+    id: video-card-first
+- extendedWaitUntil:
+    visible:
+      id: player-screen
+    timeout: 20000

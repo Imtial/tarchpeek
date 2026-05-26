@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { TARCHPEEK_CONSTANTS } from '../../constants/tarchpeekConstants';
@@ -21,11 +21,13 @@ type VideoResultsListProps = {
 };
 
 function formatViewCount(viewCount: number) {
-  return new Intl.NumberFormat('en-US', {
-    notation: 'compact',
-    maximumFractionDigits: 1,
-  }).format(Math.max(0, viewCount));
+  return VIEW_COUNT_FORMATTER.format(Math.max(0, viewCount));
 }
+
+const VIEW_COUNT_FORMATTER = new Intl.NumberFormat('en-US', {
+  notation: 'compact',
+  maximumFractionDigits: 1,
+});
 
 function isRecentlyAdded(dateDownloaded: number) {
   if (!dateDownloaded || dateDownloaded <= 0) {
@@ -49,14 +51,15 @@ function VideoResultsList({
   const { colors } = theme;
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
+  const queueVideoIds = useMemo(() => items.map(video => video.videoId), [items]);
 
-  async function handleOpenVideo(item: ContinueWatchingItem) {
+  const handleOpenVideo = useCallback(async (item: ContinueWatchingItem) => {
     setActiveVideoId(item.videoId);
-    const currentIndex = items.findIndex(candidate => candidate.videoId === item.videoId);
+    const currentIndex = queueVideoIds.indexOf(item.videoId);
     const queueContext =
       currentIndex >= 0
         ? {
-            videoIds: items.map(video => video.videoId),
+            videoIds: queueVideoIds,
             currentIndex,
           }
         : undefined;
@@ -65,7 +68,7 @@ function VideoResultsList({
     } finally {
       setActiveVideoId(null);
     }
-  }
+  }, [onOpenVideo, queueVideoIds]);
 
   function renderProgress(item: ContinueWatchingItem) {
     const duration = Math.max(1, item.durationSeconds);

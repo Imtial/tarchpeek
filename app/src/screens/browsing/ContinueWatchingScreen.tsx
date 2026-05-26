@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import type { ContinueWatchingItem, TubeArchivistClient } from '../../services/tubeArchivist';
 import { BrowsingScreenShell } from './BrowsingScreenShell';
 import { VideoResultsList } from './VideoResultsList';
+import { usePagedResource } from './hooks/usePagedResource';
 
 type ContinueWatchingScreenProps = {
   browseRefreshKey: number;
@@ -16,60 +17,18 @@ function sortWatchedLast(items: ContinueWatchingItem[]) {
 }
 
 function ContinueWatchingScreen({ browseRefreshKey, client, onOpenVideo }: ContinueWatchingScreenProps) {
-  const [items, setItems] = useState<ContinueWatchingItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [page, setPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(false);
+  const fetchPage = useCallback((page: number) => client.fetchContinueWatching(page), [client]);
+  const mergeItems = useCallback(
+    (currentItems: ContinueWatchingItem[], nextPageItems: ContinueWatchingItem[]) =>
+      sortWatchedLast([...currentItems, ...nextPageItems]),
+    [],
+  );
 
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadFirstPage() {
-      setIsLoading(true);
-      try {
-        const firstPage = await client.fetchContinueWatching(1);
-        if (!isMounted) {
-          return;
-        }
-        setItems(sortWatchedLast(firstPage.items));
-        setPage(firstPage.currentPage);
-        setHasNextPage(firstPage.hasNextPage);
-      } catch {
-        if (!isMounted) {
-          return;
-        }
-        setItems([]);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadFirstPage();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [browseRefreshKey, client]);
-
-  async function loadMore() {
-    if (isLoadingMore || !hasNextPage) {
-      return;
-    }
-    const nextPage = page + 1;
-    setIsLoadingMore(true);
-    try {
-      const response = await client.fetchContinueWatching(nextPage);
-      setItems(currentItems => sortWatchedLast([...currentItems, ...response.items]));
-      setPage(response.currentPage);
-      setHasNextPage(response.hasNextPage);
-    } catch {
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }
+  const { hasNextPage, isLoading, isLoadingMore, items, loadMore } = usePagedResource<ContinueWatchingItem>({
+    fetchPage,
+    mergeItems,
+    reloadKey: browseRefreshKey,
+  });
 
   return (
     <BrowsingScreenShell
@@ -78,7 +37,7 @@ function ContinueWatchingScreen({ browseRefreshKey, client, onOpenVideo }: Conti
       title="Continue Watching">
       <VideoResultsList
         hasNextPage={hasNextPage}
-        isLoading={isLoading}
+        isLoading={isLoading && items.length === 0}
         isLoadingMore={isLoadingMore}
         items={items}
         loadingCount={5}

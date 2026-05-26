@@ -4,6 +4,8 @@
 # Project-local overrides
 tubearchivist/
 
+.opencode/skills/*
+
 ### Android ###
 # Gradle files
 .gradle/
@@ -52,7 +54,8 @@ gen-external-apklibs
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
