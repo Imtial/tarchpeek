@@ -209,6 +209,11 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
     - `3D` validation: lint clean (`npx eslint src/screens/PlayerScreen.tsx src/screens/usePlayerSession.ts`)
     - `3D` validation: TS compile clean (`npx tsc --noEmit`)
     - `3D` validation: Android Maestro E2E passed (`4/4`, `2m 29s`)
+    - `3E` completed: simplified root mode ownership in `app/App.tsx` and `app/src/app/useAppContentController.ts`
+    - `3E` completed: removed `appMode` abstraction after constraining root behavior to direct `hasConnection` branch + player overlay-in-browse
+    - `3E` validation: lint clean (`npx eslint App.tsx src/app/useAppContentController.ts`)
+    - `3E` validation: TS compile clean (`npx tsc --noEmit`)
+    - `3E` validation: Android Maestro E2E passed (`4/4`, `2m 30s`)
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary
