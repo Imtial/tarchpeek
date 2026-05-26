@@ -233,6 +233,62 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
       - Hoisted `Intl.NumberFormat` view-count formatter in `app/src/screens/PlayerScreen.tsx` to module scope (removed per-call formatter creation)
       - Validation: lint clean (`npx eslint src/screens/PlayerScreen.tsx`)
       - Validation: TS compile clean (`npx tsc --noEmit`)
+  - TODO bundle 4 (completed): Channel feature completeness audit + OpenAPI feasibility check
+    - Findings (severity-ranked):
+      - `High`: channel detail route is metadata-only and has no channel video list/playback path (`app/src/screens/browsing/ChannelDetailScreen.tsx`, `app/src/services/tubeArchivist/types.ts`, `app/src/services/tubeArchivist/taClient.ts`)
+      - `Medium`: channel flows collapse error cases into empty/null UI without explicit retry/error state (`ChannelDetailScreen`, shared `usePagedResource` catch paths)
+      - `Medium`: search data layer already hydrates `channelResults`, but `SearchScreen` renders only `videoResults`
+      - `Low`: no Channels-specific Maestro assertions (`channels-screen` / `channel-detail-screen`) currently present
+    - OpenAPI feasibility validation (`app/tubearchivist_api.yaml`, version `v0.5.10`):
+      - Confirmed feasible channel-video listing path via `GET /api/video/?channel=<channel_id>` (`video_retrieve`)
+      - Confirmed feasible channel capability/shape helpers via `GET /api/channel/{channel_id}/` and `GET /api/channel/{channel_id}/nav/`
+      - Confirmed feasible search channel/playlist surfacing from existing `/api/search/` response shape already consumed by app search client
+      - No API blockers identified for closing channel feature gaps in MVP scope
+  - TODO bundle 5 (next): Channel completion implementation slice
+    - Add channel-video browsing surface on channel detail using `video_retrieve(channel=<id>)` with explicit open-video path
+    - Add explicit error/empty/retry handling for channels list + channel detail load paths (without broad architecture change)
+    - Surface channel and playlist search result groups in `SearchScreen` with explicit open-navigation actions
+    - Add one focused Maestro scenario for `Channels -> ChannelDetail -> open video/back` regression guard
+  - TODO bundle 5 progress:
+    - Completed: added channel-video browsing on `ChannelDetailScreen` using `fetchChannelVideos(channelId, page)` backed by `GET /api/video/?channel=<channel_id>`
+    - Completed: wired `ChannelDetailScreen` video cards to player open path with queue context via shared `VideoResultsList`
+    - Completed: added explicit channel-flow error/empty handling
+      - `ChannelsScreen`: explicit load-error + retry + empty states
+      - `ChannelDetailScreen`: detail-load error state and channel-videos load-error + retry + empty states
+      - `usePagedResource`: surfaced `isError` for first-load and load-more failures
+    - Completed: surfaced `channelResults` and `playlistResults` groups in `SearchScreen` with explicit navigation actions
+      - Channel result action navigates to `Channels -> ChannelDetail`
+      - Playlist result action navigates to `Playlists -> PlaylistDetail`
+    - Completed: added focused Maestro scenario `app/maestro/scenarios/channels-detail-open-video-back.yaml`
+    - Validation: lint clean (`npx eslint` on changed browsing/navigation/service files)
+    - Validation: TS compile clean (`npx tsc --noEmit`)
+    - Follow-up refinement (completed): channel detail description now defaults to collapsed preview with explicit `See more ...` / `See less...` toggle so video list remains visible without long-scroll penalty
+      - Implementation: mirrored player-style expand/collapse behavior in `app/src/screens/browsing/ChannelDetailScreen.tsx`
+      - Behavior: expanded state resets on channel change; expanded panel is scroll-bounded (`maxHeight`) to avoid consuming full screen
+      - Validation: lint clean (`npx eslint src/screens/browsing/ChannelDetailScreen.tsx`)
+      - Validation: TS compile clean (`npx tsc --noEmit`)
+    - API verification (completed): verified local seeded TubeArchivist endpoints used by channel detail are healthy and fast
+      - `GET /api/channel/?page=1`: HTTP `200`, ~`67ms`
+      - `GET /api/channel/{channel_id}/`: HTTP `200`, ~`13ms`
+      - `GET /api/video/?page=1&type=videos&channel={channel_id}&sort=published&order=desc`: HTTP `200`, ~`26ms`, returned `3` videos
+    - Stability fix (completed): removed channel-detail page reload churn caused by unstable `usePagedResource` dependencies
+      - Memoized `reloadKey` in `ChannelDetailScreen`
+      - Memoized `mergeItems` callback in `ChannelDetailScreen`
+      - Result: channel videos load to cards instead of staying in skeleton/reload loop
+      - Validation: lint clean (`npx eslint src/screens/browsing/ChannelDetailScreen.tsx`)
+      - Validation: TS compile clean (`npx tsc --noEmit`)
+    - Maestro channel regression scenario (completed):
+      - Scenario updated to deterministic seeded channel tap (`Free HD videos - no copyright`)
+      - Scenario now passes end-to-end: `Channels -> ChannelDetail -> open video -> back to ChannelDetail`
+      - Command: `node scripts/run-maestro-android.mjs maestro/scenarios/channels-detail-open-video-back.yaml` (pass)
+      - Included in default Android Maestro suite by adding `app/maestro/tests/channels-detail-open-video-back.yaml` (delegates to scenario flow)
+    - Thermo-nuclear refactor follow-up (completed):
+      - Removed unsafe nested-tab navigation casts in `BrowsingTabs` by adding typed `NavigatorScreenParams` tab contract for `Home`, `Channels`, and `Playlists`
+      - Fixed Search result-state model bug: empty-state messaging now keys off aggregate results (`video + channel + playlist`) rather than videos-only
+      - Extracted channel detail data orchestration into dedicated hook `app/src/screens/browsing/hooks/useChannelDetailResource.ts` to remove dual async state-machine sprawl from `ChannelDetailScreen`
+      - Validation: lint clean (`npx eslint src/navigation/BrowsingTabs.tsx src/screens/browsing/ChannelDetailScreen.tsx src/screens/browsing/SearchScreen.tsx src/screens/browsing/hooks/useChannelDetailResource.ts`)
+      - Validation: TS compile clean (`npx tsc --noEmit`)
+      - Validation: existing Android Maestro suite pass (`npm run e2e:test:android` -> `4/4` flows passed in `5m 27s`)
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary

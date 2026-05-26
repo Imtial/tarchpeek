@@ -76,6 +76,12 @@ type ChannelDetail = {
   subscribed: boolean;
 };
 
+type ChannelVideosPage = {
+  items: ContinueWatchingItem[];
+  currentPage: number;
+  hasNextPage: boolean;
+};
+
 type PlaylistListItem = {
   playlistId: string;
   playlistName: string;
@@ -136,6 +142,7 @@ type SearchChannelResult = {
 type SearchPlaylistResult = {
   playlistId: string;
   playlistName: string;
+  channelId: string;
   channelName: string;
   thumbnailUrl: string | null;
   videoCount: number;
@@ -157,6 +164,7 @@ type TubeArchivistClient = {
   fetchHomeFeed: (page?: number) => Promise<HomeFeedPage>;
   fetchChannels: (page?: number) => Promise<ChannelsPage>;
   fetchChannelDetail: (channelId: string) => Promise<ChannelDetail>;
+  fetchChannelVideos: (channelId: string, page?: number) => Promise<ChannelVideosPage>;
   fetchPlaylists: (page?: number) => Promise<PlaylistsPage>;
   fetchPlaylistDetail: (playlistId: string) => Promise<PlaylistDetail>;
   searchArchive: (query: string) => Promise<SearchResultsPage>;
@@ -167,6 +175,7 @@ type TubeArchivistClient = {
 export type {
   ChannelDetail,
   ChannelListItem,
+  ChannelVideosPage,
   ChannelsPage,
   ContinueWatchingItem,
   ContinueWatchingPage,

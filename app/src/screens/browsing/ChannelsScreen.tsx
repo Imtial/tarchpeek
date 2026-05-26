@@ -20,7 +20,7 @@ function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
     (currentItems: ChannelListItem[], nextPageItems: ChannelListItem[]) => [...currentItems, ...nextPageItems],
     [],
   );
-  const { hasNextPage, isLoading, isLoadingMore, items, loadMore } = usePagedResource<ChannelListItem>({
+  const { hasNextPage, isError, isLoading, isLoadingMore, items, loadMore, reload } = usePagedResource<ChannelListItem>({
     fetchPage,
     mergeItems,
     reloadKey: client,
@@ -38,7 +38,7 @@ function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
               </View>
             </View>
           ))
-        : items.map(item => (
+        : items.map((item, index) => (
             <Pressable
               key={item.channelId}
               accessibilityRole="button"
@@ -55,7 +55,8 @@ function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
                 styles.row,
                 { borderColor: focusedElementId === item.channelId ? colors.accent : colors.border },
                 pressed ? styles.pressed : null,
-              ]}>
+              ]}
+              testID={index === 0 ? 'channel-card-first' : `channel-card-${item.channelId}`}>
               {item.thumbnailUrl ? (
                 <Image source={{ uri: item.thumbnailUrl }} style={styles.thumb} />
               ) : (
@@ -71,6 +72,22 @@ function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
               </View>
             </Pressable>
           ))}
+      {!isLoading && items.length === 0 && !isError ? (
+        <Text style={[styles.stateText, { color: colors.textSecondary }]}>No channels found.</Text>
+      ) : null}
+      {isError ? (
+        <View style={styles.errorRow}>
+          <Text style={[styles.stateText, { color: colors.textSecondary }]}>Failed to load channels.</Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              reload().catch(() => undefined);
+            }}
+            style={[styles.retryButton, { backgroundColor: colors.buttonSecondaryBackground }]}>
+            <Text style={[styles.retryLabel, { color: colors.buttonLabel }]}>Retry</Text>
+          </Pressable>
+        </View>
+      ) : null}
       <Pressable
         accessibilityRole="button"
         disabled={!hasNextPage || isLoadingMore}
@@ -152,6 +169,25 @@ const styles = StyleSheet.create({
     borderRadius: radii.md,
     height: 56,
     width: 56,
+  },
+  stateText: {
+    fontSize: 13,
+    marginTop: spacing.sm,
+  },
+  errorRow: {
+    alignItems: 'flex-start',
+    marginTop: spacing.sm,
+  },
+  retryButton: {
+    borderRadius: radii.md,
+    marginTop: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  retryLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    textTransform: 'uppercase',
   },
   title: {
     fontSize: 14,

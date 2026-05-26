@@ -1,0 +1,36 @@
+appId: com.tarchpeek.maestro
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    file: ../shared/connect-valid.yaml
+- tapOn: Channels
+- extendedWaitUntil:
+    visible:
+      id: channels-screen
+    timeout: 20000
+- tapOn: Free HD videos - no copyright
+- extendedWaitUntil:
+    visible:
+      id: channel-detail-screen
+    timeout: 20000
+- scrollUntilVisible:
+    element:
+      id: video-card-first
+    direction: DOWN
+    timeout: 30000
+- tapOn:
+    id: video-card-first
+- extendedWaitUntil:
+    visible:
+      id: player-screen
+    timeout: 20000
+- back
+- extendedWaitUntil:
+    notVisible:
+      id: player-screen
+    timeout: 20000
+- extendedWaitUntil:
+    visible:
+      id: channel-detail-screen
+    timeout: 20000

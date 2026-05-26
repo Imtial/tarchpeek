@@ -153,6 +153,7 @@ function mapSearchPlaylistResult(playlist: Playlist, serverUrl: string): SearchP
   return {
     playlistId: playlist.playlist_id,
     playlistName: playlist.playlist_name,
+    channelId: playlist.playlist_channel_id,
     channelName: playlist.playlist_channel,
     thumbnailUrl: resolveUrl(playlist.playlist_thumbnail ?? null, serverUrl),
     videoCount: playlist.playlist_entries.length,

@@ -72,6 +72,21 @@ function createTubeArchivistClient(connection: TubeArchivistConnection): TubeArc
     return mapChannelDetail(response.data, connection.serverUrl);
   }
 
+  async function fetchChannelVideos(channelId: string, page = 1) {
+    const response = await transport.videoRetrieve({
+      page,
+      channel: channelId,
+      type: 'videos',
+      sort: 'published',
+      order: 'desc',
+    });
+    return {
+      items: response.data.data.map(video => mapVideoToContinueWatchingItem(video, connection.serverUrl)),
+      currentPage: response.data.paginate.current_page,
+      hasNextPage: Boolean(response.data.paginate.next_pages?.length),
+    };
+  }
+
   async function fetchPlaylists(page = 1) {
     const response = await transport.playlistRetrieve({ page });
     return {
@@ -146,6 +161,7 @@ function createTubeArchivistClient(connection: TubeArchivistConnection): TubeArc
     fetchHomeFeed,
     fetchChannels,
     fetchChannelDetail,
+    fetchChannelVideos,
     fetchPlaylists,
     fetchPlaylistDetail,
     searchArchive,

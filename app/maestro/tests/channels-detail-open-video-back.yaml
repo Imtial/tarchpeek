@@ -1,0 +1,4 @@
+appId: com.tarchpeek.maestro
+---
+- runFlow:
+    file: ../scenarios/channels-detail-open-video-back.yaml

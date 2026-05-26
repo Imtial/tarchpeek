@@ -1,4 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
+import type { NavigatorScreenParams } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -12,14 +13,6 @@ import { PlaylistDetailScreen } from '../screens/browsing/PlaylistDetailScreen';
 import { PlaylistsScreen } from '../screens/browsing/PlaylistsScreen';
 import { SearchScreen } from '../screens/browsing/SearchScreen';
 
-type BrowsingTabParamList = {
-  Home: undefined;
-  Channels: undefined;
-  Playlists: undefined;
-  Search: undefined;
-};
-
-const Tab = createBottomTabNavigator<BrowsingTabParamList>();
 type HomeStackParamList = {
   HomeRoot: undefined;
   ContinueWatching: undefined;
@@ -35,6 +28,14 @@ type PlaylistsStackParamList = {
   PlaylistDetail: { playlistId: string };
 };
 const PlaylistsStack = createNativeStackNavigator<PlaylistsStackParamList>();
+type BrowsingTabParamList = {
+  Home: NavigatorScreenParams<HomeStackParamList> | undefined;
+  Channels: NavigatorScreenParams<ChannelsStackParamList> | undefined;
+  Playlists: NavigatorScreenParams<PlaylistsStackParamList> | undefined;
+  Search: undefined;
+};
+
+const Tab = createBottomTabNavigator<BrowsingTabParamList>();
 const iconNameByRoute: Record<keyof BrowsingTabParamList, string> = {
   Home: 'home-outline',
   Channels: 'television-play',
@@ -84,7 +85,7 @@ function HomeTabNavigator({ browseRefreshKey, client, onOpenVideo }: BrowsingTab
   );
 }
 
-function ChannelsTabNavigator({ client }: { client: TubeArchivistClient }) {
+function ChannelsTabNavigator({ client, onOpenVideo }: VideoOpenProps) {
   return (
     <ChannelsStack.Navigator screenOptions={{ headerShown: false }}>
       <ChannelsStack.Screen name="ChannelsRoot">
@@ -98,7 +99,13 @@ function ChannelsTabNavigator({ client }: { client: TubeArchivistClient }) {
         )}
       </ChannelsStack.Screen>
       <ChannelsStack.Screen name="ChannelDetail">
-        {({ route }) => <ChannelDetailScreen channelId={route.params.channelId} client={client} />}
+        {({ route }) => (
+          <ChannelDetailScreen
+            channelId={route.params.channelId}
+            client={client}
+            onOpenVideo={onOpenVideo}
+          />
+        )}
       </ChannelsStack.Screen>
     </ChannelsStack.Navigator>
   );
@@ -178,13 +185,30 @@ function BrowsingTabs({ browseRefreshKey, client, onOpenVideo }: BrowsingTabsPro
           {() => <HomeTabNavigator browseRefreshKey={browseRefreshKey} client={client} onOpenVideo={onOpenVideo} />}
         </Tab.Screen>
         <Tab.Screen name="Channels">
-          {() => <ChannelsTabNavigator client={client} />}
+          {() => <ChannelsTabNavigator client={client} onOpenVideo={onOpenVideo} />}
         </Tab.Screen>
         <Tab.Screen name="Playlists">
           {() => <PlaylistsTabNavigator client={client} onOpenVideo={onOpenVideo} />}
         </Tab.Screen>
         <Tab.Screen name="Search">
-          {() => <SearchScreen client={client} onOpenVideo={onOpenVideo} />}
+          {({ navigation }) => (
+            <SearchScreen
+              client={client}
+              onOpenChannel={channelId => {
+                navigation.navigate('Channels', {
+                  screen: 'ChannelDetail',
+                  params: { channelId },
+                });
+              }}
+              onOpenPlaylist={playlistId => {
+                navigation.navigate('Playlists', {
+                  screen: 'PlaylistDetail',
+                  params: { playlistId },
+                });
+              }}
+              onOpenVideo={onOpenVideo}
+            />
+          )}
         </Tab.Screen>
       </Tab.Navigator>
     </NavigationContainer>

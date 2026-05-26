@@ -24,6 +24,7 @@ function usePagedResource<TItem>({
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [isError, setIsError] = useState(false);
   const isMountedRef = useRef(true);
 
   const loadFirstPage = useCallback(async () => {
@@ -32,6 +33,7 @@ function usePagedResource<TItem>({
     }
 
     try {
+      setIsError(false);
       const firstPage = await fetchPage(1);
       if (!isMountedRef.current) {
         return;
@@ -43,6 +45,7 @@ function usePagedResource<TItem>({
       if (!isMountedRef.current) {
         return;
       }
+      setIsError(true);
       setItems([]);
       setPage(1);
       setHasNextPage(false);
@@ -61,6 +64,7 @@ function usePagedResource<TItem>({
     const nextPage = page + 1;
     setIsLoadingMore(true);
     try {
+      setIsError(false);
       const response = await fetchPage(nextPage);
       if (!isMountedRef.current) {
         return;
@@ -69,6 +73,9 @@ function usePagedResource<TItem>({
       setPage(response.currentPage);
       setHasNextPage(response.hasNextPage);
     } catch {
+      if (isMountedRef.current) {
+        setIsError(true);
+      }
     } finally {
       if (isMountedRef.current) {
         setIsLoadingMore(false);
@@ -89,6 +96,7 @@ function usePagedResource<TItem>({
     isLoading,
     isLoadingMore,
     hasNextPage,
+    isError,
     loadMore,
     reload: loadFirstPage,
   };
