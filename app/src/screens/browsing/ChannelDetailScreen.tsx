@@ -1,13 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ExpandableDescription } from '../../components/ExpandableDescription';
 import { useTheme } from '../../design/ThemeProvider';
 import type { TubeArchivistClient } from '../../services/tubeArchivist';
 import { radii, spacing } from '../../design/tokens';
 import { BrowsingScreenShell } from './BrowsingScreenShell';
 import { useChannelDetailResource } from './hooks/useChannelDetailResource';
 import { VideoResultsList } from './VideoResultsList';
-
-const COLLAPSED_DESCRIPTION_LINES = 4;
 
 type ChannelDetailScreenProps = {
   channelId: string;
@@ -18,8 +16,6 @@ type ChannelDetailScreenProps = {
 function ChannelDetailScreen({ channelId, client, onOpenVideo }: ChannelDetailScreenProps) {
   const { theme } = useTheme();
   const { colors } = theme;
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const [hasExpandableDescription, setHasExpandableDescription] = useState(false);
   const {
     detail,
     hasNextPage,
@@ -36,12 +32,6 @@ function ChannelDetailScreen({ channelId, client, onOpenVideo }: ChannelDetailSc
     client,
   });
   const descriptionText = detail?.description ?? 'No description available.';
-  const shouldShowDescriptionToggle = hasExpandableDescription || descriptionText.length > 140;
-
-  useEffect(() => {
-    setIsDescriptionExpanded(false);
-    setHasExpandableDescription(false);
-  }, [channelId]);
 
   return (
     <BrowsingScreenShell subtitle="" testID="channel-detail-screen" title={detail?.channelName ?? 'Channel'}>
@@ -59,43 +49,12 @@ function ChannelDetailScreen({ channelId, client, onOpenVideo }: ChannelDetailSc
         </Text>
       </View>
       <View style={[styles.descriptionCard, { borderColor: colors.border }]}>
-        {isDescriptionExpanded ? (
-          <ScrollView nestedScrollEnabled persistentScrollbar style={styles.expandedDescriptionScroll}>
-            <Text style={[styles.description, { color: colors.textPrimary }]}>
-              {descriptionText}
-            </Text>
-          </ScrollView>
-        ) : (
-          <Text
-            numberOfLines={COLLAPSED_DESCRIPTION_LINES}
-            onTextLayout={event => {
-              const next = event.nativeEvent.lines.length > COLLAPSED_DESCRIPTION_LINES;
-              setHasExpandableDescription(current => (current === next ? current : next));
-            }}
-            style={[styles.description, { color: colors.textPrimary }]}>
-            {descriptionText}
-          </Text>
-        )}
-        {isDescriptionExpanded ? (
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => {
-              setIsDescriptionExpanded(false);
-            }}
-            style={styles.descriptionToggleButton}>
-            <Text style={[styles.descriptionToggleLabel, { color: colors.textSecondary }]}>See less...</Text>
-          </Pressable>
-        ) : null}
-        {!isDescriptionExpanded && shouldShowDescriptionToggle ? (
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => {
-              setIsDescriptionExpanded(true);
-            }}
-            style={styles.descriptionToggleButton}>
-            <Text style={[styles.descriptionToggleLabel, { color: colors.textSecondary }]}>See more ...</Text>
-          </Pressable>
-        ) : null}
+        <ExpandableDescription
+          collapsedLines={4}
+          descriptionStyle={[styles.description, { color: colors.textPrimary }]}
+          expandedScrollMaxHeight={180}
+          text={descriptionText}
+        />
       </View>
       {isDetailError ? (
         <Text style={[styles.stateText, { color: colors.textSecondary }]}>
@@ -150,18 +109,6 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.sm,
-  },
-  expandedDescriptionScroll: {
-    flexGrow: 0,
-    maxHeight: 180,
-  },
-  descriptionToggleButton: {
-    alignSelf: 'flex-start',
-    marginTop: spacing.xs,
-  },
-  descriptionToggleLabel: {
-    fontSize: 13,
-    fontWeight: '600',
   },
   meta: {
     fontSize: 12,
