@@ -4,6 +4,7 @@ import { useEvent, useVideoPlayer } from 'react-native-video';
 import { TARCHPEEK_CONSTANTS } from '../constants/tarchpeekConstants';
 import type { TubeArchivistClient, VideoDetails } from '../services/tubeArchivist';
 import { PROGRESS_SYNC_INTERVAL_SECONDS, syncPlaybackProgressCheckpoint } from './playbackProgress';
+import { getWatchedSessionSeconds, startWatchSession, stopWatchSession } from './player/sessionPolicies';
 
 type UsePlayerSessionParams = {
   client: TubeArchivistClient;
@@ -23,7 +24,7 @@ function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: U
     (durationSeconds <= 0 ||
       initialResumeSeconds < Math.max(RESUME_MIN_SECONDS + 1, durationSeconds - RESUME_END_BUFFER_SECONDS));
 
-  const [, setPlaybackStatus] = useState('Preparing player...');
+  const setPlaybackStatus = useCallback((_value: string) => {}, []);
   const [isWatched, setIsWatched] = useState(videoDetails.watched);
   const [isUpdatingWatchedState, setIsUpdatingWatchedState] = useState(false);
   const latestPlaybackTimeRef = useRef(0);
@@ -35,6 +36,33 @@ function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: U
   const playSessionStartedAtMsRef = useRef<number | null>(null);
   const watchedSessionMsRef = useRef(0);
   const isAdvancingAfterEndRef = useRef(false);
+
+  const syncProgress = useCallback(
+    async (reasonLabel: string, force: boolean) => {
+      await syncPlaybackProgressCheckpoint({
+        client,
+        force,
+        isProgressSyncInFlightRef,
+        lastSyncedProgressRef,
+        latestPlaybackTimeRef,
+        reasonLabel,
+        setPlaybackStatus,
+        shouldUpdateStatus: false,
+        videoId: videoDetails.videoId,
+      });
+    },
+    [client, setPlaybackStatus, videoDetails.videoId],
+  );
+
+  const syncProgressWithErrorStatus = useCallback(
+    (reasonLabel: string, force: boolean) => {
+      syncProgress(reasonLabel, force).catch(error => {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
+        setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
+      });
+    },
+    [setPlaybackStatus, syncProgress],
+  );
 
   const player = useVideoPlayer(videoDetails.source, currentPlayer => {
     currentPlayer.muted = false;
@@ -70,20 +98,7 @@ function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: U
       playbackSeconds >= lastSyncedProgressRef.current + PROGRESS_SYNC_INTERVAL_SECONDS;
 
     if (hasReachedIntervalThreshold) {
-      syncPlaybackProgressCheckpoint({
-        client,
-        force: false,
-        isProgressSyncInFlightRef,
-        lastSyncedProgressRef,
-        latestPlaybackTimeRef,
-        reasonLabel: 'interval',
-        setPlaybackStatus,
-        shouldUpdateStatus: false,
-        videoId: videoDetails.videoId,
-      }).catch(error => {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
-        setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
-      });
+      syncProgressWithErrorStatus('interval', false);
     }
   });
 
@@ -97,35 +112,24 @@ function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: U
     const nextStateLabel = data.isBuffering ? 'buffering' : data.isPlaying ? 'playing' : 'paused';
     setPlaybackStatus(`Playback state: ${nextStateLabel}`);
 
-    if (data.isPlaying && !isPlayingRef.current) {
-      isPlayingRef.current = true;
-      playSessionStartedAtMsRef.current = Date.now();
+    if (data.isPlaying) {
+      startWatchSession({
+        isPlayingRef,
+        playSessionStartedAtMsRef,
+        watchedSessionMsRef,
+      });
     }
 
-    if ((!data.isPlaying || data.isBuffering) && isPlayingRef.current) {
-      const startedAt = playSessionStartedAtMsRef.current;
-      if (startedAt) {
-        watchedSessionMsRef.current += Math.max(0, Date.now() - startedAt);
-      }
-      playSessionStartedAtMsRef.current = null;
-      isPlayingRef.current = false;
+    if (!data.isPlaying || data.isBuffering) {
+      stopWatchSession({
+        isPlayingRef,
+        playSessionStartedAtMsRef,
+        watchedSessionMsRef,
+      });
     }
 
     if (!data.isPlaying && !data.isBuffering) {
-      syncPlaybackProgressCheckpoint({
-        client,
-        force: true,
-        isProgressSyncInFlightRef,
-        lastSyncedProgressRef,
-        latestPlaybackTimeRef,
-        reasonLabel: nextStateLabel,
-        setPlaybackStatus,
-        shouldUpdateStatus: false,
-        videoId: videoDetails.videoId,
-      }).catch(error => {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
-        setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
-      });
+      syncProgressWithErrorStatus(nextStateLabel, true);
     }
   });
 
@@ -135,17 +139,7 @@ function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: U
     }
 
     isAdvancingAfterEndRef.current = true;
-    syncPlaybackProgressCheckpoint({
-      client,
-      force: true,
-      isProgressSyncInFlightRef,
-      lastSyncedProgressRef,
-      latestPlaybackTimeRef,
-      reasonLabel: 'ended',
-      setPlaybackStatus,
-      shouldUpdateStatus: false,
-      videoId: videoDetails.videoId,
-    })
+    syncProgress('ended', true)
       .then(async () => {
         await onPlayNextInQueue();
       })
@@ -168,32 +162,19 @@ function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: U
     }
 
     isClosingRef.current = true;
-    if (isPlayingRef.current) {
-      const startedAt = playSessionStartedAtMsRef.current;
-      if (startedAt) {
-        watchedSessionMsRef.current += Math.max(0, Date.now() - startedAt);
-      }
-      playSessionStartedAtMsRef.current = null;
-      isPlayingRef.current = false;
-    }
-    const watchedSessionSeconds = Math.floor(watchedSessionMsRef.current / 1000);
+    stopWatchSession({
+      isPlayingRef,
+      playSessionStartedAtMsRef,
+      watchedSessionMsRef,
+    });
+    const watchedSessionSeconds = getWatchedSessionSeconds(watchedSessionMsRef);
     const shouldRefreshBrowse =
       watchedSessionSeconds >= TARCHPEEK_CONSTANTS.player.browseRefreshWatchThresholdSeconds ||
       didWatchedStateChangeRef.current;
     onBack({ resultMessage: 'Playback closed.', shouldRefreshBrowse });
 
-    syncPlaybackProgressCheckpoint({
-      client,
-      force: true,
-      isProgressSyncInFlightRef,
-      lastSyncedProgressRef,
-      latestPlaybackTimeRef,
-      reasonLabel: 'exit',
-      setPlaybackStatus,
-      shouldUpdateStatus: false,
-      videoId: videoDetails.videoId,
-    }).catch(() => undefined);
-  }, [client, onBack, videoDetails.videoId]);
+    syncProgress('exit', true).catch(() => undefined);
+  }, [onBack, syncProgress]);
 
   useEffect(() => {
     // Needed to map Android hardware back/gesture to player exit + final progress sync.

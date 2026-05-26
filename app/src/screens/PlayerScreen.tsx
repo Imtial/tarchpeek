@@ -16,12 +16,13 @@ type PlayerScreenProps = {
 };
 
 const COLLAPSED_DESCRIPTION_LINES = TARCHPEEK_CONSTANTS.player.collapsedDescriptionLines;
+const VIEW_COUNT_FORMATTER = new Intl.NumberFormat('en-US', {
+  notation: 'compact',
+  maximumFractionDigits: 1,
+});
 
 function formatViewCount(viewCount: number) {
-  const compactLabel = new Intl.NumberFormat('en-US', {
-    notation: 'compact',
-    maximumFractionDigits: 1,
-  }).format(Math.max(0, viewCount));
+  const compactLabel = VIEW_COUNT_FORMATTER.format(Math.max(0, viewCount));
   return `${compactLabel} views`;
 }
 

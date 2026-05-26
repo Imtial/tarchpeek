@@ -214,6 +214,25 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
     - `3E` validation: lint clean (`npx eslint App.tsx src/app/useAppContentController.ts`)
     - `3E` validation: TS compile clean (`npx tsc --noEmit`)
     - `3E` validation: Android Maestro E2E passed (`4/4`, `2m 30s`)
+  - Review pass #2 (post-3E, thermo-nuclear):
+    - Findings:
+      - `Medium`: mapper boundary drift in `app/src/services/tubeArchivist/taMappers.ts` from duplicated anonymous input shapes and `unknown[]` contracts
+      - `Medium`: `app/src/screens/usePlayerSession.ts` still dense as one orchestration state-machine hook (event wiring + watch clock + sync policy + exit policy + watched mutation)
+      - `Low`: `Intl.NumberFormat` creation on each call in `app/src/screens/PlayerScreen.tsx` `formatViewCount`
+    - Immediate fix unit (completed):
+      - Replaced anonymous mapper input contracts with generated model types (`Channel`, `Playlist`, `PlaylistEntry`) in `taMappers`
+      - Removed `unknown[]` playlist-entry boundary in mapper signatures
+    - Immediate fix unit #2 (completed):
+      - Decomposed `app/src/screens/usePlayerSession.ts` by extracting watch-session policy helpers into `app/src/screens/player/sessionPolicies.ts`
+      - Reduced repeated watch-clock and session-stop branches in playback state and exit handlers using shared helpers
+      - Removed inert internal string-status state in `usePlayerSession` (no UI consumed it); kept required sync callback signature via stable no-op status sink
+      - Validation: lint clean (`npx eslint src/screens/usePlayerSession.ts src/screens/player/sessionPolicies.ts src/services/tubeArchivist/taMappers.ts`)
+      - Validation: TS compile clean (`npx tsc --noEmit`)
+      - Validation: Android Maestro E2E passed (`4/4`, `2m 33s`)
+    - Immediate fix unit #3 (completed):
+      - Hoisted `Intl.NumberFormat` view-count formatter in `app/src/screens/PlayerScreen.tsx` to module scope (removed per-call formatter creation)
+      - Validation: lint clean (`npx eslint src/screens/PlayerScreen.tsx`)
+      - Validation: TS compile clean (`npx tsc --noEmit`)
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary

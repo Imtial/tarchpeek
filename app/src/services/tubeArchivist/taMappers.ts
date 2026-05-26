@@ -1,4 +1,4 @@
-import type { Video } from '../../api/generated/models';
+import type { Channel, Playlist, PlaylistEntry, Video } from '../../api/generated/models';
 import type {
   ChannelDetail,
   ChannelListItem,
@@ -59,13 +59,7 @@ function mapVideoDetails(videoId: string, video: Video, serverUrl: string, apiTo
   };
 }
 
-function mapChannelListItem(channel: {
-  channel_id: string;
-  channel_name: string;
-  channel_thumb_url?: string | null;
-  channel_subscribed: boolean;
-  channel_subs: number;
-}, serverUrl: string): ChannelListItem {
+function mapChannelListItem(channel: Channel, serverUrl: string): ChannelListItem {
   return {
     channelId: channel.channel_id,
     channelName: channel.channel_name,
@@ -75,14 +69,7 @@ function mapChannelListItem(channel: {
   };
 }
 
-function mapChannelDetail(detail: {
-  channel_id: string;
-  channel_name: string;
-  channel_description?: string | null;
-  channel_thumb_url?: string | null;
-  channel_subs: number;
-  channel_subscribed: boolean;
-}, serverUrl: string): ChannelDetail {
+function mapChannelDetail(detail: Channel, serverUrl: string): ChannelDetail {
   return {
     channelId: detail.channel_id,
     channelName: detail.channel_name,
@@ -93,15 +80,7 @@ function mapChannelDetail(detail: {
   };
 }
 
-function mapPlaylistListItem(playlist: {
-  playlist_id: string;
-  playlist_name: string;
-  playlist_channel_id: string;
-  playlist_channel: string;
-  playlist_thumbnail?: string | null;
-  playlist_entries: unknown[];
-  playlist_subscribed: boolean;
-}, serverUrl: string): PlaylistListItem {
+function mapPlaylistListItem(playlist: Playlist, serverUrl: string): PlaylistListItem {
   return {
     playlistId: playlist.playlist_id,
     playlistName: playlist.playlist_name,
@@ -115,13 +94,7 @@ function mapPlaylistListItem(playlist: {
 }
 
 function mapPlaylistEntry(args: {
-  entry: {
-    youtube_id: string;
-    title: string;
-    uploader: string | null;
-    idx: number;
-    downloaded: boolean;
-  };
+  entry: PlaylistEntry;
   video: Video;
   fallbackChannelName: string;
   serverUrl: string;
@@ -146,16 +119,7 @@ function mapPlaylistEntry(args: {
 }
 
 function mapPlaylistDetail(args: {
-  playlist: {
-    playlist_id: string;
-    playlist_name: string;
-    playlist_channel_id: string;
-    playlist_channel: string;
-    playlist_description?: string | null;
-    playlist_thumbnail?: string | null;
-    playlist_entries: unknown[];
-    playlist_subscribed: boolean;
-  };
+  playlist: Playlist;
   channelThumbUrl: string | null | undefined;
   entries: PlaylistVideoEntry[];
   serverUrl: string;
@@ -175,13 +139,7 @@ function mapPlaylistDetail(args: {
   };
 }
 
-function mapSearchChannelResult(channel: {
-  channel_id: string;
-  channel_name: string;
-  channel_thumb_url?: string | null;
-  channel_subscribed: boolean;
-  channel_subs: number;
-}, serverUrl: string): SearchChannelResult {
+function mapSearchChannelResult(channel: Channel, serverUrl: string): SearchChannelResult {
   return {
     channelId: channel.channel_id,
     channelName: channel.channel_name,
@@ -191,14 +149,7 @@ function mapSearchChannelResult(channel: {
   };
 }
 
-function mapSearchPlaylistResult(playlist: {
-  playlist_id: string;
-  playlist_name: string;
-  playlist_channel: string;
-  playlist_thumbnail?: string | null;
-  playlist_entries: unknown[];
-  playlist_subscribed: boolean;
-}, serverUrl: string): SearchPlaylistResult {
+function mapSearchPlaylistResult(playlist: Playlist, serverUrl: string): SearchPlaylistResult {
   return {
     playlistId: playlist.playlist_id,
     playlistName: playlist.playlist_name,
