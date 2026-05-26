@@ -1,9 +1,8 @@
-<h1 align="center">
-  <span style="display: inline-flex; align-items: center;">
-    <img src="app/assets/tarchpeek.svg" alt="TarchPeek logo" height="52" />
-    <span>TarchPeek</span>
-  </span>
-</h1>
+<p align="center">
+  <img src="app/assets/tarchpeek.svg" alt="TarchPeek logo" width="96" />
+</p>
+
+<h1 align="center">TarchPeek</h1>
 
 TarchPeek is a simple, home-native way to watch the videos in your TubeArchivist library, designed for TV-style “lean back” viewing. It’s a great fit when you want a calmer, ad-free experience, or when you curate what’s available for kids or guests: your library becomes the menu, and watching feels like using a streaming app instead of managing a server.
 
