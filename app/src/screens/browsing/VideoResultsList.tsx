@@ -52,10 +52,14 @@ function VideoResultsList({
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
   const queueVideoIds = useMemo(() => items.map(video => video.videoId), [items]);
+  const queueIndexByVideoId = useMemo(
+    () => new Map(queueVideoIds.map((videoId, index) => [videoId, index])),
+    [queueVideoIds],
+  );
 
   const handleOpenVideo = useCallback(async (item: ContinueWatchingItem) => {
     setActiveVideoId(item.videoId);
-    const currentIndex = queueVideoIds.indexOf(item.videoId);
+    const currentIndex = queueIndexByVideoId.get(item.videoId) ?? -1;
     const queueContext =
       currentIndex >= 0
         ? {
@@ -68,7 +72,7 @@ function VideoResultsList({
     } finally {
       setActiveVideoId(null);
     }
-  }, [onOpenVideo, queueVideoIds]);
+  }, [onOpenVideo, queueIndexByVideoId, queueVideoIds]);
 
   function renderProgress(item: ContinueWatchingItem) {
     const duration = Math.max(1, item.durationSeconds);

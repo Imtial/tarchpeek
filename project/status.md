@@ -289,6 +289,16 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
       - Validation: lint clean (`npx eslint src/navigation/BrowsingTabs.tsx src/screens/browsing/ChannelDetailScreen.tsx src/screens/browsing/SearchScreen.tsx src/screens/browsing/hooks/useChannelDetailResource.ts`)
       - Validation: TS compile clean (`npx tsc --noEmit`)
       - Validation: existing Android Maestro suite pass (`npm run e2e:test:android` -> `4/4` flows passed in `5m 27s`)
+    - Performance follow-up (completed):
+      - Applied targeted interaction-path optimization in `VideoResultsList`: replaced per-press `queueVideoIds.indexOf(videoId)` lookup with memoized `Map<videoId, index>` lookup
+      - Validation: lint clean (`npx eslint src/screens/browsing/VideoResultsList.tsx`)
+      - Validation: TS compile clean (`npx tsc --noEmit`)
+      - Benchmark driver: `node scripts/run-maestro-android.mjs maestro/scenarios/channels-detail-open-video-back.yaml` (pass)
+      - Benchmark sample (`adb shell dumpsys gfxinfo com.tarchpeek.maestro framestats` after passing flow):
+        - Frames: `625`
+        - Janky frames: `122` (`19.52%`)
+        - Percentiles: p50 `17ms`, p90 `23ms`, p95 `34ms`, p99 `113ms`
+      - Assessment: no new regression signal specific to the channel-detail open-video path after the optimization
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary
