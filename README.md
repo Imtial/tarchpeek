@@ -1,4 +1,4 @@
-![TarchPeek logo](app/assets/tarchpeek.svg)
+<img src="app/assets/tarchpeek.svg" alt="TarchPeek logo" width="220" />
 
 TarchPeek is a simple, home-native way to watch the videos in your TubeArchivist library, designed for TV-style “lean back” viewing. It’s a great fit when you want a calmer, ad-free experience, or when you curate what’s available for kids or guests: your library becomes the menu, and watching feels like using a streaming app instead of managing a server.
 
