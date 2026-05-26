@@ -195,6 +195,15 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
     - `3B` completed: migrated `app/src/screens/browsing/ChannelsScreen.tsx` to `usePagedResource` with existing append merge semantics preserved
     - `3B` completed: migrated `app/src/screens/browsing/PlaylistsScreen.tsx` to `usePagedResource` with existing page-window + dedupe semantics preserved
     - `3B` validation: lint clean for changed files via `npx eslint src/screens/browsing/HomeScreen.tsx src/screens/browsing/ChannelsScreen.tsx src/screens/browsing/PlaylistsScreen.tsx src/screens/browsing/hooks/usePagedResource.ts`
+    - `3C` completed: split `app/src/services/tubeArchivist.ts` responsibilities into:
+      - `app/src/services/tubeArchivist/taTransport.ts` (endpoint IO + auth/base URL)
+      - `app/src/services/tubeArchivist/taMappers.ts` (API -> app model mapping)
+      - `app/src/services/tubeArchivist/taClient.ts` (feature orchestration + client factory/hook)
+      - `app/src/services/tubeArchivist/types.ts` (service contract/data model types)
+      - compatibility wrapper preserved at `app/src/services/tubeArchivist.ts` (existing import surface retained)
+    - `3C` validation: lint clean (`npx eslint src/services/tubeArchivist.ts src/services/tubeArchivist/*.ts`)
+    - `3C` validation: TS compile clean (`npx tsc --noEmit`)
+    - `3C` validation: Android Maestro E2E passed (`4/4`, `3m 51s`)
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary
