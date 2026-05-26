@@ -2,7 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,reactnative,android,macos,xcode
 
 # Project-local overrides
-tubearchivist/
+/tubearchivist/
 
 .opencode/skills/*
 
