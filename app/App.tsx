@@ -53,40 +53,22 @@ function AppContent() {
     videoDetails,
   } = useAppContentController();
 
-  if (videoDetails) {
-    if (!hasConnection) {
-      return (
-        <PlayerScreen
-          client={client}
-          key={videoDetails.videoId}
-          onBack={closePlayer}
-          onPlayNextInQueue={playNextInQueue}
-          videoDetails={videoDetails}
-        />
-      );
-    }
-  }
-
-  if (hasConnection) {
-    return (
-      <View style={styles.connectedRoot}>
-        <BrowsingTabs browseRefreshKey={browseRefreshKey} client={client} onOpenVideo={openVideoById} />
-        {videoDetails ? (
-          <View style={styles.playerOverlay}>
-            <PlayerScreen
-              client={client}
-              key={videoDetails.videoId}
-              onBack={closePlayer}
-              onPlayNextInQueue={playNextInQueue}
-              videoDetails={videoDetails}
-            />
-          </View>
-        ) : null}
-      </View>
-    );
-  }
-
-  return (
+  return hasConnection ? (
+    <View style={styles.connectedRoot}>
+      <BrowsingTabs browseRefreshKey={browseRefreshKey} client={client} onOpenVideo={openVideoById} />
+      {videoDetails ? (
+        <View style={styles.playerOverlay}>
+          <PlayerScreen
+            client={client}
+            key={videoDetails.videoId}
+            onBack={closePlayer}
+            onPlayNextInQueue={playNextInQueue}
+            videoDetails={videoDetails}
+          />
+        </View>
+      ) : null}
+    </View>
+  ) : (
     <ConnectScreen
       apiToken={apiToken}
       connectionError={connectionError}
