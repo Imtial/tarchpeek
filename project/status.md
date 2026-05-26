@@ -323,6 +323,20 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
         - Janky frames: `122` (`19.52%`)
         - Percentiles: p50 `17ms`, p90 `23ms`, p95 `34ms`, p99 `113ms`
       - Assessment: no new regression signal specific to the channel-detail open-video path after the optimization
+  - TODO bundle 6 (completed): fullscreen orientation follows video aspect ratio (Android)
+    - Completed: extended `VideoDetails` mapping to include first usable video-stream dimensions (`streamWidth`, `streamHeight`) from `video.streams` where `type === 'video'`
+    - Completed: player fullscreen orientation policy now derives lock from stream aspect
+      - wide stream: lock fullscreen to landscape
+      - tall stream: lock fullscreen to portrait
+      - square/missing dimensions: do not force orientation
+    - Completed: switched fullscreen orientation control to `willEnterFullscreen` / `willExitFullscreen` lifecycle timing and kept `onFullscreenChange(false)` as exit safety net
+    - Completed: fullscreen exit/back cleanup releases orientation lock via `unlockAllOrientations()` (no restore-to-previous forced lock)
+    - Completed: integrated required Android native hooks for `react-native-orientation-locker`
+      - `MainActivity.kt`: `onConfigurationChanged` broadcast forwarding
+      - `MainApplication.kt`: registered `OrientationActivityLifecycle`
+    - Validation: lint clean (`npx eslint src/screens/PlayerScreen.tsx src/screens/usePlayerSession.ts src/screens/player/fullscreenOrientation.ts`)
+    - Validation: TS compile clean (`npx tsc --noEmit`)
+    - Validation: Android native compile clean (`./gradlew :app:compileDebugKotlin`)
 - Image caching: no dedicated app-level LRU cache planned; continue with platform-native `Image` caching behavior
 
 ## Phase Summary

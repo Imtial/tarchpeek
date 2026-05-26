@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { VideoView } from 'react-native-video';
+import { ExpandableDescription } from '../components/ExpandableDescription';
 import { TARCHPEEK_CONSTANTS } from '../constants/tarchpeekConstants';
 import { useTheme } from '../design/ThemeProvider';
 import type { TubeArchivistClient, VideoDetails } from '../services/tubeArchivist';
@@ -58,21 +58,23 @@ function formatPublishedDate(published: string) {
 
 function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: PlayerScreenProps) {
   const { theme } = useTheme();
-  const { handleToggleWatched, isWatched, player } = usePlayerSession({
+  const { handleFullscreenChange, handleToggleWatched, handleWillEnterFullscreen, handleWillExitFullscreen, isWatched, player } =
+    usePlayerSession({
     client,
     onBack,
     onPlayNextInQueue,
     videoDetails,
   });
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const [hasExpandableDescription, setHasExpandableDescription] = useState(false);
-  const [focusedActionId, setFocusedActionId] = useState<string | null>(null);
+  const descriptionText = videoDetails.description || 'No description available.';
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.pageBackground }]} testID="player-screen">
       <View style={[styles.playerScreenFrame, { backgroundColor: theme.colors.videoFrameBackground }]}>
         <VideoView
           controls
+          onFullscreenChange={handleFullscreenChange}
+          willEnterFullscreen={handleWillEnterFullscreen}
+          willExitFullscreen={handleWillExitFullscreen}
           player={player}
           resizeMode="contain"
           style={styles.playerScreenVideo}
@@ -91,22 +93,10 @@ function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: Playe
               accessibilityLabel={isWatched ? 'Watched' : 'Mark watched'}
               accessibilityRole="button"
               focusable
-              onBlur={() => {
-                setFocusedActionId(current => (current === 'watched-toggle' ? null : current));
-              }}
-              onFocus={() => {
-                setFocusedActionId('watched-toggle');
-              }}
               onPress={() => {
                 handleToggleWatched().catch(() => undefined);
               }}
-              style={({ pressed }) => [
-                styles.watchedToggleButton,
-                {
-                  borderColor: focusedActionId === 'watched-toggle' ? theme.colors.accent : 'transparent',
-                },
-                pressed ? styles.buttonPressed : null,
-              ]}>
+              style={({ pressed }) => [styles.watchedToggleButton, pressed ? styles.buttonPressed : null]}>
               <MaterialCommunityIcons
                 color={isWatched ? theme.colors.accent : theme.colors.textSecondary}
                 name={isWatched ? 'check-circle' : 'check-circle-outline'}
@@ -132,75 +122,13 @@ function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: Playe
         </View>
 
         <View style={[styles.metadataCard, { borderColor: theme.colors.border }]}>
-          {isDescriptionExpanded ? (
-            <ScrollView
-              nestedScrollEnabled
-              persistentScrollbar
-              showsVerticalScrollIndicator
-              style={styles.expandedDescriptionScroll}>
-              <Text style={[styles.videoMeta, { color: theme.colors.textPrimary }]}>
-                {videoDetails.description}
-              </Text>
-            </ScrollView>
-          ) : (
-            <Text
-              numberOfLines={COLLAPSED_DESCRIPTION_LINES}
-              onTextLayout={event => {
-                setHasExpandableDescription(
-                  event.nativeEvent.lines.length > COLLAPSED_DESCRIPTION_LINES,
-                );
-              }}
-              style={[styles.videoMeta, { color: theme.colors.textPrimary }]}>
-              {videoDetails.description}
-            </Text>
-          )}
-          {isDescriptionExpanded ? (
-            <Pressable
-              accessibilityRole="button"
-              focusable
-              onBlur={() => {
-                setFocusedActionId(current => (current === 'description-collapse' ? null : current));
-              }}
-              onFocus={() => {
-                setFocusedActionId('description-collapse');
-              }}
-              onPress={() => {
-                setIsDescriptionExpanded(false);
-              }}
-              style={({ pressed }) => [
-                styles.descriptionToggleButton,
-                {
-                  borderColor:
-                    focusedActionId === 'description-collapse' ? theme.colors.accent : 'transparent',
-                },
-                pressed ? styles.buttonPressed : null,
-              ]}>
-              <Text style={[styles.seeMoreLabel, { color: theme.colors.textSecondary }]}>See less...</Text>
-            </Pressable>
-          ) : null}
-          {!isDescriptionExpanded && hasExpandableDescription ? (
-            <Pressable
-              accessibilityRole="button"
-              focusable
-              onBlur={() => {
-                setFocusedActionId(current => (current === 'description-toggle' ? null : current));
-              }}
-              onFocus={() => {
-                setFocusedActionId('description-toggle');
-              }}
-              onPress={() => {
-                setIsDescriptionExpanded(true);
-              }}
-              style={({ pressed }) => [
-                styles.descriptionToggleButton,
-                {
-                  borderColor: focusedActionId === 'description-toggle' ? theme.colors.accent : 'transparent',
-                },
-                pressed ? styles.buttonPressed : null,
-              ]}>
-              <Text style={[styles.seeMoreLabel, { color: theme.colors.textSecondary }]}>See more ...</Text>
-            </Pressable>
-          ) : null}
+          <ExpandableDescription
+            collapsedLines={COLLAPSED_DESCRIPTION_LINES}
+            descriptionStyle={[styles.videoMeta, { color: theme.colors.textPrimary }]}
+            text={descriptionText}
+            toggleButtonStyle={styles.descriptionToggleButton}
+            toggleLabelStyle={styles.seeMoreLabel}
+          />
         </View>
       </View>
     </SafeAreaView>
@@ -246,7 +174,6 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   descriptionToggleButton: {
-    alignSelf: 'flex-start',
     borderWidth: 0,
     marginTop: 8,
     paddingHorizontal: 0,
@@ -274,10 +201,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     paddingHorizontal: 12,
     paddingVertical: 10,
-  },
-  expandedDescriptionScroll: {
-    flexGrow: 0,
-    flexShrink: 1,
   },
   videoTitle: {
     fontSize: 18,

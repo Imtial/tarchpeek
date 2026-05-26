@@ -10,6 +10,8 @@ type VideoDetails = {
   resumePositionSeconds: number;
   title: string;
   duration?: number;
+  streamWidth?: number;
+  streamHeight?: number;
   durationLabel: string;
   viewCount: number;
   channelName: string;

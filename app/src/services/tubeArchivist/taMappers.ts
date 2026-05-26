@@ -37,11 +37,14 @@ function mapVideoToContinueWatchingItem(video: Video, serverUrl: string): Contin
 }
 
 function mapVideoDetails(videoId: string, video: Video, serverUrl: string, apiToken: string): VideoDetails {
+  const firstUsableVideoStream = video.streams.find(stream => stream.type === 'video' && stream.width && stream.height);
   return {
     videoId,
     resumePositionSeconds: video.player.position ?? 0,
     title: video.title,
     duration: video.player.duration,
+    streamWidth: firstUsableVideoStream?.width,
+    streamHeight: firstUsableVideoStream?.height,
     durationLabel: video.player.duration_str,
     viewCount: video.stats.view_count ?? 0,
     channelName: video.channel?.channel_name ?? 'Unknown channel',
