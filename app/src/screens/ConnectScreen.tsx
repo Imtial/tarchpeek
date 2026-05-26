@@ -1,4 +1,16 @@
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useRef } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../design/ThemeProvider';
 import { radii, spacing } from '../design/tokens';
@@ -27,19 +39,36 @@ function ConnectScreen(props: ConnectScreenProps) {
   const { theme } = useTheme();
   const { colors } = theme;
   const hasError = Boolean(props.connectionError);
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  function scrollFormToEnd(animated = true) {
+    scrollViewRef.current?.scrollToEnd({ animated });
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.pageBackground }]} testID="connect-screen">
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Image source={require('../../assets/tarchpeek.png')} style={styles.logo} />
-        <Text style={[styles.title, { color: colors.textPrimary }]}>TarchPeek</Text>
-        <Text style={[styles.body, styles.bodySpacing, { color: colors.textSecondary }]}>
-          Connect to your TubeArchivist server.
-        </Text>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}>
+        <ScrollView
+          ref={scrollViewRef}
+          contentContainerStyle={styles.content}
+          onContentSizeChange={() => {
+            scrollFormToEnd(false);
+          }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag">
+          <View style={styles.headerRow}>
+            <Image source={require('../../assets/tarchpeek.png')} style={styles.logo} />
+            <Text style={[styles.title, { color: colors.textPrimary }]}>TarchPeek</Text>
+          </View>
+          <Text style={[styles.body, styles.bodySpacing, { color: colors.textSecondary }]}>
+            Connect to your TubeArchivist server.
+          </Text>
 
-        <View style={[styles.card, { backgroundColor: colors.surfaceBackground }]}> 
-          <Text style={[styles.label, { color: colors.textPrimary }]}>Server URL</Text>
-          <TextInput
+          <View style={[styles.card, { backgroundColor: colors.surfaceBackground }]}>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>Server URL</Text>
+            <TextInput
             autoCapitalize="none"
             autoFocus
             autoCorrect={false}
@@ -53,6 +82,7 @@ function ConnectScreen(props: ConnectScreenProps) {
             onChangeText={props.onServerUrlChange}
             onFocus={() => {
               props.onFocusField('serverUrl');
+              scrollFormToEnd();
             }}
             placeholder="https://archive.local"
             placeholderTextColor={colors.inputPlaceholder}
@@ -72,13 +102,13 @@ function ConnectScreen(props: ConnectScreenProps) {
             ]}
             testID="connect-server-url-input"
             value={props.serverUrl}
-          />
-          {props.connectionFieldErrors.serverUrl ? (
-            <Text style={[styles.fieldError, { color: colors.errorText }]}>{props.connectionFieldErrors.serverUrl}</Text>
-          ) : null}
+            />
+            {props.connectionFieldErrors.serverUrl ? (
+              <Text style={[styles.fieldError, { color: colors.errorText }]}>{props.connectionFieldErrors.serverUrl}</Text>
+            ) : null}
 
-          <Text style={[styles.label, { color: colors.textPrimary }]}>API token</Text>
-          <TextInput
+            <Text style={[styles.label, { color: colors.textPrimary }]}>API token</Text>
+            <TextInput
             autoCapitalize="none"
             autoCorrect={false}
             editable={!props.isSaving}
@@ -89,6 +119,7 @@ function ConnectScreen(props: ConnectScreenProps) {
             onChangeText={props.onApiTokenChange}
             onFocus={() => {
               props.onFocusField('apiToken');
+              scrollFormToEnd();
             }}
             placeholder="Paste API token"
             placeholderTextColor={colors.inputPlaceholder}
@@ -109,50 +140,51 @@ function ConnectScreen(props: ConnectScreenProps) {
             ]}
             testID="connect-api-token-input"
             value={props.apiToken}
-          />
-          {props.connectionFieldErrors.apiToken ? (
-            <Text style={[styles.fieldError, { color: colors.errorText }]}>{props.connectionFieldErrors.apiToken}</Text>
-          ) : null}
+            />
+            {props.connectionFieldErrors.apiToken ? (
+              <Text style={[styles.fieldError, { color: colors.errorText }]}>{props.connectionFieldErrors.apiToken}</Text>
+            ) : null}
 
-          {props.connectionError ? (
-            <View
-              style={[
-                styles.errorBanner,
+            {props.connectionError ? (
+              <View
+                style={[
+                  styles.errorBanner,
+                  {
+                    backgroundColor: colors.errorBackground,
+                    borderColor: colors.errorBorder,
+                  },
+                ]}
+                testID="connect-error-banner">
+                <Text style={[styles.errorBannerLabel, { color: colors.errorText }]}>Connection failed</Text>
+                <Text style={[styles.errorBannerBody, { color: colors.errorText }]}>{props.connectionError}</Text>
+              </View>
+            ) : null}
+
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ busy: props.isSaving, disabled: props.isSaving }}
+              disabled={props.isSaving}
+              focusable
+              onPress={props.onSaveConnection}
+              style={({ pressed }) => [
+                styles.button,
                 {
-                  backgroundColor: colors.errorBackground,
-                  borderColor: colors.errorBorder,
+                  backgroundColor: props.isSaving
+                    ? colors.buttonDisabledBackground
+                    : colors.buttonPrimaryBackground,
                 },
-              ]}
-              testID="connect-error-banner">
-              <Text style={[styles.errorBannerLabel, { color: colors.errorText }]}>Connection failed</Text>
-              <Text style={[styles.errorBannerBody, { color: colors.errorText }]}>{props.connectionError}</Text>
-            </View>
-          ) : null}
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ busy: props.isSaving, disabled: props.isSaving }}
-            disabled={props.isSaving}
-            focusable
-            onPress={props.onSaveConnection}
-            style={({ pressed }) => [
-              styles.button,
-              {
-                backgroundColor: props.isSaving
-                  ? colors.buttonDisabledBackground
-                  : colors.buttonPrimaryBackground,
-              },
                 pressed && !props.isSaving ? styles.buttonPressed : null,
-            ]}
-            testID="connect-save-button">
-            {props.isSaving ? (
-              <ActivityIndicator color="#e2e8f0" />
-            ) : (
-              <Text style={[styles.buttonText, { color: colors.buttonLabel }]}>Save connection</Text>
-            )}
-          </Pressable>
-        </View>
-      </ScrollView>
+              ]}
+              testID="connect-save-button">
+              {props.isSaving ? (
+                <ActivityIndicator color="#e2e8f0" />
+              ) : (
+                <Text style={[styles.buttonText, { color: colors.buttonLabel }]}>Save connection</Text>
+              )}
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -169,15 +201,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.xxl,
   },
+  headerRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.sm,
+  },
   title: {
     fontSize: 40,
     fontWeight: '700',
-    marginBottom: spacing.sm,
   },
   logo: {
-    alignSelf: 'flex-start',
     height: 56,
-    marginBottom: spacing.md,
     width: 56,
   },
   body: {
