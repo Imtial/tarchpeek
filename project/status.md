@@ -42,7 +42,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Immediate Next Steps
 
-1. Bundle F (active): Android playback performance validation + targeted optimization
+1. Bundle F (completed): Android playback performance validation + targeted optimization
    - Treat feature scope as launch-ready; focus on measured performance quality for core viewing loop
    - Measure baseline for `Connect -> Home`, `Home -> Player`, and `Player -> Back` on Android using RN DevTools profiler + FPS sampling
    - Record evidence and baseline metrics directly in this file before making optimizations
@@ -79,7 +79,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
   - Validation note: Maestro is now the mainline Android E2E framework for launch-critical flows
    - Validation note: `npm run e2e:test:android:resume` now passes against the local seeded fixture
    - Validation note: `node scripts/run-maestro-android.mjs maestro/scenarios/player-back-origin-surfaces.yaml` now passes
-- Bundle F: Android playback performance validation (in progress)
+- Bundle F: Android playback performance validation (completed)
   - Measurement runbook (baseline then re-measure):
     - Build context: Android debug build on emulator/device, same runtime target for all captures in a pass
     - Flow A: `Connect -> Home` (from submit tap until first populated Home list render)
@@ -140,7 +140,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
     - `Home -> Player`: avg FPS `30.5` (from `30.0`), min FPS `28.4` (from `27.4`), p90 `32ms` (from `150ms`), janky `14.46%` (from `44.94%`)
     - `Player -> Back`: avg FPS `40.8` (from `11.4`), min FPS `6.4` (from `1.9`), p90 `26ms` (from `250ms`), janky `4.29%` (from `60.38%`)
   - Working rule: no new `useEffect` unless explicitly justified against a simpler alternative
-- Bundle G: thermo-nuclear maintainability audit + decomposition plan (active)
+- Bundle G: thermo-nuclear maintainability audit + decomposition plan (completed)
   - Scope lock:
     - Include: `app/src` and app test assets under `app/maestro`
     - Exclude: project tracking docs, TubeArchivist backend/fixtures, Orval-generated files under `app/src/api/generated`
@@ -244,7 +244,7 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
       - Confirmed feasible channel capability/shape helpers via `GET /api/channel/{channel_id}/` and `GET /api/channel/{channel_id}/nav/`
       - Confirmed feasible search channel/playlist surfacing from existing `/api/search/` response shape already consumed by app search client
       - No API blockers identified for closing channel feature gaps in MVP scope
-  - TODO bundle 5 (next): Channel completion implementation slice
+  - TODO bundle 5 (completed): Channel completion implementation slice
     - Add channel-video browsing surface on channel detail using `video_retrieve(channel=<id>)` with explicit open-video path
     - Add explicit error/empty/retry handling for channels list + channel detail load paths (without broad architecture change)
     - Surface channel and playlist search result groups in `SearchScreen` with explicit open-navigation actions

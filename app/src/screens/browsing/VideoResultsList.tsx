@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { TARCHPEEK_CONSTANTS } from '../../constants/tarchpeekConstants';
 import { useTheme } from '../../design/ThemeProvider';
 import type { ContinueWatchingItem } from '../../services/tubeArchivist';
@@ -51,6 +51,7 @@ function VideoResultsList({
   const { colors } = theme;
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
+  const endIndicatorScale = useRef(new Animated.Value(0.92)).current;
   const queueVideoIds = useMemo(() => items.map(video => video.videoId), [items]);
   const queueIndexByVideoId = useMemo(
     () => new Map(queueVideoIds.map((videoId, index) => [videoId, index])),
@@ -73,6 +74,19 @@ function VideoResultsList({
       setActiveVideoId(null);
     }
   }, [onOpenVideo, queueIndexByVideoId, queueVideoIds]);
+
+  useEffect(() => {
+    if (hasNextPage || items.length === 0 || isLoading) {
+      return;
+    }
+    endIndicatorScale.setValue(0.92);
+    Animated.spring(endIndicatorScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      bounciness: 12,
+      speed: 14,
+    }).start();
+  }, [endIndicatorScale, hasNextPage, isLoading, items.length]);
 
   function renderProgress(item: ContinueWatchingItem) {
     const duration = Math.max(1, item.durationSeconds);
@@ -161,10 +175,18 @@ function VideoResultsList({
       return null;
     }
 
+    if (!hasNextPage) {
+      return (
+        <Animated.View style={[styles.endOfListWrap, { transform: [{ scale: endIndicatorScale }] }]}>
+          <View style={[styles.endOfListLine, { backgroundColor: colors.border }]} />
+        </Animated.View>
+      );
+    }
+
     return (
       <Pressable
         accessibilityRole="button"
-        disabled={!hasNextPage || isLoadingMore}
+        disabled={isLoadingMore}
         onBlur={() => {
           setFocusedElementId(current => (current === 'video-load-more' ? null : current));
         }}
@@ -178,15 +200,15 @@ function VideoResultsList({
           styles.loadMoreButton,
           {
             backgroundColor:
-              hasNextPage && !isLoadingMore
+              !isLoadingMore
                 ? colors.buttonSecondaryBackground
                 : colors.buttonDisabledBackground,
           },
           focusedElementId === 'video-load-more' ? styles.buttonFocused : null,
-          pressed && hasNextPage && !isLoadingMore ? styles.buttonPressed : null,
+          pressed && !isLoadingMore ? styles.buttonPressed : null,
         ]}>
         <Text style={[styles.loadMoreLabel, { color: colors.buttonLabel }]}>
-          {isLoadingMore ? 'Loading...' : hasNextPage ? 'Load next page' : 'No more pages'}
+          {isLoadingMore ? 'Loading...' : 'Load next page'}
         </Text>
       </Pressable>
     );
@@ -242,6 +264,16 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     textTransform: 'uppercase',
+  },
+  endOfListWrap: {
+    alignItems: 'center',
+    marginTop: spacing.md,
+    paddingBottom: spacing.md,
+  },
+  endOfListLine: {
+    borderRadius: 999,
+    height: 5,
+    width: 64,
   },
   videoItem: {
     borderRadius: radii.md,

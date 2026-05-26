@@ -35,6 +35,8 @@ function ChannelDetailScreen({ channelId, client, onOpenVideo }: ChannelDetailSc
     channelId,
     client,
   });
+  const descriptionText = detail?.description ?? 'No description available.';
+  const shouldShowDescriptionToggle = hasExpandableDescription || descriptionText.length > 140;
 
   useEffect(() => {
     setIsDescriptionExpanded(false);
@@ -48,27 +50,30 @@ function ChannelDetailScreen({ channelId, client, onOpenVideo }: ChannelDetailSc
       ) : (
         <View style={[styles.banner, { backgroundColor: colors.surfacePressed }]} />
       )}
-      <Text style={[styles.meta, { color: colors.textSecondary }]}>
-        {`${detail?.subscriberCount.toLocaleString() ?? 0} subscribers`}
-      </Text>
-      <Text style={[styles.meta, { color: colors.textSecondary }]}>
-        {detail?.subscribed ? 'Subscribed' : 'Not subscribed'}
-      </Text>
+      <View style={styles.metaWrap}>
+        <Text style={[styles.meta, { color: colors.textSecondary }]}>
+          {`${detail?.subscriberCount.toLocaleString() ?? 0} subscribers`}
+        </Text>
+        <Text style={[styles.metaStatus, { color: colors.textSecondary }]}>
+          {detail?.subscribed ? 'Subscribed' : 'Not subscribed'}
+        </Text>
+      </View>
       <View style={[styles.descriptionCard, { borderColor: colors.border }]}>
         {isDescriptionExpanded ? (
           <ScrollView nestedScrollEnabled persistentScrollbar style={styles.expandedDescriptionScroll}>
             <Text style={[styles.description, { color: colors.textPrimary }]}>
-              {detail?.description ?? 'No description available.'}
+              {descriptionText}
             </Text>
           </ScrollView>
         ) : (
           <Text
             numberOfLines={COLLAPSED_DESCRIPTION_LINES}
             onTextLayout={event => {
-              setHasExpandableDescription(event.nativeEvent.lines.length > COLLAPSED_DESCRIPTION_LINES);
+              const next = event.nativeEvent.lines.length > COLLAPSED_DESCRIPTION_LINES;
+              setHasExpandableDescription(current => (current === next ? current : next));
             }}
             style={[styles.description, { color: colors.textPrimary }]}>
-            {detail?.description ?? 'No description available.'}
+            {descriptionText}
           </Text>
         )}
         {isDescriptionExpanded ? (
@@ -81,7 +86,7 @@ function ChannelDetailScreen({ channelId, client, onOpenVideo }: ChannelDetailSc
             <Text style={[styles.descriptionToggleLabel, { color: colors.textSecondary }]}>See less...</Text>
           </Pressable>
         ) : null}
-        {!isDescriptionExpanded && hasExpandableDescription ? (
+        {!isDescriptionExpanded && shouldShowDescriptionToggle ? (
           <Pressable
             accessibilityRole="button"
             onPress={() => {
@@ -131,7 +136,7 @@ function ChannelDetailScreen({ channelId, client, onOpenVideo }: ChannelDetailSc
 const styles = StyleSheet.create({
   banner: {
     aspectRatio: 16 / 5,
-    borderRadius: radii.md,
+    borderRadius: 0,
     width: '100%',
   },
   description: {
@@ -142,6 +147,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.md,
     borderWidth: 1,
     marginTop: spacing.md,
+    marginHorizontal: spacing.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.sm,
   },
@@ -159,10 +165,21 @@ const styles = StyleSheet.create({
   },
   meta: {
     fontSize: 12,
+  },
+  metaWrap: {
+    marginTop: spacing.sm,
+    paddingHorizontal: spacing.sm,
+  },
+  metaStatus: {
+    borderRadius: radii.md,
+    fontSize: 12,
     marginTop: spacing.xs,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.xs,
   },
   errorRow: {
     alignItems: 'flex-start',
+    marginHorizontal: spacing.sm,
     marginTop: spacing.sm,
   },
   retryButton: {
@@ -178,6 +195,7 @@ const styles = StyleSheet.create({
   },
   stateText: {
     fontSize: 13,
+    marginHorizontal: spacing.sm,
     marginTop: spacing.sm,
   },
 });
