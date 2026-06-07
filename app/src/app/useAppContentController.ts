@@ -20,15 +20,22 @@ type ConnectionFieldErrors = {
   serverUrl: string | null;
   apiToken: string | null;
 };
+type DraftConnection = StoredConnection;
+type ConnectionState =
+  | { status: 'bootstrapping' }
+  | { status: 'disconnected'; error: string | null }
+  | { status: 'connecting' }
+  | { status: 'connected'; connection: TubeArchivistConnection };
 
 function useAppContentController() {
-  const [serverUrl, setServerUrl] = useState('');
-  const [apiToken, setApiToken] = useState('');
-  const [activeConnection, setActiveConnection] = useState<TubeArchivistConnection | null>(null);
+  const [draftConnection, setDraftConnection] = useState<DraftConnection>({
+    serverUrl: '',
+    apiToken: '',
+  });
+  const [connectionState, setConnectionState] = useState<ConnectionState>({
+    status: 'bootstrapping',
+  });
   const [focusedField, setFocusedField] = useState<FieldName>(null);
-  const [isHydrating, setIsHydrating] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [connectionError, setConnectionError] = useState<string | null>(null);
   const [connectionFieldErrors, setConnectionFieldErrors] = useState<ConnectionFieldErrors>({
     serverUrl: null,
     apiToken: null,
@@ -38,17 +45,17 @@ function useAppContentController() {
     null,
   );
   const [browseRefreshKey, setBrowseRefreshKey] = useState(0);
+  const activeConnection =
+    connectionState.status === 'connected' ? connectionState.connection : null;
+  const connectionError = connectionState.status === 'disconnected' ? connectionState.error : null;
+  const isHydrating = connectionState.status === 'bootstrapping';
+  const isSaving = connectionState.status === 'connecting';
 
   const client = useTubeArchivistClient({
     serverUrl: activeConnection?.serverUrl ?? 'http://localhost',
     apiToken: activeConnection?.apiToken ?? '',
   });
-  const hasConnection = Boolean(activeConnection);
-
-  async function activateConnection(connection: StoredConnection) {
-    await validateTubeArchivistConnection(connection);
-    setActiveConnection(connection);
-  }
+  const hasConnection = connectionState.status === 'connected';
 
   useEffect(() => {
     let isMounted = true;
@@ -61,22 +68,20 @@ function useAppContentController() {
           return;
         }
 
-        if (storedConnection.serverUrl) {
-          setServerUrl(storedConnection.serverUrl);
-        }
-
-        if (storedConnection.apiToken) {
-          setApiToken(storedConnection.apiToken);
-        }
+        setDraftConnection(storedConnection);
 
         if (!storedConnection.serverUrl || !storedConnection.apiToken) {
+          setConnectionState({ status: 'disconnected', error: null });
           return;
         }
 
         try {
-          await activateConnection(storedConnection);
+          await validateTubeArchivistConnection(storedConnection);
           if (isMounted) {
-            setConnectionError(null);
+            setConnectionState({
+              status: 'connected',
+              connection: storedConnection,
+            });
             setConnectionFieldErrors({
               serverUrl: null,
               apiToken: null,
@@ -86,14 +91,15 @@ function useAppContentController() {
           if (isMounted) {
             const message =
               error instanceof Error ? error.message : 'Saved server settings could not connect.';
-            setConnectionError(message);
+            setConnectionState({ status: 'disconnected', error: message });
           }
         }
       } catch {
-        return;
-      } finally {
         if (isMounted) {
-          setIsHydrating(false);
+          setConnectionState({
+            status: 'disconnected',
+            error: 'Saved server settings could not be loaded.',
+          });
         }
       }
     }
@@ -106,8 +112,8 @@ function useAppContentController() {
   }, []);
 
   async function saveConnection() {
-    const trimmedServerUrl = serverUrl.trim();
-    const trimmedApiToken = apiToken.trim();
+    const trimmedServerUrl = draftConnection.serverUrl.trim();
+    const trimmedApiToken = draftConnection.apiToken.trim();
     const nextFieldErrors: ConnectionFieldErrors = {
       serverUrl: trimmedServerUrl ? null : 'Server URL is required.',
       apiToken: trimmedApiToken ? null : 'API token is required.',
@@ -115,12 +121,11 @@ function useAppContentController() {
 
     if (nextFieldErrors.serverUrl || nextFieldErrors.apiToken) {
       setConnectionFieldErrors(nextFieldErrors);
-      setConnectionError(null);
+      setConnectionState({ status: 'disconnected', error: null });
       return;
     }
 
-    setIsSaving(true);
-    setConnectionError(null);
+    setConnectionState({ status: 'connecting' });
     setConnectionFieldErrors({
       serverUrl: null,
       apiToken: null,
@@ -133,37 +138,43 @@ function useAppContentController() {
       };
       await validateTubeArchivistConnection(nextConnection);
       await saveStoredConnection(nextConnection);
-
-      const storedConnection = await loadStoredConnection();
-      setServerUrl(storedConnection.serverUrl);
-      setApiToken(storedConnection.apiToken);
-      setActiveConnection(storedConnection);
-      setConnectionError(null);
+      setDraftConnection(nextConnection);
+      setConnectionState({
+        status: 'connected',
+        connection: nextConnection,
+      });
     } catch (error) {
-      setActiveConnection(null);
       const message = error instanceof Error ? error.message : 'Connection check failed.';
-      setConnectionError(message);
-    } finally {
-      setIsSaving(false);
+      setConnectionState({ status: 'disconnected', error: message });
     }
   }
 
   function updateServerUrl(value: string) {
-    setConnectionError(null);
+    if (connectionState.status === 'disconnected' && connectionState.error) {
+      setConnectionState({ status: 'disconnected', error: null });
+    }
     setConnectionFieldErrors(currentErrors => ({
       ...currentErrors,
       serverUrl: value.trim() ? null : currentErrors.serverUrl,
     }));
-    setServerUrl(value);
+    setDraftConnection(currentConnection => ({
+      ...currentConnection,
+      serverUrl: value,
+    }));
   }
 
   function updateApiToken(value: string) {
-    setConnectionError(null);
+    if (connectionState.status === 'disconnected' && connectionState.error) {
+      setConnectionState({ status: 'disconnected', error: null });
+    }
     setConnectionFieldErrors(currentErrors => ({
       ...currentErrors,
       apiToken: value.trim() ? null : currentErrors.apiToken,
     }));
-    setApiToken(value);
+    setDraftConnection(currentConnection => ({
+      ...currentConnection,
+      apiToken: value,
+    }));
   }
 
   async function openVideoById(videoId: string, queueContext?: PlaybackQueueContext) {
@@ -209,18 +220,19 @@ function useAppContentController() {
   }
 
   return {
-    apiToken,
+    apiToken: draftConnection.apiToken,
     client,
     closePlayer,
     browseRefreshKey,
     connectionError,
+    connectionStatus: connectionState.status,
     focusedField,
     hasConnection,
     isHydrating,
     isSaving,
     openVideoById,
     playNextInQueue,
-    serverUrl,
+    serverUrl: draftConnection.serverUrl,
     setApiToken: updateApiToken,
     setFocusedField,
     setServerUrl: updateServerUrl,

@@ -26,7 +26,6 @@ type ConnectScreenProps = {
     apiToken: string | null;
   };
   focusedField: FieldName;
-  isHydrating: boolean;
   isSaving: boolean;
   onServerUrlChange: (value: string) => void;
   onApiTokenChange: (value: string) => void;

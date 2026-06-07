@@ -68,6 +68,12 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
   - Validation: `corepack pnpm fmt:check` clean
   - Validation: `corepack pnpm lint` clean
   - Validation: `corepack pnpm exec tsc --noEmit` clean
+- Bundle L: startup auto-connect flow cleanup (implemented, awaiting approval)
+  - Replaced the auth bootstrap boolean mix in `app/src/app/useAppContentController.ts` with an explicit connection-state model: `bootstrapping`, `disconnected`, `connecting`, `connected`
+  - Split saved-form draft data from the validated live connection so stored credentials can prefill the form without implying an active session
+  - App root now renders a dedicated `StartupScreen` while stored credentials load and auto-connect is in flight, preventing the connect form flash before Home
+  - Failed auto-connect now falls back to the connect form with stored `serverUrl` and `apiToken` still prefilled plus the existing error banner
+  - Validation: `corepack pnpm --dir app verify` clean
 - Bundle J: app lint/package-manager migration (implemented and approved)
   - Replaced ESLint with `oxlint@1.68.0` using root `.oxlintrc.json`
   - Enabled oxlint type-aware linting via `oxlint-tsgolint` and enforced deprecated-API detection with `typescript/no-deprecated`

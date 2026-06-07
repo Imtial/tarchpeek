@@ -5,6 +5,7 @@ import { ThemeProvider, useTheme } from './src/design/ThemeProvider';
 import { BrowsingTabs } from './src/navigation/BrowsingTabs';
 import { ConnectScreen } from './src/screens/ConnectScreen';
 import { PlayerScreen } from './src/screens/PlayerScreen';
+import { StartupScreen } from './src/screens/StartupScreen';
 
 function App() {
   return (
@@ -35,9 +36,9 @@ function AppContent() {
     closePlayer,
     connectionError,
     connectionFieldErrors,
+    connectionStatus,
     focusedField,
     hasConnection,
-    isHydrating,
     isSaving,
     openVideoById,
     playNextInQueue,
@@ -48,6 +49,10 @@ function AppContent() {
     setServerUrl,
     videoDetails,
   } = useAppContentController();
+
+  if (connectionStatus === 'bootstrapping') {
+    return <StartupScreen />;
+  }
 
   return hasConnection ? (
     <View style={styles.connectedRoot}>
@@ -74,7 +79,6 @@ function AppContent() {
       connectionError={connectionError}
       connectionFieldErrors={connectionFieldErrors}
       focusedField={focusedField}
-      isHydrating={isHydrating}
       isSaving={isSaving}
       onApiTokenChange={value => {
         setApiToken(value);
