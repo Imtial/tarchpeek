@@ -10,7 +10,10 @@ const HOME_PAGE_WINDOW_SIZE = TARCHPEEK_CONSTANTS.browsing.homePageWindowSize;
 type HomeScreenProps = {
   browseRefreshKey: number;
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
+  onOpenVideo: (
+    videoId: string,
+    queueContext?: { videoIds: string[]; currentIndex: number },
+  ) => Promise<void>;
 };
 
 type HomePageChunk = {
@@ -37,18 +40,21 @@ function HomeScreen({ browseRefreshKey, client, onOpenVideo }: HomeScreenProps) 
     },
     [client],
   );
-  const mergePageChunks = useCallback((currentItems: HomePageChunk[], nextPageItems: HomePageChunk[]) => {
-    const nextPageChunk = nextPageItems[0];
-    if (!nextPageChunk) {
-      return currentItems;
-    }
-    const filtered = currentItems.filter(chunk => chunk.page !== nextPageChunk.page);
-    const nextChunks = [...filtered, nextPageChunk];
-    while (nextChunks.length > HOME_PAGE_WINDOW_SIZE) {
-      nextChunks.shift();
-    }
-    return nextChunks;
-  }, []);
+  const mergePageChunks = useCallback(
+    (currentItems: HomePageChunk[], nextPageItems: HomePageChunk[]) => {
+      const nextPageChunk = nextPageItems[0];
+      if (!nextPageChunk) {
+        return currentItems;
+      }
+      const filtered = currentItems.filter(chunk => chunk.page !== nextPageChunk.page);
+      const nextChunks = [...filtered, nextPageChunk];
+      while (nextChunks.length > HOME_PAGE_WINDOW_SIZE) {
+        nextChunks.shift();
+      }
+      return nextChunks;
+    },
+    [],
+  );
   const {
     hasNextPage,
     isLoading: isLoadingContinueWatching,
@@ -77,7 +83,8 @@ function HomeScreen({ browseRefreshKey, client, onOpenVideo }: HomeScreenProps) 
     <BrowsingScreenShell
       subtitle="Intentional retrieval with glanceable progress and newness cues."
       testID="home-screen"
-      title="Home">
+      title="Home"
+    >
       <VideoResultsList
         hasNextPage={hasNextPage}
         isLoading={isLoadingContinueWatching && homeItems.length === 0}

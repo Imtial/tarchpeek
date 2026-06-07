@@ -10,7 +10,10 @@ import { VideoResultsList } from './VideoResultsList';
 type ChannelDetailScreenProps = {
   channelId: string;
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
+  onOpenVideo: (
+    videoId: string,
+    queueContext?: { videoIds: string[]; currentIndex: number },
+  ) => Promise<void>;
 };
 
 function ChannelDetailScreen({ channelId, client, onOpenVideo }: ChannelDetailScreenProps) {
@@ -34,7 +37,11 @@ function ChannelDetailScreen({ channelId, client, onOpenVideo }: ChannelDetailSc
   const descriptionText = detail?.description ?? 'No description available.';
 
   return (
-    <BrowsingScreenShell subtitle="" testID="channel-detail-screen" title={detail?.channelName ?? 'Channel'}>
+    <BrowsingScreenShell
+      subtitle=""
+      testID="channel-detail-screen"
+      title={detail?.channelName ?? 'Channel'}
+    >
       {detail?.thumbnailUrl ? (
         <Image source={{ uri: detail.thumbnailUrl }} style={styles.banner} />
       ) : (
@@ -71,13 +78,16 @@ function ChannelDetailScreen({ channelId, client, onOpenVideo }: ChannelDetailSc
             onPress={() => {
               reloadVideos().catch(() => undefined);
             }}
-            style={[styles.retryButton, { backgroundColor: colors.buttonSecondaryBackground }]}>
+            style={[styles.retryButton, { backgroundColor: colors.buttonSecondaryBackground }]}
+          >
             <Text style={[styles.retryLabel, { color: colors.buttonLabel }]}>Retry</Text>
           </Pressable>
         </View>
       ) : null}
       {!isVideosLoading && !isVideosError && videoItems.length === 0 ? (
-        <Text style={[styles.stateText, { color: colors.textSecondary }]}>No videos found for this channel.</Text>
+        <Text style={[styles.stateText, { color: colors.textSecondary }]}>
+          No videos found for this channel.
+        </Text>
       ) : null}
       <VideoResultsList
         hasNextPage={hasNextPage}

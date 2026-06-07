@@ -11,6 +11,7 @@ These rules apply to the whole repository.
 - Treat `project/status.md` as the source of truth for active phase and immediate next steps.
 - Deferred items belong only in `project/backlog.md`. Do not track deferred items in active phase roadmap checklists or `project/status.md`.
 - Bundle TODOs into unit of work. Unit of work should be consistent, meaningful and small. After completing a unit of work, **stop** and wait for explicit user approval and mention the next TODOs along with unit of work bundle before starting the next work.
+- After implementation work in `app`, run `pnpm --dir app verify` before handoff.
 Example: Done - Awaiting approval
 [x] TODO 1 description
 [x] TODO 2 description

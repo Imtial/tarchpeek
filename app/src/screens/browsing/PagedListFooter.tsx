@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons/static';
 import { useTheme } from '../../design/ThemeProvider';
 import { radii, spacing } from '../../design/tokens';
 
@@ -55,7 +55,8 @@ function PagedListFooter({
         },
         isFocused ? styles.buttonFocused : null,
         pressed && isLoadMoreEnabled && !isLoadingMore ? styles.buttonPressed : null,
-      ]}>
+      ]}
+    >
       {isLoadingMore ? (
         <View style={[styles.loadingDot, { borderColor: colors.buttonLabel }]} />
       ) : (

@@ -13,7 +13,10 @@ import { VideoResultsList } from './VideoResultsList';
 
 type SearchScreenProps = {
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
+  onOpenVideo: (
+    videoId: string,
+    queueContext?: { videoIds: string[]; currentIndex: number },
+  ) => Promise<void>;
   onOpenChannel: (channelId: string) => void;
   onOpenPlaylist: (playlistId: string) => void;
 };
@@ -55,7 +58,8 @@ function SearchScreen({ client, onOpenChannel, onOpenPlaylist, onOpenVideo }: Se
   }
 
   const hasSubmittedQuery = submittedQuery.length > 0;
-  const hasAnyResults = results.length > 0 || channelResults.length > 0 || playlistResults.length > 0;
+  const hasAnyResults =
+    results.length > 0 || channelResults.length > 0 || playlistResults.length > 0;
 
   return (
     <BrowsingScreenShell subtitle="" testID="search-screen" title="Search">
@@ -104,7 +108,8 @@ function SearchScreen({ client, onOpenChannel, onOpenPlaylist, onOpenVideo }: Se
             focusedElementId === 'search-submit' ? styles.focused : null,
             pressed && !isLoading && queryInput.trim() ? styles.pressed : null,
           ]}
-          testID="search-submit-button">
+          testID="search-submit-button"
+        >
           <Text style={[styles.searchButtonLabel, { color: colors.buttonLabel }]}>
             {isLoading ? 'Searching...' : 'Search'}
           </Text>
@@ -118,9 +123,7 @@ function SearchScreen({ client, onOpenChannel, onOpenPlaylist, onOpenVideo }: Se
       ) : null}
 
       {hasSubmittedQuery && !isLoading && !isError && !hasAnyResults ? (
-        <Text style={[styles.stateText, { color: colors.textSecondary }]}>
-          No results found.
-        </Text>
+        <Text style={[styles.stateText, { color: colors.textSecondary }]}>No results found.</Text>
       ) : null}
       {channelResults.length > 0 ? (
         <View style={styles.groupWrap}>
@@ -132,7 +135,12 @@ function SearchScreen({ client, onOpenChannel, onOpenPlaylist, onOpenVideo }: Se
               onPress={() => {
                 onOpenChannel(result.channelId);
               }}
-              style={({ pressed }) => [styles.groupRow, { borderColor: colors.border }, pressed ? styles.pressed : null]}>
+              style={({ pressed }) => [
+                styles.groupRow,
+                { borderColor: colors.border },
+                pressed ? styles.pressed : null,
+              ]}
+            >
               <Text numberOfLines={1} style={[styles.groupName, { color: colors.textPrimary }]}>
                 {result.channelName}
               </Text>
@@ -153,7 +161,12 @@ function SearchScreen({ client, onOpenChannel, onOpenPlaylist, onOpenVideo }: Se
               onPress={() => {
                 onOpenPlaylist(result.playlistId);
               }}
-              style={({ pressed }) => [styles.groupRow, { borderColor: colors.border }, pressed ? styles.pressed : null]}>
+              style={({ pressed }) => [
+                styles.groupRow,
+                { borderColor: colors.border },
+                pressed ? styles.pressed : null,
+              ]}
+            >
               <Text numberOfLines={1} style={[styles.groupName, { color: colors.textPrimary }]}>
                 {result.playlistName}
               </Text>

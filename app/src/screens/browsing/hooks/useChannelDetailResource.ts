@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { ChannelDetail, ContinueWatchingItem, TubeArchivistClient } from '../../../services/tubeArchivist';
+import type {
+  ChannelDetail,
+  ContinueWatchingItem,
+  TubeArchivistClient,
+} from '../../../services/tubeArchivist';
 import { usePagedResource } from './usePagedResource';
 
 type UseChannelDetailResourceParams = {
@@ -20,7 +24,10 @@ function useChannelDetailResource({ channelId, client }: UseChannelDetailResourc
     ],
     [],
   );
-  const fetchPage = useCallback((page: number) => client.fetchChannelVideos(channelId, page), [channelId, client]);
+  const fetchPage = useCallback(
+    (page: number) => client.fetchChannelVideos(channelId, page),
+    [channelId, client],
+  );
   const {
     hasNextPage,
     isError: isVideosError,

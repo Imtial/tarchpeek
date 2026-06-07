@@ -5,7 +5,8 @@ import { spawnSync } from 'node:child_process';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(scriptDir, '..');
-const authConfigPath = process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'maestro/.runtime/tubearchivist-auth.json');
+const authConfigPath =
+  process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'maestro/.runtime/tubearchivist-auth.json');
 function fail(message) {
   console.error(message);
   process.exit(1);
@@ -13,17 +14,20 @@ function fail(message) {
 
 function loadAuthConfig() {
   if (!existsSync(authConfigPath)) {
-    fail(`Missing auth config at ${authConfigPath}. Run npm --prefix app run ta:seed:bootstrap first.`);
+    fail(`Missing auth config at ${authConfigPath}. Run pnpm --dir app ta:seed:bootstrap first.`);
   }
 
   let parsed;
   try {
     parsed = JSON.parse(readFileSync(authConfigPath, 'utf-8'));
   } catch (error) {
-    fail(`Failed to parse auth config ${authConfigPath}: ${error instanceof Error ? error.message : String(error)}`);
+    fail(
+      `Failed to parse auth config ${authConfigPath}: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 
-  const baseUrl = typeof parsed.baseUrl === 'string' ? parsed.baseUrl.trim().replace(/\/$/, '') : '';
+  const baseUrl =
+    typeof parsed.baseUrl === 'string' ? parsed.baseUrl.trim().replace(/\/$/, '') : '';
   const apiToken = typeof parsed.apiToken === 'string' ? parsed.apiToken.trim() : '';
   if (!baseUrl || !apiToken) {
     fail(`Auth config is missing baseUrl/apiToken: ${authConfigPath}`);
@@ -52,7 +56,9 @@ function requestUrlFor(url) {
 
 function runEmulatorHttpCheck(url, apiToken) {
   if (url.protocol !== 'http:') {
-    fail(`[emu-net-check] Unsupported protocol ${url.protocol}. Use an HTTP reverse proxy endpoint for emulator checks.`);
+    fail(
+      `[emu-net-check] Unsupported protocol ${url.protocol}. Use an HTTP reverse proxy endpoint for emulator checks.`,
+    );
   }
 
   const requestUrl = requestUrlFor(url);
@@ -72,8 +78,8 @@ function runEmulatorHttpCheck(url, apiToken) {
       requestUrl.toString(),
     ],
     {
-    cwd: appRoot,
-    encoding: 'utf-8',
+      cwd: appRoot,
+      encoding: 'utf-8',
     },
   );
 
@@ -81,9 +87,15 @@ function runEmulatorHttpCheck(url, apiToken) {
     fail(`[emu-net-check] curl request failed: ${result.stderr || result.stdout}`);
   }
 
-  const firstLine = result.stdout.split('\n').map(line => line.trim()).find(Boolean) ?? '';
+  const firstLine =
+    result.stdout
+      .split('\n')
+      .map(line => line.trim())
+      .find(Boolean) ?? '';
   if (!firstLine.startsWith('HTTP/')) {
-    fail(`[emu-net-check] Unexpected response from emulator network check: ${firstLine || '<empty>'}`);
+    fail(
+      `[emu-net-check] Unexpected response from emulator network check: ${firstLine || '<empty>'}`,
+    );
   }
 
   const statusCode = Number(firstLine.split(' ')[1] ?? 0);

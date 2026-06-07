@@ -14,7 +14,10 @@ type VideoResultsListProps = {
   items: ContinueWatchingItem[];
   isLoading: boolean;
   loadingCount: number;
-  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
+  onOpenVideo: (
+    videoId: string,
+    queueContext?: { videoIds: string[]; currentIndex: number },
+  ) => Promise<void>;
   hasNextPage?: boolean;
   isLoadingMore?: boolean;
   onLoadMore?: () => Promise<void>;
@@ -57,22 +60,25 @@ function VideoResultsList({
     [queueVideoIds],
   );
 
-  const handleOpenVideo = useCallback(async (item: ContinueWatchingItem) => {
-    setActiveVideoId(item.videoId);
-    const currentIndex = queueIndexByVideoId.get(item.videoId) ?? -1;
-    const queueContext =
-      currentIndex >= 0
-        ? {
-            videoIds: queueVideoIds,
-            currentIndex,
-          }
-        : undefined;
-    try {
-      await onOpenVideo(item.videoId, queueContext);
-    } finally {
-      setActiveVideoId(null);
-    }
-  }, [onOpenVideo, queueIndexByVideoId, queueVideoIds]);
+  const handleOpenVideo = useCallback(
+    async (item: ContinueWatchingItem) => {
+      setActiveVideoId(item.videoId);
+      const currentIndex = queueIndexByVideoId.get(item.videoId) ?? -1;
+      const queueContext =
+        currentIndex >= 0
+          ? {
+              videoIds: queueVideoIds,
+              currentIndex,
+            }
+          : undefined;
+      try {
+        await onOpenVideo(item.videoId, queueContext);
+      } finally {
+        setActiveVideoId(null);
+      }
+    },
+    [onOpenVideo, queueIndexByVideoId, queueVideoIds],
+  );
 
   function renderProgress(item: ContinueWatchingItem) {
     const duration = Math.max(1, item.durationSeconds);
@@ -90,7 +96,9 @@ function VideoResultsList({
             </View>
           ) : hasContinueProgress ? (
             <View style={[styles.badgeChip, { backgroundColor: colors.surfaceBackground }]}>
-              <Text style={[styles.badgeLabel, { color: colors.textPrimary }]}>{`${progressPercent}%`}</Text>
+              <Text
+                style={[styles.badgeLabel, { color: colors.textPrimary }]}
+              >{`${progressPercent}%`}</Text>
             </View>
           ) : (
             <View style={styles.badgeChipPlaceholder} />
@@ -102,13 +110,20 @@ function VideoResultsList({
               </View>
             ) : null}
             <View style={[styles.timeChip, { backgroundColor: colors.surfaceBackground }]}>
-              <Text style={[styles.timeChipLabel, { color: colors.textPrimary }]}>{item.durationLabel}</Text>
+              <Text style={[styles.timeChipLabel, { color: colors.textPrimary }]}>
+                {item.durationLabel}
+              </Text>
             </View>
           </View>
         </View>
         {hasContinueProgress ? (
           <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
-            <View style={[styles.progressFill, { backgroundColor: colors.accent, width: `${progressPercent}%` }]} />
+            <View
+              style={[
+                styles.progressFill,
+                { backgroundColor: colors.accent, width: `${progressPercent}%` },
+              ]}
+            />
           </View>
         ) : null}
       </View>
@@ -136,7 +151,8 @@ function VideoResultsList({
           { borderColor: focusedElementId === item.videoId ? colors.accent : colors.border },
           pressed ? styles.buttonPressed : null,
         ]}
-        testID={index === 0 ? 'video-card-first' : `video-card-${item.videoId}`}>
+        testID={index === 0 ? 'video-card-first' : `video-card-${item.videoId}`}
+      >
         <View style={styles.thumbnailWrap}>
           <Image source={{ uri: item.thumbnailUrl }} style={styles.thumbnailImage} />
           {renderProgress(item)}
@@ -145,11 +161,15 @@ function VideoResultsList({
           {item.title}
         </Text>
         <View style={styles.videoMetaRow}>
-          {item.channelLogoUrl ? <Image source={{ uri: item.channelLogoUrl }} style={styles.channelLogo} /> : null}
+          {item.channelLogoUrl ? (
+            <Image source={{ uri: item.channelLogoUrl }} style={styles.channelLogo} />
+          ) : null}
           <Text numberOfLines={1} style={[styles.videoMeta, { color: colors.textSecondary }]}>
             {item.channelName}
           </Text>
-          <Text style={[styles.videoMetaCount, { color: colors.textSecondary }]}>{`${formatViewCount(item.viewCount)} views`}</Text>
+          <Text
+            style={[styles.videoMetaCount, { color: colors.textSecondary }]}
+          >{`${formatViewCount(item.viewCount)} views`}</Text>
         </View>
       </Pressable>
     );
@@ -159,8 +179,17 @@ function VideoResultsList({
     return (
       <>
         {Array.from({ length: loadingCount }).map((_, index) => (
-          <View key={`video-skeleton-${index}`} style={[styles.videoItem, { borderColor: colors.border }]}>
-            <View style={[styles.thumbnailImage, styles.skeletonBlock, { backgroundColor: colors.surfacePressed }]} />
+          <View
+            key={`video-skeleton-${index}`}
+            style={[styles.videoItem, { borderColor: colors.border }]}
+          >
+            <View
+              style={[
+                styles.thumbnailImage,
+                styles.skeletonBlock,
+                { backgroundColor: colors.surfacePressed },
+              ]}
+            />
             <View style={[styles.skeletonTitle, { backgroundColor: colors.surfacePressed }]} />
             <View style={[styles.skeletonMeta, { backgroundColor: colors.surfacePressed }]} />
           </View>

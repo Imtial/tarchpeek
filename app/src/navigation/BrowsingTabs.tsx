@@ -2,7 +2,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import type { NavigatorScreenParams } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import type { ComponentProps } from 'react';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons/static';
 import { useTheme } from '../design/ThemeProvider';
 import type { TubeArchivistClient } from '../services/tubeArchivist';
 import { ChannelDetailScreen } from '../screens/browsing/ChannelDetailScreen';
@@ -36,7 +37,9 @@ type BrowsingTabParamList = {
 };
 
 const Tab = createBottomTabNavigator<BrowsingTabParamList>();
-const iconNameByRoute: Record<keyof BrowsingTabParamList, string> = {
+type MaterialCommunityIconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
+
+const iconNameByRoute: Record<keyof BrowsingTabParamList, MaterialCommunityIconName> = {
   Home: 'home-outline',
   Channels: 'television-play',
   Playlists: 'playlist-play',
@@ -52,12 +55,18 @@ function buildTabBarIcon(routeName: keyof BrowsingTabParamList) {
 type BrowsingTabsProps = {
   browseRefreshKey: number;
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
+  onOpenVideo: (
+    videoId: string,
+    queueContext?: { videoIds: string[]; currentIndex: number },
+  ) => Promise<void>;
 };
 
 type VideoOpenProps = {
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
+  onOpenVideo: (
+    videoId: string,
+    queueContext?: { videoIds: string[]; currentIndex: number },
+  ) => Promise<void>;
 };
 
 function HomeTabNavigator({ browseRefreshKey, client, onOpenVideo }: BrowsingTabsProps) {
@@ -182,7 +191,13 @@ function BrowsingTabs({ browseRefreshKey, client, onOpenVideo }: BrowsingTabsPro
         }}
       >
         <Tab.Screen name="Home">
-          {() => <HomeTabNavigator browseRefreshKey={browseRefreshKey} client={client} onOpenVideo={onOpenVideo} />}
+          {() => (
+            <HomeTabNavigator
+              browseRefreshKey={browseRefreshKey}
+              client={client}
+              onOpenVideo={onOpenVideo}
+            />
+          )}
         </Tab.Screen>
         <Tab.Screen name="Channels">
           {() => <ChannelsTabNavigator client={client} onOpenVideo={onOpenVideo} />}

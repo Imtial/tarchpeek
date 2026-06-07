@@ -5,7 +5,11 @@ import {
   type TubeArchivistConnection,
   type VideoDetails,
 } from '../services/tubeArchivist';
-import { loadStoredConnection, saveStoredConnection, type StoredConnection } from '../storage/connectionStorage';
+import {
+  loadStoredConnection,
+  saveStoredConnection,
+  type StoredConnection,
+} from '../storage/connectionStorage';
 
 type FieldName = 'serverUrl' | 'apiToken' | null;
 type PlaybackQueueContext = {
@@ -30,7 +34,9 @@ function useAppContentController() {
     apiToken: null,
   });
   const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null);
-  const [playbackQueueContext, setPlaybackQueueContext] = useState<PlaybackQueueContext | null>(null);
+  const [playbackQueueContext, setPlaybackQueueContext] = useState<PlaybackQueueContext | null>(
+    null,
+  );
   const [browseRefreshKey, setBrowseRefreshKey] = useState(0);
 
   const client = useTubeArchivistClient({
@@ -78,7 +84,8 @@ function useAppContentController() {
           }
         } catch (error) {
           if (isMounted) {
-            const message = error instanceof Error ? error.message : 'Saved server settings could not connect.';
+            const message =
+              error instanceof Error ? error.message : 'Saved server settings could not connect.';
             setConnectionError(message);
           }
         }
@@ -91,7 +98,7 @@ function useAppContentController() {
       }
     }
 
-    hydrateConnection();
+    void hydrateConnection();
 
     return () => {
       isMounted = false;

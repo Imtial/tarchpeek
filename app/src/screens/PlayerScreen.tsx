@@ -1,5 +1,5 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons/static';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { VideoView } from 'react-native-video';
 import { ExpandableDescription } from '../components/ExpandableDescription';
@@ -35,7 +35,9 @@ function formatPublishedDate(published: string) {
   const now = Date.now();
   const diffMs = now - publishedDate.getTime();
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  const absoluteLabel = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(publishedDate);
+  const absoluteLabel = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(
+    publishedDate,
+  );
 
   if (days < 1) {
     return `Today • ${absoluteLabel}`;
@@ -58,8 +60,14 @@ function formatPublishedDate(published: string) {
 
 function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: PlayerScreenProps) {
   const { theme } = useTheme();
-  const { handleFullscreenChange, handleToggleWatched, handleWillEnterFullscreen, handleWillExitFullscreen, isWatched, player } =
-    usePlayerSession({
+  const {
+    handleFullscreenChange,
+    handleToggleWatched,
+    handleWillEnterFullscreen,
+    handleWillExitFullscreen,
+    isWatched,
+    player,
+  } = usePlayerSession({
     client,
     onBack,
     onPlayNextInQueue,
@@ -68,8 +76,13 @@ function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: Playe
   const descriptionText = videoDetails.description || 'No description available.';
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.pageBackground }]} testID="player-screen">
-      <View style={[styles.playerScreenFrame, { backgroundColor: theme.colors.videoFrameBackground }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.pageBackground }]}
+      testID="player-screen"
+    >
+      <View
+        style={[styles.playerScreenFrame, { backgroundColor: theme.colors.videoFrameBackground }]}
+      >
         <VideoView
           controls
           onFullscreenChange={handleFullscreenChange}
@@ -84,9 +97,14 @@ function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: Playe
       </View>
       <View style={styles.playerMetadataSection}>
         <View style={styles.playerScreenHeader}>
-          <Text style={[styles.videoTitle, { color: theme.colors.textPrimary }]}>{videoDetails.title}</Text>
+          <Text style={[styles.videoTitle, { color: theme.colors.textPrimary }]}>
+            {videoDetails.title}
+          </Text>
           <View style={styles.videoMetaRow}>
-            <Text numberOfLines={1} style={[styles.videoMetaLine, { color: theme.colors.textSecondary }]}>
+            <Text
+              numberOfLines={1}
+              style={[styles.videoMetaLine, { color: theme.colors.textSecondary }]}
+            >
               {`${formatViewCount(videoDetails.viewCount)} • ${formatPublishedDate(videoDetails.published)}`}
             </Text>
             <Pressable
@@ -96,7 +114,11 @@ function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: Playe
               onPress={() => {
                 handleToggleWatched().catch(() => undefined);
               }}
-              style={({ pressed }) => [styles.watchedToggleButton, pressed ? styles.buttonPressed : null]}>
+              style={({ pressed }) => [
+                styles.watchedToggleButton,
+                pressed ? styles.buttonPressed : null,
+              ]}
+            >
               <MaterialCommunityIcons
                 color={isWatched ? theme.colors.accent : theme.colors.textSecondary}
                 name={isWatched ? 'check-circle' : 'check-circle-outline'}
@@ -111,11 +133,17 @@ function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: Playe
               <View
                 style={[
                   styles.channelLogoFallback,
-                  { backgroundColor: theme.colors.surfaceBackground, borderColor: theme.colors.border },
+                  {
+                    backgroundColor: theme.colors.surfaceBackground,
+                    borderColor: theme.colors.border,
+                  },
                 ]}
               />
             )}
-            <Text numberOfLines={1} style={[styles.channelName, { color: theme.colors.textPrimary }]}>
+            <Text
+              numberOfLines={1}
+              style={[styles.channelName, { color: theme.colors.textPrimary }]}
+            >
               {videoDetails.channelName}
             </Text>
           </View>

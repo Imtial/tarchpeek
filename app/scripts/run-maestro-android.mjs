@@ -5,11 +5,14 @@ import { spawnSync } from 'node:child_process';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(scriptDir, '..');
-const authConfigPath = process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'maestro/.runtime/tubearchivist-auth.json');
+const authConfigPath =
+  process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'maestro/.runtime/tubearchivist-auth.json');
 const emulatorNetworkCheckScriptPath = resolve(scriptDir, 'verify-emulator-ta-network.mjs');
-const maestroBinaryPath = process.env.MAESTRO_PATH ?? resolve(process.env.HOME ?? '', '.maestro/bin/maestro');
+const maestroBinaryPath =
+  process.env.MAESTRO_PATH ?? resolve(process.env.HOME ?? '', '.maestro/bin/maestro');
 const maestroApkPath = resolve(appRoot, 'android/app/build/outputs/apk/maestro/app-maestro.apk');
-const adbPath = process.env.ADB_PATH ?? `${process.env.HOME}/Library/Android/sdk/platform-tools/adb`;
+const adbPath =
+  process.env.ADB_PATH ?? `${process.env.HOME}/Library/Android/sdk/platform-tools/adb`;
 const maestroTarget = process.argv[2] ?? 'maestro';
 const extraMaestroArgs = process.argv.slice(3);
 const healthPollMs = Number(process.env.TA_E2E_HEALTH_POLL_MS ?? 3000);
@@ -24,7 +27,7 @@ function fail(message) {
 function loadAuthConfig() {
   if (!existsSync(authConfigPath)) {
     fail(
-      `Missing auth config at ${authConfigPath}. Run npm --prefix app run ta:seed:bootstrap first to seed and persist the token.`,
+      `Missing auth config at ${authConfigPath}. Run pnpm --dir app ta:seed:bootstrap first to seed and persist the token.`,
     );
   }
 
@@ -32,10 +35,13 @@ function loadAuthConfig() {
   try {
     parsed = JSON.parse(readFileSync(authConfigPath, 'utf-8'));
   } catch (error) {
-    fail(`Failed to parse auth config ${authConfigPath}: ${error instanceof Error ? error.message : String(error)}`);
+    fail(
+      `Failed to parse auth config ${authConfigPath}: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 
-  const baseUrl = typeof parsed.baseUrl === 'string' ? parsed.baseUrl.trim().replace(/\/$/, '') : '';
+  const baseUrl =
+    typeof parsed.baseUrl === 'string' ? parsed.baseUrl.trim().replace(/\/$/, '') : '';
   const apiToken = typeof parsed.apiToken === 'string' ? parsed.apiToken.trim() : '';
   if (!baseUrl || !apiToken) {
     fail(`Auth config is missing baseUrl/apiToken: ${authConfigPath}`);
@@ -57,7 +63,9 @@ async function verifyToken({ baseUrl, apiToken }) {
 
       const detail = await response.text();
       if (response.status === 401 || response.status === 403) {
-        fail(`Persisted token is not accepted (HTTP ${response.status}). Re-run ta:seed:bootstrap. Detail: ${detail}`);
+        fail(
+          `Persisted token is not accepted (HTTP ${response.status}). Re-run ta:seed:bootstrap. Detail: ${detail}`,
+        );
       }
     } catch {
       // service may still be booting
@@ -91,7 +99,7 @@ function verifyMaestroApkBuilt() {
     return;
   }
 
-  fail(`Maestro APK not found at ${maestroApkPath}. Run npm --prefix app run e2e:build:android first.`);
+  fail(`Maestro APK not found at ${maestroApkPath}. Run pnpm --dir app e2e:build:android first.`);
 }
 
 function installMaestroApk() {

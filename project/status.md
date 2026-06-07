@@ -2,7 +2,7 @@
 
 Status: `in_progress`
 Current phase: `Phase 04 - Playback MVP`
-Last updated: `2026-05-26`
+Last updated: `2026-06-08`
 
 ## Product Summary
 
@@ -53,6 +53,31 @@ The MVP targets `Android` and `Android TV`, prioritizes `Continue Watching`, hid
 
 ## Bundle Progress Notes
 
+- Bundle K: app formatter + API codegen cleanup (implemented and approved)
+  - Replaced `orval` with `@hey-api/openapi-ts@0.98.1` and removed `prettier` completely from the app toolchain
+  - Switched `api:generate` to Hey API and now generate a single typed contract file at `app/src/api/generated/types.gen.ts`
+  - Preserved runtime behavior by keeping the existing handwritten Axios transport and remapping it to Hey API generated request/response types instead of introducing a new generated runtime layer
+  - Removed stale Orval-generated endpoints/models files after migrating imports in `search`, transport, and mapper modules
+  - Switched app formatting to `oxfmt@0.53.0` only via `.oxfmtrc.json`, `fmt`, and `fmt:check`
+  - Replaced deprecated `react-native-vector-icons` with `@react-native-vector-icons/material-design-icons` scoped package and removed the legacy bundled font asset + unused `react-native.config.js`
+  - Eliminated transitive pnpm peer warnings by aligning the `react-dom` override to the app's installed `react` version and keeping the `@videojs/react` peer metadata patch
+  - Muted unavoidable upstream deprecated transitive package noise (`glob`, `inflight`) through pnpm's deprecation allowlist after removing the direct deprecated dependency cause in-app
+  - Validation: `corepack pnpm@11.5.2 install` clean
+  - Validation: `corepack pnpm api:generate` clean
+  - Validation: `corepack pnpm peers check` clean
+  - Validation: `corepack pnpm fmt:check` clean
+  - Validation: `corepack pnpm lint` clean
+  - Validation: `corepack pnpm exec tsc --noEmit` clean
+- Bundle J: app lint/package-manager migration (implemented and approved)
+  - Replaced ESLint with `oxlint@1.68.0` using root `.oxlintrc.json`
+  - Enabled oxlint type-aware linting via `oxlint-tsgolint` and enforced deprecated-API detection with `typescript/no-deprecated`
+  - Replaced the custom export-order lint rule with native oxlint `import/exports-last`
+  - Migrated app package management from npm to `pnpm@11.5.2` and committed `app/pnpm-lock.yaml`
+  - Added `app/pnpm-workspace.yaml` with React Native-safe `nodeLinker: hoisted` plus supply-chain protections: `allowBuilds`, `minimumReleaseAge`, `trustPolicy`, and `blockExoticSubdeps`
+  - Removed deprecated `hasTVPreferredFocus` usage surfaced by oxlint and fixed async-floating-promise warnings in existing effects
+  - Updated app README and helper-script user guidance from npm to pnpm commands
+  - Validation: `corepack pnpm lint` clean
+  - Validation: `corepack pnpm exec tsc --noEmit` clean
 - Bundle A: implemented and approved
 - Bundle B: implemented and approved
 - Bundle C: implemented and approved

@@ -36,19 +36,28 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
     },
     [client],
   );
-  const mergeItems = useCallback((currentItems: PlaylistPageChunk[], nextPageItems: PlaylistPageChunk[]) => {
-    const nextPageChunk = nextPageItems[0];
-    if (!nextPageChunk) {
-      return currentItems;
-    }
-    const filtered = currentItems.filter(chunk => chunk.page !== nextPageChunk.page);
-    const nextChunks = [...filtered, nextPageChunk];
-    while (nextChunks.length > PLAYLISTS_PAGE_WINDOW_SIZE) {
-      nextChunks.shift();
-    }
-    return nextChunks;
-  }, []);
-  const { hasNextPage, isLoading, isLoadingMore, items: pageChunks, loadMore } = usePagedResource<PlaylistPageChunk>({
+  const mergeItems = useCallback(
+    (currentItems: PlaylistPageChunk[], nextPageItems: PlaylistPageChunk[]) => {
+      const nextPageChunk = nextPageItems[0];
+      if (!nextPageChunk) {
+        return currentItems;
+      }
+      const filtered = currentItems.filter(chunk => chunk.page !== nextPageChunk.page);
+      const nextChunks = [...filtered, nextPageChunk];
+      while (nextChunks.length > PLAYLISTS_PAGE_WINDOW_SIZE) {
+        nextChunks.shift();
+      }
+      return nextChunks;
+    },
+    [],
+  );
+  const {
+    hasNextPage,
+    isLoading,
+    isLoadingMore,
+    items: pageChunks,
+    loadMore,
+  } = usePagedResource<PlaylistPageChunk>({
     fetchPage,
     mergeItems,
     reloadKey: client,
@@ -83,17 +92,24 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
           styles.row,
           { borderColor: focusedElementId === item.playlistId ? colors.accent : colors.border },
           pressed ? styles.pressed : null,
-        ]}>
+        ]}
+      >
         {item.thumbnailUrl ? (
           <Image source={{ uri: item.thumbnailUrl }} style={styles.thumb} />
         ) : (
           <View style={[styles.thumb, { backgroundColor: colors.surfacePressed }]} />
         )}
         <View style={styles.textWrap}>
-          <Text numberOfLines={3} style={[styles.title, styles.titleText, { color: colors.textPrimary }]}>
+          <Text
+            numberOfLines={3}
+            style={[styles.title, styles.titleText, { color: colors.textPrimary }]}
+          >
             {item.playlistName}
           </Text>
-          <Text numberOfLines={2} style={[styles.meta, styles.channelMeta, { color: colors.textSecondary }]}>
+          <Text
+            numberOfLines={2}
+            style={[styles.meta, styles.channelMeta, { color: colors.textSecondary }]}
+          >
             {item.channelName}
           </Text>
           <Text style={[styles.meta, { color: colors.textSecondary }]}>
@@ -108,10 +124,14 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
     <BrowsingScreenShell
       subtitle="Browse playlists with explicit entry into playlist details."
       testID="playlists-screen"
-      title="Playlists">
-      {isLoading
-        ? Array.from({ length: 8 }).map((_, index) => (
-          <View key={`playlist-skeleton-${index}`} style={[styles.row, { borderColor: colors.border }]}>
+      title="Playlists"
+    >
+      {isLoading ? (
+        Array.from({ length: 8 }).map((_, index) => (
+          <View
+            key={`playlist-skeleton-${index}`}
+            style={[styles.row, { borderColor: colors.border }]}
+          >
             <View style={[styles.thumb, { backgroundColor: colors.surfacePressed }]} />
             <View style={styles.textWrap}>
               <View style={[styles.skeletonTitle, { backgroundColor: colors.surfacePressed }]} />
@@ -120,19 +140,19 @@ function PlaylistsScreen({ client, onOpenPlaylist }: PlaylistsScreenProps) {
             </View>
           </View>
         ))
-        : (
-          <View style={styles.listWrap}>
-            <PagedFlashList
-              data={items}
-              drawDistance={PLAYLISTS_DRAW_DISTANCE}
-              hasNextPage={hasNextPage}
-              isLoadingMore={isLoadingMore}
-              keyExtractor={item => item.playlistId}
-              onLoadMore={loadMore}
-              renderItem={({ item }) => renderPlaylistCard(item)}
-            />
-          </View>
-        )}
+      ) : (
+        <View style={styles.listWrap}>
+          <PagedFlashList
+            data={items}
+            drawDistance={PLAYLISTS_DRAW_DISTANCE}
+            hasNextPage={hasNextPage}
+            isLoadingMore={isLoadingMore}
+            keyExtractor={item => item.playlistId}
+            onLoadMore={loadMore}
+            renderItem={({ item }) => renderPlaylistCard(item)}
+          />
+        </View>
+      )}
     </BrowsingScreenShell>
   );
 }

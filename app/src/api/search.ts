@@ -1,5 +1,5 @@
 import { customAxios } from './fetcher';
-import type { Channel, Playlist, Video } from './generated/models';
+import type { Channel, Playlist, Video } from './generated/types.gen';
 
 type SearchQueryType = 'simple' | 'video' | 'channel' | 'playlist' | 'full';
 
