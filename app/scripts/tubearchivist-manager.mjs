@@ -7,16 +7,19 @@ const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, '..', '..');
 
 const command = process.argv[2];
-const composeFile = process.env.COMPOSE_FILE ?? resolve(repoRoot, 'project/fixtures/tubearchivist-compose.yml');
+const composeFile =
+  process.env.COMPOSE_FILE ?? resolve(repoRoot, 'project/fixtures/tubearchivist-compose.yml');
 const projectName = process.env.PROJECT_NAME ?? 'tarchpeek';
 const taVolumes = (process.env.TA_VOLUMES ?? '').trim();
 const taBaseUrl = (process.env.TA_BASE_URL ?? 'http://localhost:8000').replace(/\/$/, '');
 const taUsername = process.env.TA_USERNAME ?? 'tarchpeek';
 const taPassword = process.env.TA_PASSWORD ?? 'tarchpeek-local';
 const taApiToken = (process.env.TA_API_TOKEN ?? '').trim();
-const seedFilePath = process.env.TA_SEED_FILE ?? resolve(repoRoot, 'project/fixtures/tubearchivist-seed-videos.txt');
+const seedFilePath =
+  process.env.TA_SEED_FILE ?? resolve(repoRoot, 'project/fixtures/tubearchivist-seed-videos.txt');
 const taAuthConfigPath =
-  process.env.TA_AUTH_CONFIG_FILE ?? resolve(repoRoot, 'app/maestro/.runtime/tubearchivist-auth.json');
+  process.env.TA_AUTH_CONFIG_FILE ??
+  resolve(repoRoot, 'app/maestro/.runtime/tubearchivist-auth.json');
 const bootPollIntervalMs = Number(process.env.TA_BOOTSTRAP_POLL_MS ?? 5000);
 const bootPollAttempts = Number(process.env.TA_BOOTSTRAP_ATTEMPTS ?? 120);
 const seedStuckWindowMs = Number(process.env.TA_SEED_STUCK_WINDOW_MS ?? 120000);
@@ -152,7 +155,9 @@ async function waitForHealth() {
       console.log('TubeArchivist health endpoint is ready.');
       return;
     } catch {
-      process.stdout.write(`Waiting for TubeArchivist health (${attempt}/${bootPollAttempts})...\r`);
+      process.stdout.write(
+        `Waiting for TubeArchivist health (${attempt}/${bootPollAttempts})...\r`,
+      );
       await sleep(bootPollIntervalMs);
     }
   }
@@ -208,7 +213,9 @@ function parseAuthCookies(loginResponse) {
     return null;
   }
 
-  const cookiePairs = rawSetCookies.map(rawCookie => rawCookie.split(';', 1)[0]?.trim()).filter(Boolean);
+  const cookiePairs = rawSetCookies
+    .map(rawCookie => rawCookie.split(';', 1)[0]?.trim())
+    .filter(Boolean);
   if (!cookiePairs.length) {
     return null;
   }
@@ -412,7 +419,9 @@ async function bootstrapSeed() {
 }
 
 if (!command) {
-  console.error('Usage: tubearchivist-manager.mjs <bootstrap-seed|capture-seed|reset-and-start|stop>');
+  console.error(
+    'Usage: tubearchivist-manager.mjs <bootstrap-seed|capture-seed|reset-and-start|stop>',
+  );
   process.exit(1);
 }
 

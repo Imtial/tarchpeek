@@ -9,10 +9,10 @@ paths:
       operationId: appsettings_backup_retrieve
       description: get list of available backup files
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -26,10 +26,10 @@ paths:
       operationId: appsettings_backup_create
       description: start new backup file task
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -42,16 +42,16 @@ paths:
       operationId: appsettings_backup_retrieve_2
       description: get single backup
       parameters:
-      - in: path
-        name: filename
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: filename
+          schema:
+            type: string
+          required: true
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -69,16 +69,16 @@ paths:
       operationId: appsettings_backup_create_2
       description: start new task to restore backup file
       parameters:
-      - in: path
-        name: filename
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: filename
+          schema:
+            type: string
+          required: true
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -96,16 +96,16 @@ paths:
       operationId: appsettings_backup_destroy
       description: delete backup file
       parameters:
-      - in: path
-        name: filename
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: filename
+          schema:
+            type: string
+          required: true
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: file deleted
@@ -120,10 +120,10 @@ paths:
       operationId: appsettings_config_retrieve
       description: get app config
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -135,7 +135,7 @@ paths:
       operationId: appsettings_config_create
       description: update config values, allows partial update
       tags:
-      - appsettings
+        - appsettings
       requestBody:
         content:
           application/json:
@@ -148,8 +148,8 @@ paths:
             schema:
               $ref: '#/components/schemas/AppConfig'
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -168,10 +168,10 @@ paths:
       operationId: appsettings_cookie_retrieve
       description: get cookie validation status
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -183,10 +183,10 @@ paths:
       operationId: appsettings_cookie_create
       description: validate cookie
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -198,7 +198,7 @@ paths:
       operationId: appsettings_cookie_update
       description: handle put request
       tags:
-      - appsettings
+        - appsettings
       requestBody:
         content:
           application/json:
@@ -212,8 +212,8 @@ paths:
               $ref: '#/components/schemas/CookieUpdate'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -231,10 +231,10 @@ paths:
       operationId: appsettings_cookie_destroy
       description: delete the cookie
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: Cookie revoked
@@ -243,7 +243,7 @@ paths:
       operationId: appsettings_manual_import_create
       description: manual import
       tags:
-      - appsettings
+        - appsettings
       requestBody:
         content:
           application/json:
@@ -257,8 +257,8 @@ paths:
               $ref: '#/components/schemas/ManualImportConfig'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -271,10 +271,10 @@ paths:
       operationId: appsettings_membership_profile_retrieve
       description: get profile
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -293,10 +293,10 @@ paths:
       operationId: appsettings_membership_sync_create
       description: post request
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           description: No response body
@@ -305,10 +305,10 @@ paths:
       operationId: appsettings_membership_token_retrieve
       description: get token
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           description: No response body
@@ -316,10 +316,10 @@ paths:
       operationId: appsettings_membership_token_create
       description: add token
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           description: No response body
@@ -327,10 +327,10 @@ paths:
       operationId: appsettings_membership_token_destroy
       description: delete token
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: No response body
@@ -339,7 +339,7 @@ paths:
       operationId: appsettings_rescan_filesystem_create
       description: start new task rescan filesystem task
       tags:
-      - appsettings
+        - appsettings
       requestBody:
         content:
           application/json:
@@ -353,8 +353,8 @@ paths:
               $ref: '#/components/schemas/RescanFileSystemConfig'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -367,10 +367,10 @@ paths:
       operationId: appsettings_snapshot_retrieve
       description: get available snapshots with metadata
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -382,10 +382,10 @@ paths:
       operationId: appsettings_snapshot_create
       description: take snapshot now
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -398,16 +398,16 @@ paths:
       operationId: appsettings_snapshot_retrieve_2
       description: handle get request
       parameters:
-      - in: path
-        name: snapshot_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: snapshot_id
+          schema:
+            type: string
+          required: true
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -425,16 +425,16 @@ paths:
       operationId: appsettings_snapshot_create_2
       description: restore snapshot
       parameters:
-      - in: path
-        name: snapshot_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: snapshot_id
+          schema:
+            type: string
+          required: true
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -452,16 +452,16 @@ paths:
       operationId: appsettings_snapshot_destroy
       description: delete snapshot from index
       parameters:
-      - in: path
-        name: snapshot_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: snapshot_id
+          schema:
+            type: string
+          required: true
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: delete snapshot from index
@@ -470,10 +470,10 @@ paths:
       operationId: appsettings_token_retrieve
       description: get your API token
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -485,10 +485,10 @@ paths:
       operationId: appsettings_token_destroy
       description: delete your API token, new will get created on next get
       tags:
-      - appsettings
+        - appsettings
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: delete token
@@ -497,26 +497,26 @@ paths:
       operationId: channel_retrieve
       description: get request
       parameters:
-      - in: query
-        name: filter
-        schema:
-          enum:
-          - subscribed
-          - unsubscribed
-          type: string
-          minLength: 1
-        description: |-
-          * `subscribed` - subscribed
-          * `unsubscribed` - unsubscribed
-      - in: query
-        name: page
-        schema:
-          type: integer
+        - in: query
+          name: filter
+          schema:
+            enum:
+              - subscribed
+              - unsubscribed
+            type: string
+            minLength: 1
+          description: |-
+            * `subscribed` - subscribed
+            * `unsubscribed` - unsubscribed
+        - in: query
+          name: page
+          schema:
+            type: integer
       tags:
-      - channel
+        - channel
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -528,10 +528,10 @@ paths:
       operationId: channel_create
       description: subscribe/unsubscribe to list of channels
       tags:
-      - channel
+        - channel
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           description: No response body
@@ -540,16 +540,16 @@ paths:
       operationId: channel_retrieve_2
       description: get channel detail
       parameters:
-      - in: path
-        name: channel_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: channel_id
+          schema:
+            type: string
+          required: true
       tags:
-      - channel
+        - channel
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -567,13 +567,13 @@ paths:
       operationId: channel_create_2
       description: modify channel
       parameters:
-      - in: path
-        name: channel_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: channel_id
+          schema:
+            type: string
+          required: true
       tags:
-      - channel
+        - channel
       requestBody:
         content:
           application/json:
@@ -586,8 +586,8 @@ paths:
             schema:
               $ref: '#/components/schemas/ChannelUpdate'
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -611,16 +611,16 @@ paths:
       operationId: channel_destroy
       description: delete channel
       parameters:
-      - in: path
-        name: channel_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: channel_id
+          schema:
+            type: string
+          required: true
       tags:
-      - channel
+        - channel
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: Channel deleted
@@ -635,16 +635,16 @@ paths:
       operationId: channel_aggs_retrieve
       description: get channel aggregations
       parameters:
-      - in: path
-        name: channel_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: channel_id
+          schema:
+            type: string
+          required: true
       tags:
-      - channel
+        - channel
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -657,16 +657,16 @@ paths:
       operationId: channel_nav_retrieve
       description: get navigation
       parameters:
-      - in: path
-        name: channel_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: channel_id
+          schema:
+            type: string
+          required: true
       tags:
-      - channel
+        - channel
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -679,17 +679,17 @@ paths:
       operationId: channel_search_retrieve
       description: search for local channel ID
       parameters:
-      - in: query
-        name: q
-        schema:
-          type: string
-        description: Search query string
-        required: true
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: Search query string
+          required: true
       tags:
-      - channel
+        - channel
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -710,56 +710,56 @@ paths:
       operationId: download_retrieve
       description: get download queue list
       parameters:
-      - in: query
-        name: channel
-        schema:
-          type: string
-          minLength: 1
-        description: channel ID
-      - in: query
-        name: error
-        schema:
-          type: boolean
-          nullable: true
-      - in: query
-        name: filter
-        schema:
-          enum:
-          - pending
-          - ignore
-          type: string
-          minLength: 1
-        description: |-
-          * `pending` - pending
-          * `ignore` - ignore
-      - in: query
-        name: page
-        schema:
-          type: integer
-      - in: query
-        name: q
-        schema:
-          type: string
-          minLength: 1
-        description: Search Query
-      - in: query
-        name: vid_type
-        schema:
-          enum:
-          - videos
-          - streams
-          - shorts
-          type: string
-          minLength: 1
-        description: |-
-          * `videos` - videos
-          * `streams` - streams
-          * `shorts` - shorts
+        - in: query
+          name: channel
+          schema:
+            type: string
+            minLength: 1
+          description: channel ID
+        - in: query
+          name: error
+          schema:
+            type: boolean
+            nullable: true
+        - in: query
+          name: filter
+          schema:
+            enum:
+              - pending
+              - ignore
+            type: string
+            minLength: 1
+          description: |-
+            * `pending` - pending
+            * `ignore` - ignore
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: q
+          schema:
+            type: string
+            minLength: 1
+          description: Search Query
+        - in: query
+          name: vid_type
+          schema:
+            enum:
+              - videos
+              - streams
+              - shorts
+            type: string
+            minLength: 1
+          description: |-
+            * `videos` - videos
+            * `streams` - streams
+            * `shorts` - shorts
       tags:
-      - download
+        - download
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -771,20 +771,20 @@ paths:
       operationId: download_create
       description: add list of videos to download queue
       parameters:
-      - in: query
-        name: autostart
-        schema:
-          type: boolean
-      - in: query
-        name: flat
-        schema:
-          type: boolean
-      - in: query
-        name: force
-        schema:
-          type: boolean
+        - in: query
+          name: autostart
+          schema:
+            type: boolean
+        - in: query
+          name: flat
+          schema:
+            type: boolean
+        - in: query
+          name: force
+          schema:
+            type: boolean
       tags:
-      - download
+        - download
       requestBody:
         content:
           application/json:
@@ -798,8 +798,8 @@ paths:
               $ref: '#/components/schemas/AddToDownloadList'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -817,45 +817,45 @@ paths:
       operationId: download_partial_update
       description: bulk update status
       parameters:
-      - in: query
-        name: channel
-        schema:
-          type: string
-          minLength: 1
-      - in: query
-        name: error
-        schema:
-          type: boolean
-          nullable: true
-      - in: query
-        name: filter
-        schema:
-          enum:
-          - pending
-          - ignore
-          - priority
-          type: string
-          minLength: 1
-        description: |-
-          * `pending` - pending
-          * `ignore` - ignore
-          * `priority` - priority
-        required: true
-      - in: query
-        name: vid_type
-        schema:
-          enum:
-          - videos
-          - streams
-          - shorts
-          type: string
-          minLength: 1
-        description: |-
-          * `videos` - videos
-          * `streams` - streams
-          * `shorts` - shorts
+        - in: query
+          name: channel
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: error
+          schema:
+            type: boolean
+            nullable: true
+        - in: query
+          name: filter
+          schema:
+            enum:
+              - pending
+              - ignore
+              - priority
+            type: string
+            minLength: 1
+          description: |-
+            * `pending` - pending
+            * `ignore` - ignore
+            * `priority` - priority
+          required: true
+        - in: query
+          name: vid_type
+          schema:
+            enum:
+              - videos
+              - streams
+              - shorts
+            type: string
+            minLength: 1
+          description: |-
+            * `videos` - videos
+            * `streams` - streams
+            * `shorts` - shorts
       tags:
-      - download
+        - download
       requestBody:
         content:
           application/json:
@@ -868,8 +868,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedBulkUpdateDowloadData'
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: Status updated
@@ -877,42 +877,42 @@ paths:
       operationId: download_destroy
       description: bulk delete download queue items by filter
       parameters:
-      - in: query
-        name: channel
-        schema:
-          type: string
-          minLength: 1
-        description: channel ID
-      - in: query
-        name: filter
-        schema:
-          enum:
-          - pending
-          - ignore
-          type: string
-          minLength: 1
-        description: |-
-          * `pending` - pending
-          * `ignore` - ignore
-        required: true
-      - in: query
-        name: vid_type
-        schema:
-          enum:
-          - videos
-          - streams
-          - shorts
-          type: string
-          minLength: 1
-        description: |-
-          * `videos` - videos
-          * `streams` - streams
-          * `shorts` - shorts
+        - in: query
+          name: channel
+          schema:
+            type: string
+            minLength: 1
+          description: channel ID
+        - in: query
+          name: filter
+          schema:
+            enum:
+              - pending
+              - ignore
+            type: string
+            minLength: 1
+          description: |-
+            * `pending` - pending
+            * `ignore` - ignore
+          required: true
+        - in: query
+          name: vid_type
+          schema:
+            enum:
+              - videos
+              - streams
+              - shorts
+            type: string
+            minLength: 1
+          description: |-
+            * `videos` - videos
+            * `streams` - streams
+            * `shorts` - shorts
       tags:
-      - download
+        - download
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: Download items deleted
@@ -927,16 +927,16 @@ paths:
       operationId: download_retrieve_2
       description: get download queue item
       parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: video_id
+          schema:
+            type: string
+          required: true
       tags:
-      - download
+        - download
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -954,13 +954,13 @@ paths:
       operationId: download_create_2
       description: post to video to change status
       parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: video_id
+          schema:
+            type: string
+          required: true
       tags:
-      - download
+        - download
       requestBody:
         content:
           application/json:
@@ -974,8 +974,8 @@ paths:
               $ref: '#/components/schemas/DownloadQueueItemUpdate'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -999,16 +999,16 @@ paths:
       operationId: download_destroy_2
       description: delete single video from queue
       parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: video_id
+          schema:
+            type: string
+          required: true
       tags:
-      - download
+        - download
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: delete download item
@@ -1023,42 +1023,42 @@ paths:
       operationId: download_aggs_retrieve
       description: get aggs
       parameters:
-      - in: query
-        name: channel
-        schema:
-          type: string
-          minLength: 1
-        description: channel ID
-      - in: query
-        name: filter
-        schema:
-          enum:
-          - pending
-          - ignore
-          type: string
-          minLength: 1
-        description: |-
-          * `pending` - pending
-          * `ignore` - ignore
-        required: true
-      - in: query
-        name: vid_type
-        schema:
-          enum:
-          - videos
-          - streams
-          - shorts
-          type: string
-          minLength: 1
-        description: |-
-          * `videos` - videos
-          * `streams` - streams
-          * `shorts` - shorts
+        - in: query
+          name: channel
+          schema:
+            type: string
+            minLength: 1
+          description: channel ID
+        - in: query
+          name: filter
+          schema:
+            enum:
+              - pending
+              - ignore
+            type: string
+            minLength: 1
+          description: |-
+            * `pending` - pending
+            * `ignore` - ignore
+          required: true
+        - in: query
+          name: vid_type
+          schema:
+            enum:
+              - videos
+              - streams
+              - shorts
+            type: string
+            minLength: 1
+          description: |-
+            * `videos` - videos
+            * `streams` - streams
+            * `shorts` - shorts
       tags:
-      - download
+        - download
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1077,11 +1077,11 @@ paths:
       operationId: health_retrieve
       description: health check, no auth needed
       tags:
-      - health
+        - health
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+        - cookieAuth: []
+        - basicAuth: []
+        - {}
       responses:
         '200':
           description: No response body
@@ -1090,24 +1090,24 @@ paths:
       operationId: notification_retrieve
       description: get all notifications
       parameters:
-      - in: query
-        name: filter
-        schema:
-          enum:
-          - download
-          - settings
-          - channel
-          type: string
-          minLength: 1
-        description: |-
-          * `download` - download
-          * `settings` - settings
-          * `channel` - channel
+        - in: query
+          name: filter
+          schema:
+            enum:
+              - download
+              - settings
+              - channel
+            type: string
+            minLength: 1
+          description: |-
+            * `download` - download
+            * `settings` - settings
+            * `channel` - channel
       tags:
-      - notification
+        - notification
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1122,10 +1122,10 @@ paths:
       operationId: ping_retrieve
       description: get pong
       tags:
-      - ping
+        - ping
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1138,36 +1138,36 @@ paths:
       operationId: playlist_retrieve
       description: get playlist list
       parameters:
-      - in: query
-        name: channel
-        schema:
-          type: string
-          minLength: 1
-      - in: query
-        name: page
-        schema:
-          type: integer
-      - in: query
-        name: subscribed
-        schema:
-          type: boolean
-          nullable: true
-      - in: query
-        name: type
-        schema:
-          enum:
-          - regular
-          - custom
-          type: string
-          minLength: 1
-        description: |-
-          * `regular` - regular
-          * `custom` - custom
+        - in: query
+          name: channel
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: subscribed
+          schema:
+            type: boolean
+            nullable: true
+        - in: query
+          name: type
+          schema:
+            enum:
+              - regular
+              - custom
+            type: string
+            minLength: 1
+          description: |-
+            * `regular` - regular
+            * `custom` - custom
       tags:
-      - playlist
+        - playlist
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1185,7 +1185,7 @@ paths:
       operationId: playlist_create
       description: async subscribe to list of playlists
       tags:
-      - playlist
+        - playlist
       requestBody:
         content:
           application/json:
@@ -1199,8 +1199,8 @@ paths:
               $ref: '#/components/schemas/PlaylistBulkAdd'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1219,16 +1219,16 @@ paths:
       operationId: playlist_retrieve_2
       description: get playlist
       parameters:
-      - in: path
-        name: playlist_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: playlist_id
+          schema:
+            type: string
+          required: true
       tags:
-      - playlist
+        - playlist
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1246,13 +1246,13 @@ paths:
       operationId: playlist_create_2
       description: update subscribed state of playlist
       parameters:
-      - in: path
-        name: playlist_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: playlist_id
+          schema:
+            type: string
+          required: true
       tags:
-      - playlist
+        - playlist
       requestBody:
         content:
           application/json:
@@ -1265,8 +1265,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PlaylistSingleUpdate'
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1284,20 +1284,20 @@ paths:
       operationId: playlist_destroy
       description: delete playlist
       parameters:
-      - in: query
-        name: delete_videos
-        schema:
-          type: boolean
-      - in: path
-        name: playlist_id
-        schema:
-          type: string
-        required: true
+        - in: query
+          name: delete_videos
+          schema:
+            type: boolean
+        - in: path
+          name: playlist_id
+          schema:
+            type: string
+          required: true
       tags:
-      - playlist
+        - playlist
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: playlist deleted
@@ -1306,7 +1306,7 @@ paths:
       operationId: playlist_custom_create
       description: create new custom playlist
       tags:
-      - playlist
+        - playlist
       requestBody:
         content:
           application/json:
@@ -1320,8 +1320,8 @@ paths:
               $ref: '#/components/schemas/PlaylistListCustomPost'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1340,13 +1340,13 @@ paths:
       operationId: playlist_custom_create_2
       description: modify custom playlist
       parameters:
-      - in: path
-        name: playlist_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: playlist_id
+          schema:
+            type: string
+          required: true
       tags:
-      - playlist
+        - playlist
       requestBody:
         content:
           application/json:
@@ -1360,8 +1360,8 @@ paths:
               $ref: '#/components/schemas/PlaylistCustomPost'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1386,29 +1386,29 @@ paths:
       operationId: refresh_retrieve
       description: get refresh status
       parameters:
-      - in: query
-        name: id
-        schema:
-          type: string
-          minLength: 1
-      - in: query
-        name: type
-        schema:
-          enum:
-          - video
-          - channel
-          - playlist
-          type: string
-          minLength: 1
-        description: |-
-          * `video` - video
-          * `channel` - channel
-          * `playlist` - playlist
+        - in: query
+          name: id
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: type
+          schema:
+            enum:
+              - video
+              - channel
+              - playlist
+            type: string
+            minLength: 1
+          description: |-
+            * `video` - video
+            * `channel` - channel
+            * `playlist` - playlist
       tags:
-      - refresh
+        - refresh
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1426,12 +1426,12 @@ paths:
       operationId: refresh_create
       description: add to reindex queue
       parameters:
-      - in: query
-        name: extract_videos
-        schema:
-          type: boolean
+        - in: query
+          name: extract_videos
+          schema:
+            type: boolean
       tags:
-      - refresh
+        - refresh
       requestBody:
         content:
           application/json:
@@ -1444,8 +1444,8 @@ paths:
             schema:
               $ref: '#/components/schemas/RefreshAddData'
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1460,10 +1460,10 @@ paths:
         handle get request
         search through all indexes
       tags:
-      - search
+        - search
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           description: No response body
@@ -1472,10 +1472,10 @@ paths:
       operationId: stats_biggestchannels_retrieve
       description: get biggest channels stats
       tags:
-      - stats
+        - stats
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1496,10 +1496,10 @@ paths:
       operationId: stats_channel_retrieve
       description: get channel stats
       tags:
-      - stats
+        - stats
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1512,10 +1512,10 @@ paths:
       operationId: stats_download_retrieve
       description: get download stats
       tags:
-      - stats
+        - stats
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1528,10 +1528,10 @@ paths:
       operationId: stats_downloadhist_list
       description: get download hist items
       tags:
-      - stats
+        - stats
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1546,10 +1546,10 @@ paths:
       operationId: stats_playlist_retrieve
       description: get playlist stats
       tags:
-      - stats
+        - stats
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1562,10 +1562,10 @@ paths:
       operationId: stats_video_retrieve
       description: get video stats
       tags:
-      - stats
+        - stats
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1578,10 +1578,10 @@ paths:
       operationId: stats_watch_retrieve
       description: get watched stats
       tags:
-      - stats
+        - stats
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1594,16 +1594,16 @@ paths:
       operationId: task_by_id_retrieve
       description: get task by ID
       parameters:
-      - in: path
-        name: task_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: task_id
+          schema:
+            type: string
+          required: true
       tags:
-      - task
+        - task
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1621,13 +1621,13 @@ paths:
       operationId: task_by_id_create
       description: post command to task
       parameters:
-      - in: path
-        name: task_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: task_id
+          schema:
+            type: string
+          required: true
       tags:
-      - task
+        - task
       requestBody:
         content:
           application/json:
@@ -1641,8 +1641,8 @@ paths:
               $ref: '#/components/schemas/TaskIDData'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: task command sent
@@ -1663,10 +1663,10 @@ paths:
       operationId: task_by_name_list
       description: get all stored task results
       tags:
-      - task
+        - task
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1681,16 +1681,16 @@ paths:
       operationId: task_by_name_retrieve
       description: get stored task by name
       parameters:
-      - in: path
-        name: task_name
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: task_name
+          schema:
+            type: string
+          required: true
       tags:
-      - task
+        - task
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1710,16 +1710,16 @@ paths:
       operationId: task_by_name_create
       description: start new task without args
       parameters:
-      - in: path
-        name: task_name
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: task_name
+          schema:
+            type: string
+          required: true
       tags:
-      - task
+        - task
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1744,10 +1744,10 @@ paths:
       operationId: task_notification_retrieve
       description: handle get request
       tags:
-      - task
+        - task
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1759,7 +1759,7 @@ paths:
       operationId: task_notification_create
       description: create notification
       tags:
-      - task
+        - task
       requestBody:
         content:
           application/json:
@@ -1773,8 +1773,8 @@ paths:
               $ref: '#/components/schemas/TaskNotificationPost'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1792,10 +1792,10 @@ paths:
       operationId: task_notification_destroy
       description: delete notification
       tags:
-      - task
+        - task
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: notification url deleted
@@ -1810,7 +1810,7 @@ paths:
       operationId: task_notification_test_create
       description: test notification
       tags:
-      - task
+        - task
       requestBody:
         content:
           application/json:
@@ -1824,8 +1824,8 @@ paths:
               $ref: '#/components/schemas/TaskNotificationTest'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           description: test notification sent
@@ -1840,10 +1840,10 @@ paths:
       operationId: task_schedule_retrieve
       description: get all schedules
       tags:
-      - task
+        - task
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1858,16 +1858,16 @@ paths:
       operationId: task_schedule_retrieve_2
       description: get single schedule by task_name
       parameters:
-      - in: path
-        name: task_name
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: task_name
+          schema:
+            type: string
+          required: true
       tags:
-      - task
+        - task
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1885,13 +1885,13 @@ paths:
       operationId: task_schedule_create
       description: create/update schedule for task
       parameters:
-      - in: path
-        name: task_name
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: task_name
+          schema:
+            type: string
+          required: true
       tags:
-      - task
+        - task
       requestBody:
         content:
           application/json:
@@ -1904,8 +1904,8 @@ paths:
             schema:
               $ref: '#/components/schemas/TaskCreateData'
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1923,16 +1923,16 @@ paths:
       operationId: task_schedule_destroy
       description: delete schedule by task_name
       parameters:
-      - in: path
-        name: task_name
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: task_name
+          schema:
+            type: string
+          required: true
       tags:
-      - task
+        - task
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: schedule deleted
@@ -1947,10 +1947,10 @@ paths:
       operationId: user_account_retrieve
       description: get user account
       tags:
-      - user
+        - user
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -1963,7 +1963,7 @@ paths:
       operationId: user_login_create
       description: login with username and password
       tags:
-      - user
+        - user
       requestBody:
         content:
           application/json:
@@ -1977,9 +1977,9 @@ paths:
               $ref: '#/components/schemas/Login'
         required: true
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+        - cookieAuth: []
+        - basicAuth: []
+        - {}
       responses:
         '204':
           description: login successful
@@ -1988,10 +1988,10 @@ paths:
       operationId: user_logout_create
       description: logout user from session
       tags:
-      - user
+        - user
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: logout successful
@@ -2000,10 +2000,10 @@ paths:
       operationId: user_me_retrieve
       description: get user config
       tags:
-      - user
+        - user
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -2015,7 +2015,7 @@ paths:
       operationId: user_me_create
       description: update config, allows partial update
       tags:
-      - user
+        - user
       requestBody:
         content:
           application/json:
@@ -2029,8 +2029,8 @@ paths:
               $ref: '#/components/schemas/UserMeConfig'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -2049,91 +2049,91 @@ paths:
       operationId: video_retrieve
       description: get video list
       parameters:
-      - in: query
-        name: channel
-        schema:
-          type: string
-          minLength: 1
-      - in: query
-        name: height
-        schema:
-          type: integer
-      - in: query
-        name: order
-        schema:
-          enum:
-          - asc
-          - desc
-          type: string
-          minLength: 1
-        description: |-
-          * `asc` - asc
-          * `desc` - desc
-      - in: query
-        name: page
-        schema:
-          type: integer
-      - in: query
-        name: playlist
-        schema:
-          type: string
-          minLength: 1
-      - in: query
-        name: sort
-        schema:
-          enum:
-          - published
-          - downloaded
-          - views
-          - likes
-          - duration
-          - mediasize
-          - width
-          - height
-          type: string
-          minLength: 1
-        description: |-
-          * `published` - published
-          * `downloaded` - downloaded
-          * `views` - views
-          * `likes` - likes
-          * `duration` - duration
-          * `mediasize` - mediasize
-          * `width` - width
-          * `height` - height
-      - in: query
-        name: type
-        schema:
-          enum:
-          - videos
-          - streams
-          - shorts
-          type: string
-          minLength: 1
-        description: |-
-          * `videos` - videos
-          * `streams` - streams
-          * `shorts` - shorts
-      - in: query
-        name: watch
-        schema:
-          enum:
-          - watched
-          - unwatched
-          - continue
-          - null
-          type: string
-          nullable: true
-          minLength: 1
-        description: |-
-          * `watched` - watched
-          * `unwatched` - unwatched
-          * `continue` - continue
+        - in: query
+          name: channel
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: height
+          schema:
+            type: integer
+        - in: query
+          name: order
+          schema:
+            enum:
+              - asc
+              - desc
+            type: string
+            minLength: 1
+          description: |-
+            * `asc` - asc
+            * `desc` - desc
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: playlist
+          schema:
+            type: string
+            minLength: 1
+        - in: query
+          name: sort
+          schema:
+            enum:
+              - published
+              - downloaded
+              - views
+              - likes
+              - duration
+              - mediasize
+              - width
+              - height
+            type: string
+            minLength: 1
+          description: |-
+            * `published` - published
+            * `downloaded` - downloaded
+            * `views` - views
+            * `likes` - likes
+            * `duration` - duration
+            * `mediasize` - mediasize
+            * `width` - width
+            * `height` - height
+        - in: query
+          name: type
+          schema:
+            enum:
+              - videos
+              - streams
+              - shorts
+            type: string
+            minLength: 1
+          description: |-
+            * `videos` - videos
+            * `streams` - streams
+            * `shorts` - shorts
+        - in: query
+          name: watch
+          schema:
+            enum:
+              - watched
+              - unwatched
+              - continue
+              - null
+            type: string
+            nullable: true
+            minLength: 1
+          description: |-
+            * `watched` - watched
+            * `unwatched` - unwatched
+            * `continue` - continue
       tags:
-      - video
+        - video
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -2152,16 +2152,16 @@ paths:
       operationId: video_retrieve_2
       description: get video
       parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: video_id
+          schema:
+            type: string
+          required: true
       tags:
-      - video
+        - video
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -2179,16 +2179,16 @@ paths:
       operationId: video_destroy
       description: delete video
       parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: video_id
+          schema:
+            type: string
+          required: true
       tags:
-      - video
+        - video
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: video deleted
@@ -2203,16 +2203,16 @@ paths:
       operationId: video_comment_retrieve
       description: get video comments
       parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: video_id
+          schema:
+            type: string
+          required: true
       tags:
-      - video
+        - video
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -2231,16 +2231,16 @@ paths:
       operationId: video_nav_retrieve
       description: get video playlist nav
       parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: video_id
+          schema:
+            type: string
+          required: true
       tags:
-      - video
+        - video
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -2259,13 +2259,13 @@ paths:
       operationId: video_progress_create
       description: set video progress position in redis
       parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: video_id
+          schema:
+            type: string
+          required: true
       tags:
-      - video
+        - video
       requestBody:
         content:
           application/json:
@@ -2278,8 +2278,8 @@ paths:
             schema:
               $ref: '#/components/schemas/VideoProgressUpdate'
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -2297,16 +2297,16 @@ paths:
       operationId: video_progress_destroy
       description: delete progress position
       parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: video_id
+          schema:
+            type: string
+          required: true
       tags:
-      - video
+        - video
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: video progress deleted
@@ -2315,16 +2315,16 @@ paths:
       operationId: video_similar_list
       description: get similar videos
       parameters:
-      - in: path
-        name: video_id
-        schema:
-          type: string
-        required: true
+        - in: path
+          name: video_id
+          schema:
+            type: string
+          required: true
       tags:
-      - video
+        - video
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -2339,7 +2339,7 @@ paths:
       operationId: watched_create
       description: change watched state
       tags:
-      - watched
+        - watched
       requestBody:
         content:
           application/json:
@@ -2353,8 +2353,8 @@ paths:
               $ref: '#/components/schemas/WatchedData'
         required: true
       security:
-      - cookieAuth: []
-      - tokenAuth: []
+        - cookieAuth: []
+        - tokenAuth: []
       responses:
         '200':
           content:
@@ -2403,16 +2403,16 @@ components:
           format: date-time
           nullable: true
       required:
-      - id
-      - name
+        - id
+        - name
     ActionEnum:
       enum:
-      - create
-      - remove
-      - up
-      - down
-      - top
-      - bottom
+        - create
+        - remove
+        - up
+        - down
+        - top
+        - bottom
       type: string
       description: |-
         * `create` - create
@@ -2430,12 +2430,12 @@ components:
         status:
           $ref: '#/components/schemas/AddDownloadItemStatusEnum'
       required:
-      - status
-      - youtube_id
+        - status
+        - youtube_id
     AddDownloadItemStatusEnum:
       enum:
-      - pending
-      - ignore-force
+        - pending
+        - ignore-force
       type: string
       description: |-
         * `pending` - pending
@@ -2449,7 +2449,7 @@ components:
           items:
             $ref: '#/components/schemas/AddDownloadItem'
       required:
-      - data
+        - data
     AppConfig:
       type: object
       description: serialize appconfig
@@ -2469,8 +2469,8 @@ components:
         enable_cast:
           type: boolean
       required:
-      - enable_cast
-      - enable_snapshot
+        - enable_cast
+        - enable_snapshot
     AppConfigDownloads:
       type: object
       description: serialize app config downloads config
@@ -2498,8 +2498,8 @@ components:
         subtitle_source:
           nullable: true
           oneOf:
-          - $ref: '#/components/schemas/SubtitleSourceEnum'
-          - $ref: '#/components/schemas/NullEnum'
+            - $ref: '#/components/schemas/SubtitleSourceEnum'
+            - $ref: '#/components/schemas/NullEnum'
         subtitle_index:
           type: boolean
         comment_max:
@@ -2508,8 +2508,8 @@ components:
         comment_sort:
           nullable: true
           oneOf:
-          - $ref: '#/components/schemas/CommentSortEnum'
-          - $ref: '#/components/schemas/NullEnum'
+            - $ref: '#/components/schemas/CommentSortEnum'
+            - $ref: '#/components/schemas/NullEnum'
         cookie_import:
           type: boolean
         pot_provider_url:
@@ -2526,23 +2526,23 @@ components:
         integrate_sponsorblock:
           type: boolean
       required:
-      - add_metadata
-      - autodelete_days
-      - comment_max
-      - comment_sort
-      - cookie_import
-      - extractor_lang
-      - format
-      - format_sort
-      - integrate_ryd
-      - integrate_sponsorblock
-      - limit_speed
-      - pot_provider_url
-      - sleep_interval
-      - subtitle
-      - subtitle_index
-      - subtitle_source
-      - throttledratelimit
+        - add_metadata
+        - autodelete_days
+        - comment_max
+        - comment_sort
+        - cookie_import
+        - extractor_lang
+        - format
+        - format_sort
+        - integrate_ryd
+        - integrate_sponsorblock
+        - limit_speed
+        - pot_provider_url
+        - sleep_interval
+        - subtitle
+        - subtitle_index
+        - subtitle_source
+        - throttledratelimit
     AppConfigSub:
       type: object
       description: serialize app config subscriptions
@@ -2576,7 +2576,7 @@ components:
         filename:
           type: string
       required:
-      - task_id
+        - task_id
     BackupFile:
       type: object
       description: serialize backup file
@@ -2592,11 +2592,11 @@ components:
         reason:
           type: string
       required:
-      - file_path
-      - file_size
-      - filename
-      - reason
-      - timestamp
+        - file_path
+        - file_size
+        - filename
+        - reason
+        - timestamp
     BiggestChannelItem:
       type: object
       description: serialize biggest channel item
@@ -2614,18 +2614,18 @@ components:
         media_size:
           type: integer
       required:
-      - doc_count
-      - duration
-      - duration_str
-      - id
-      - media_size
-      - name
+        - doc_count
+        - duration
+        - duration_str
+        - id
+        - media_size
+        - name
     BulkUpdateDowloadDataStatusEnum:
       enum:
-      - pending
-      - ignore
-      - priority
-      - clear_error
+        - pending
+        - ignore
+        - priority
+        - clear_error
       type: string
       description: |-
         * `pending` - pending
@@ -2677,13 +2677,13 @@ components:
           type: integer
           title: ' score'
       required:
-      - channel_active
-      - channel_id
-      - channel_last_refresh
-      - channel_name
-      - channel_subs
-      - channel_subscribed
-      - channel_tabs
+        - channel_active
+        - channel_id
+        - channel_last_refresh
+        - channel_name
+        - channel_subs
+        - channel_subscribed
+        - channel_tabs
     ChannelAgg:
       type: object
       description: serialize channel aggregation
@@ -2695,9 +2695,9 @@ components:
         total_duration:
           $ref: '#/components/schemas/ChannelAggBucket'
       required:
-      - total_duration
-      - total_items
-      - total_size
+        - total_duration
+        - total_items
+        - total_size
     ChannelAggBucket:
       type: object
       description: serialize channel agg bucket
@@ -2707,7 +2707,7 @@ components:
         value_str:
           type: string
       required:
-      - value
+        - value
     ChannelList:
       type: object
       description: serialize channel list
@@ -2719,8 +2719,8 @@ components:
         paginate:
           $ref: '#/components/schemas/Pagination'
       required:
-      - data
-      - paginate
+        - data
+        - paginate
     ChannelNav:
       type: object
       description: serialize channel navigation
@@ -2738,12 +2738,12 @@ components:
         has_shorts:
           type: boolean
       required:
-      - has_ignored
-      - has_pending
-      - has_playlists
-      - has_shorts
-      - has_streams
-      - has_videos
+        - has_ignored
+        - has_pending
+        - has_playlists
+        - has_shorts
+        - has_streams
+        - has_videos
     ChannelOverwrite:
       type: object
       description: serialize channel overwrites
@@ -2789,11 +2789,11 @@ components:
           type: integer
           nullable: true
       required:
-      - active_false
-      - active_true
-      - doc_count
-      - subscribed_false
-      - subscribed_true
+        - active_false
+        - active_true
+        - doc_count
+        - subscribed_false
+        - subscribed_true
     ChannelUpdate:
       type: object
       description: update channel
@@ -2834,22 +2834,22 @@ components:
           items: {}
           readOnly: true
       required:
-      - comment_author
-      - comment_author_id
-      - comment_author_is_uploader
-      - comment_author_thumbnail
-      - comment_id
-      - comment_is_favorited
-      - comment_likecount
-      - comment_parent
-      - comment_replies
-      - comment_text
-      - comment_time_text
-      - comment_timestamp
+        - comment_author
+        - comment_author_id
+        - comment_author_is_uploader
+        - comment_author_thumbnail
+        - comment_id
+        - comment_is_favorited
+        - comment_likecount
+        - comment_parent
+        - comment_replies
+        - comment_text
+        - comment_time_text
+        - comment_timestamp
     CommentSortEnum:
       enum:
-      - top
-      - new
+        - top
+        - new
       type: string
       description: |-
         * `top` - top
@@ -2861,7 +2861,7 @@ components:
         cookie:
           type: string
       required:
-      - cookie
+        - cookie
     CookieValidation:
       type: object
       description: serialize cookie validation response
@@ -2875,7 +2875,7 @@ components:
         validated_str:
           type: string
       required:
-      - cookie_enabled
+        - cookie_enabled
     CustomPeriodicTask:
       type: object
       description: serialize CustomPeriodicTask
@@ -2895,11 +2895,11 @@ components:
           type: object
           additionalProperties: {}
       required:
-      - config
-      - last_run_at
-      - name
-      - schedule
-      - schedule_human
+        - config
+        - last_run_at
+        - name
+        - schedule
+        - schedule_human
     DownloadAggBucket:
       type: object
       description: serialize bucket
@@ -2913,9 +2913,9 @@ components:
         doc_count:
           type: integer
       required:
-      - doc_count
-      - key
-      - key_as_string
+        - doc_count
+        - key
+        - key_as_string
     DownloadAggs:
       type: object
       description: serialize download channel bucket aggregations
@@ -2929,9 +2929,9 @@ components:
           items:
             $ref: '#/components/schemas/DownloadAggBucket'
       required:
-      - buckets
-      - doc_count_error_upper_bound
-      - sum_other_doc_count
+        - buckets
+        - doc_count_error_upper_bound
+        - sum_other_doc_count
     DownloadHistItem:
       type: object
       description: serialize download hist item
@@ -2943,9 +2943,9 @@ components:
         media_size:
           type: integer
       required:
-      - count
-      - date
-      - media_size
+        - count
+        - date
+        - media_size
     DownloadItem:
       type: object
       description: serialize download item
@@ -2986,30 +2986,30 @@ components:
           type: integer
           title: ' score'
       required:
-      - channel_id
-      - channel_indexed
-      - channel_name
-      - duration
-      - published
-      - timestamp
-      - title
-      - vid_thumb_url
-      - vid_type
-      - youtube_id
+        - channel_id
+        - channel_indexed
+        - channel_name
+        - duration
+        - published
+        - timestamp
+        - title
+        - vid_thumb_url
+        - vid_type
+        - youtube_id
     DownloadItemStatusEnum:
       enum:
-      - pending
-      - ignore
+        - pending
+        - ignore
       type: string
       description: |-
         * `pending` - pending
         * `ignore` - ignore
     DownloadItemVidTypeEnum:
       enum:
-      - videos
-      - streams
-      - shorts
-      - unknown
+        - videos
+        - streams
+        - shorts
+        - unknown
       type: string
       description: |-
         * `videos` - videos
@@ -3027,8 +3027,8 @@ components:
         paginate:
           $ref: '#/components/schemas/Pagination'
       required:
-      - data
-      - paginate
+        - data
+        - paginate
     DownloadQueueItemUpdate:
       type: object
       description: update single download queue item
@@ -3036,13 +3036,13 @@ components:
         status:
           $ref: '#/components/schemas/DownloadQueueItemUpdateStatusEnum'
       required:
-      - status
+        - status
     DownloadQueueItemUpdateStatusEnum:
       enum:
-      - pending
-      - ignore
-      - ignore-force
-      - priority
+        - pending
+        - ignore
+        - ignore-force
+        - priority
       type: string
       description: |-
         * `pending` - pending
@@ -3069,11 +3069,11 @@ components:
           type: integer
           nullable: true
       required:
-      - ignore
-      - pending
-      - pending_shorts
-      - pending_streams
-      - pending_videos
+        - ignore
+        - pending
+        - pending_shorts
+        - pending_streams
+        - pending_videos
     DynamicDict:
       type: object
       properties:
@@ -3110,27 +3110,27 @@ components:
         error:
           type: string
       required:
-      - error
+        - error
     ExtEnum:
       enum:
-      - json3
-      - vtt
+        - json3
+        - vtt
       type: string
       description: |-
         * `json3` - json3
         * `vtt` - vtt
     FileSizeUnitEnum:
       enum:
-      - binary
-      - metric
+        - binary
+        - metric
       type: string
       description: |-
         * `binary` - binary
         * `metric` - metric
     LevelEnum:
       enum:
-      - info
-      - error
+        - info
+        - error
       type: string
       description: |-
         * `info` - info
@@ -3145,11 +3145,11 @@ components:
           type: string
         remember_me:
           allOf:
-          - $ref: '#/components/schemas/RememberMeEnum'
+            - $ref: '#/components/schemas/RememberMeEnum'
           default: 'off'
       required:
-      - password
-      - username
+        - password
+        - username
     ManualImportConfig:
       type: object
       description: serialize for manual import task
@@ -3159,8 +3159,8 @@ components:
         prefer_local:
           type: boolean
       required:
-      - ignore_error
-      - prefer_local
+        - ignore_error
+        - prefer_local
     MembershipProfile:
       type: object
       description: serialize membership profile
@@ -3178,12 +3178,12 @@ components:
         is_connected:
           type: boolean
       required:
-      - id
-      - is_connected
-      - sponsor_tier
-      - subscription_count
-      - subscription_is_max
-      - user
+        - id
+        - is_connected
+        - sponsor_tier
+        - subscription_count
+        - subscription_is_max
+        - user
     MembershipUser:
       type: object
       description: serialize user
@@ -3193,8 +3193,8 @@ components:
         username:
           type: string
       required:
-      - id
-      - username
+        - id
+        - username
     Notification:
       type: object
       description: serialize notification messages
@@ -3221,24 +3221,24 @@ components:
         command:
           $ref: '#/components/schemas/NotificationCommandEnum'
       required:
-      - api_start
-      - api_stop
-      - group
-      - id
-      - level
-      - messages
-      - title
+        - api_start
+        - api_stop
+        - group
+        - id
+        - level
+        - messages
+        - title
     NotificationCommandEnum:
       enum:
-      - STOP
-      - KILL
+        - STOP
+        - KILL
       type: string
       description: |-
         * `STOP` - STOP
         * `KILL` - KILL
     NullEnum:
       enum:
-      - null
+        - null
     Pagination:
       type: object
       description: serialize paginate response
@@ -3268,15 +3268,15 @@ components:
         total_hits:
           type: integer
       required:
-      - current_page
-      - last_page
-      - max_hits
-      - next_pages
-      - page_from
-      - page_size
-      - params
-      - prev_pages
-      - total_hits
+        - current_page
+        - last_page
+        - max_hits
+        - next_pages
+        - page_from
+        - page_size
+        - params
+        - prev_pages
+        - total_hits
     PatchedBulkUpdateDowloadData:
       type: object
       description: serialize data
@@ -3296,9 +3296,9 @@ components:
         ta_update:
           $ref: '#/components/schemas/PingUpdate'
       required:
-      - response
-      - user
-      - version
+        - response
+        - user
+        - version
     PingUpdate:
       type: object
       description: serialize update notification
@@ -3310,9 +3310,9 @@ components:
         is_breaking:
           type: boolean
       required:
-      - is_breaking
-      - status
-      - version
+        - is_breaking
+        - status
+        - version
     Player:
       type: object
       description: serialize player
@@ -3332,9 +3332,9 @@ components:
           type: number
           format: double
       required:
-      - duration
-      - duration_str
-      - watched
+        - duration
+        - duration_str
+        - watched
     Playlist:
       type: object
       description: serialize playlist
@@ -3373,17 +3373,17 @@ components:
           type: integer
           title: ' score'
       required:
-      - playlist_active
-      - playlist_channel
-      - playlist_channel_id
-      - playlist_entries
-      - playlist_id
-      - playlist_last_refresh
-      - playlist_name
-      - playlist_sort_order
-      - playlist_subscribed
-      - playlist_thumbnail
-      - playlist_type
+        - playlist_active
+        - playlist_channel
+        - playlist_channel_id
+        - playlist_entries
+        - playlist_id
+        - playlist_last_refresh
+        - playlist_name
+        - playlist_sort_order
+        - playlist_subscribed
+        - playlist_thumbnail
+        - playlist_type
     PlaylistBulkAdd:
       type: object
       description: bulk add playlists serializers
@@ -3393,7 +3393,7 @@ components:
           items:
             $ref: '#/components/schemas/PlaylistSingleAdd'
       required:
-      - data
+        - data
     PlaylistCustomPost:
       type: object
       description: serialize playlist custom action
@@ -3403,8 +3403,8 @@ components:
         video_id:
           type: string
       required:
-      - action
-      - video_id
+        - action
+        - video_id
     PlaylistEntry:
       type: object
       description: serialize single playlist entry
@@ -3421,11 +3421,11 @@ components:
         downloaded:
           type: boolean
       required:
-      - downloaded
-      - idx
-      - title
-      - uploader
-      - youtube_id
+        - downloaded
+        - idx
+        - title
+        - uploader
+        - youtube_id
     PlaylistList:
       type: object
       description: serialize list of playlists
@@ -3437,8 +3437,8 @@ components:
         paginate:
           $ref: '#/components/schemas/Pagination'
       required:
-      - data
-      - paginate
+        - data
+        - paginate
     PlaylistListCustomPost:
       type: object
       description: serialize list post custom playlist
@@ -3446,7 +3446,7 @@ components:
         playlist_name:
           type: string
       required:
-      - playlist_name
+        - playlist_name
     PlaylistNavItem:
       type: object
       description: serialize nav on playlist
@@ -3455,16 +3455,16 @@ components:
           $ref: '#/components/schemas/PlaylistNavMeta'
         playlist_previous:
           allOf:
-          - $ref: '#/components/schemas/PlaylistNavVideo'
+            - $ref: '#/components/schemas/PlaylistNavVideo'
           nullable: true
         playlist_next:
           allOf:
-          - $ref: '#/components/schemas/PlaylistNavVideo'
+            - $ref: '#/components/schemas/PlaylistNavVideo'
           nullable: true
       required:
-      - playlist_meta
-      - playlist_next
-      - playlist_previous
+        - playlist_meta
+        - playlist_next
+        - playlist_previous
     PlaylistNavMeta:
       type: object
       description: serialize playlist nav meta
@@ -3478,10 +3478,10 @@ components:
         playlist_channel:
           type: string
       required:
-      - current_idx
-      - playlist_channel
-      - playlist_id
-      - playlist_name
+        - current_idx
+        - playlist_channel
+        - playlist_id
+        - playlist_name
     PlaylistNavVideo:
       type: object
       description: serialize video item on playlist nav
@@ -3499,12 +3499,12 @@ components:
         vid_thumb:
           type: string
       required:
-      - downloaded
-      - idx
-      - title
-      - uploader
-      - vid_thumb
-      - youtube_id
+        - downloaded
+        - idx
+        - title
+        - uploader
+        - vid_thumb
+        - youtube_id
     PlaylistSingleAdd:
       type: object
       description: single item to add
@@ -3514,8 +3514,8 @@ components:
         playlist_subscribed:
           $ref: '#/components/schemas/PlaylistSubscribedEnum'
       required:
-      - playlist_id
-      - playlist_subscribed
+        - playlist_id
+        - playlist_subscribed
     PlaylistSingleUpdate:
       type: object
       description: update state of single playlist
@@ -3526,8 +3526,8 @@ components:
           $ref: '#/components/schemas/PlaylistSortOrderEnum'
     PlaylistSortOrderEnum:
       enum:
-      - top
-      - bottom
+        - top
+        - bottom
       type: string
       description: |-
         * `top` - top
@@ -3552,20 +3552,20 @@ components:
           type: integer
           nullable: true
       required:
-      - active_false
-      - active_true
-      - doc_count
-      - subscribed_false
-      - subscribed_true
+        - active_false
+        - active_true
+        - doc_count
+        - subscribed_false
+        - subscribed_true
     PlaylistSubscribedEnum:
       enum:
-      - true
+        - true
       type: boolean
       description: '* `True` - True'
     PlaylistTypeEnum:
       enum:
-      - regular
-      - custom
+        - regular
+        - custom
       type: string
       description: |-
         * `regular` - regular
@@ -3597,12 +3597,12 @@ components:
         in_queue_name:
           type: string
       required:
-      - state
-      - total_queued
+        - state
+        - total_queued
     RememberMeEnum:
       enum:
-      - 'on'
-      - 'off'
+        - 'on'
+        - 'off'
       type: string
       description: |-
         * `on` - on
@@ -3616,11 +3616,11 @@ components:
         prefer_local:
           type: boolean
       required:
-      - ignore_error
-      - prefer_local
+        - ignore_error
+        - prefer_local
     ResponseEnum:
       enum:
-      - pong
+        - pong
       type: string
       description: '* `pong` - pong'
     SnapshotCreateResponse:
@@ -3630,7 +3630,7 @@ components:
         snapshot_name:
           type: string
       required:
-      - snapshot_name
+        - snapshot_name
     SnapshotItem:
       type: object
       description: serialize snapshot response
@@ -3650,13 +3650,13 @@ components:
         duration_s:
           type: integer
       required:
-      - duration_s
-      - end_date
-      - end_stamp
-      - es_version
-      - id
-      - start_date
-      - state
+        - duration_s
+        - end_date
+        - end_stamp
+        - es_version
+        - id
+        - start_date
+        - state
     SnapshotList:
       type: object
       description: serialize snapshot list response
@@ -3672,10 +3672,10 @@ components:
           items:
             $ref: '#/components/schemas/SnapshotItem'
       required:
-      - expire_after
-      - next_exec
-      - next_exec_str
-      - snapshots
+        - expire_after
+        - next_exec
+        - next_exec_str
+        - snapshots
     SnapshotRestoreResponse:
       type: object
       description: serialize snapshot restore response
@@ -3683,17 +3683,17 @@ components:
         accepted:
           type: boolean
       required:
-      - accepted
+        - accepted
     SortByEnum:
       enum:
-      - published
-      - downloaded
-      - views
-      - likes
-      - duration
-      - mediasize
-      - width
-      - height
+        - published
+        - downloaded
+        - views
+        - likes
+        - duration
+        - mediasize
+        - width
+        - height
       type: string
       description: |-
         * `published` - published
@@ -3706,16 +3706,16 @@ components:
         * `height` - height
     SortOrderEnum:
       enum:
-      - asc
-      - desc
+        - asc
+        - desc
       type: string
       description: |-
         * `asc` - asc
         * `desc` - desc
     SourceEnum:
       enum:
-      - user
-      - auto
+        - user
+        - auto
       type: string
       description: |-
         * `user` - user
@@ -3735,9 +3735,9 @@ components:
           items:
             $ref: '#/components/schemas/SponsorBlockSegment'
       required:
-      - is_enabled
-      - last_refresh
-      - segments
+        - is_enabled
+        - last_refresh
+        - segments
     SponsorBlockSegment:
       type: object
       description: serialize sponsorblock segment
@@ -3761,13 +3761,13 @@ components:
         locked:
           type: integer
       required:
-      - UUID
-      - actionType
-      - category
-      - locked
-      - segment
-      - videoDuration
-      - votes
+        - UUID
+        - actionType
+        - category
+        - locked
+        - segment
+        - videoDuration
+        - votes
     Sponsortier:
       type: object
       description: serialize sponsor tier
@@ -3781,16 +3781,16 @@ components:
         max_subs:
           type: integer
       required:
-      - description
-      - max_subs
-      - name
-      - tier_id
+        - description
+        - max_subs
+        - name
+        - tier_id
     StateEnum:
       enum:
-      - running
-      - queued
-      - empty
-      - false
+        - running
+        - queued
+        - empty
+        - false
       description: |-
         * `running` - running
         * `queued` - queued
@@ -3810,10 +3810,10 @@ components:
         dislike_count:
           type: integer
       required:
-      - average_rating
-      - dislike_count
-      - like_count
-      - view_count
+        - average_rating
+        - dislike_count
+        - like_count
+        - view_count
     StreamItem:
       type: object
       description: serialize stream item
@@ -3831,17 +3831,17 @@ components:
         width:
           type: integer
       required:
-      - bitrate
-      - codec
-      - index
-      - type
+        - bitrate
+        - codec
+        - index
+        - type
     StylesheetEnum:
       enum:
-      - dark.css
-      - light.css
-      - matrix.css
-      - midnight.css
-      - custom.css
+        - dark.css
+        - light.css
+        - matrix.css
+        - midnight.css
+        - custom.css
       type: string
       description: |-
         * `dark.css` - dark.css
@@ -3868,16 +3868,16 @@ components:
           format: uri
           nullable: true
       required:
-      - ext
-      - lang
-      - media_url
-      - name
-      - source
-      - url
+        - ext
+        - lang
+        - media_url
+        - name
+        - source
+        - url
     SubtitleSourceEnum:
       enum:
-      - auto
-      - user
+        - auto
+        - user
       type: string
       description: |-
         * `auto` - auto
@@ -3898,30 +3898,30 @@ components:
         command:
           $ref: '#/components/schemas/TaskIDDataCommandEnum'
       required:
-      - command
+        - command
     TaskIDDataCommandEnum:
       enum:
-      - stop
-      - kill
+        - stop
+        - kill
       type: string
       description: |-
         * `stop` - stop
         * `kill` - kill
     TaskNameEnum:
       enum:
-      - update_subscribed
-      - download_pending
-      - extract_download
-      - check_reindex
-      - manual_import
-      - run_backup
-      - restore_backup
-      - rescan_filesystem
-      - thumbnail_check
-      - resync_metadata
-      - index_playlists
-      - subscribe_to
-      - version_check
+        - update_subscribed
+        - download_pending
+        - extract_download
+        - check_reindex
+        - manual_import
+        - run_backup
+        - restore_backup
+        - rescan_filesystem
+        - thumbnail_check
+        - resync_metadata
+        - index_playlists
+        - subscribe_to
+        - version_check
       type: string
       description: |-
         * `update_subscribed` - update_subscribed
@@ -3948,8 +3948,8 @@ components:
         title:
           type: string
       required:
-      - title
-      - urls
+        - title
+        - urls
     TaskNotificationPost:
       type: object
       description: serialize task notification POST
@@ -3959,7 +3959,7 @@ components:
         url:
           type: string
       required:
-      - task_name
+        - task_name
     TaskNotificationTest:
       type: object
       description: serialize task notification test POST
@@ -3969,7 +3969,7 @@ components:
         task_name:
           $ref: '#/components/schemas/TaskNameEnum'
       required:
-      - url
+        - url
     TaskResult:
       type: object
       description: serialize task result stored in redis
@@ -4005,20 +4005,20 @@ components:
         task_id:
           type: string
       required:
-      - date_done
-      - name
-      - result
-      - status
-      - task_id
-      - traceback
+        - date_done
+        - name
+        - result
+        - status
+        - task_id
+        - traceback
     TaskResultStatusEnum:
       enum:
-      - PENDING
-      - STARTED
-      - SUCCESS
-      - FAILURE
-      - RETRY
-      - REVOKED
+        - PENDING
+        - STARTED
+        - SUCCESS
+        - FAILURE
+        - RETRY
+        - REVOKED
       type: string
       description: |-
         * `PENDING` - PENDING
@@ -4035,11 +4035,11 @@ components:
           type: string
           nullable: true
       required:
-      - token
+        - token
     TypeEnum:
       enum:
-      - video
-      - audio
+        - video
+        - audio
       type: string
       description: |-
         * `video` - video
@@ -4067,8 +4067,8 @@ components:
         vid_type_filter:
           nullable: true
           oneOf:
-          - $ref: '#/components/schemas/VidTypeFilterEnum'
-          - $ref: '#/components/schemas/NullEnum'
+            - $ref: '#/components/schemas/VidTypeFilterEnum'
+            - $ref: '#/components/schemas/NullEnum'
         grid_items:
           type: integer
           maximum: 7
@@ -4095,29 +4095,29 @@ components:
         show_help_text:
           type: boolean
       required:
-      - file_size_unit
-      - grid_items
-      - hide_watched
-      - hide_watched_channel
-      - hide_watched_playlist
-      - page_size
-      - show_help_text
-      - show_ignored_only
-      - show_subed_only
-      - show_subed_only_playlists
-      - sort_by
-      - sort_order
-      - stylesheet
-      - vid_type_filter
-      - view_style_channel
-      - view_style_downloads
-      - view_style_home
-      - view_style_playlist
+        - file_size_unit
+        - grid_items
+        - hide_watched
+        - hide_watched_channel
+        - hide_watched_playlist
+        - page_size
+        - show_help_text
+        - show_ignored_only
+        - show_subed_only
+        - show_subed_only_playlists
+        - sort_by
+        - sort_order
+        - stylesheet
+        - vid_type_filter
+        - view_style_channel
+        - view_style_downloads
+        - view_style_home
+        - view_style_playlist
     VidTypeFilterEnum:
       enum:
-      - videos
-      - streams
-      - shorts
+        - videos
+        - streams
+        - shorts
       type: string
       description: |-
         * `videos` - videos
@@ -4157,7 +4157,7 @@ components:
           type: string
         sponsorblock:
           allOf:
-          - $ref: '#/components/schemas/SponsorBlock'
+            - $ref: '#/components/schemas/SponsorBlock'
           nullable: true
         stats:
           $ref: '#/components/schemas/Stats'
@@ -4191,21 +4191,21 @@ components:
           format: double
           title: ' score'
       required:
-      - active
-      - category
-      - date_downloaded
-      - media_size
-      - media_url
-      - player
-      - published
-      - stats
-      - streams
-      - tags
-      - title
-      - vid_last_refresh
-      - vid_thumb_url
-      - vid_type
-      - youtube_id
+        - active
+        - category
+        - date_downloaded
+        - media_size
+        - media_url
+        - player
+        - published
+        - stats
+        - streams
+        - tags
+        - title
+        - vid_last_refresh
+        - vid_thumb_url
+        - vid_type
+        - youtube_id
     VideoList:
       type: object
       description: serialize video list
@@ -4217,8 +4217,8 @@ components:
         paginate:
           $ref: '#/components/schemas/Pagination'
       required:
-      - data
-      - paginate
+        - data
+        - paginate
     VideoProgressUpdate:
       type: object
       description: serialize progress update data
@@ -4241,34 +4241,34 @@ components:
           type: string
         type_videos:
           allOf:
-          - $ref: '#/components/schemas/VideoStatsItem'
+            - $ref: '#/components/schemas/VideoStatsItem'
           nullable: true
         type_shorts:
           allOf:
-          - $ref: '#/components/schemas/VideoStatsItem'
+            - $ref: '#/components/schemas/VideoStatsItem'
           nullable: true
         type_streams:
           allOf:
-          - $ref: '#/components/schemas/VideoStatsItem'
+            - $ref: '#/components/schemas/VideoStatsItem'
           nullable: true
         active_true:
           allOf:
-          - $ref: '#/components/schemas/VideoStatsItem'
+            - $ref: '#/components/schemas/VideoStatsItem'
           nullable: true
         active_false:
           allOf:
-          - $ref: '#/components/schemas/VideoStatsItem'
+            - $ref: '#/components/schemas/VideoStatsItem'
           nullable: true
       required:
-      - active_false
-      - active_true
-      - doc_count
-      - duration
-      - duration_str
-      - media_size
-      - type_shorts
-      - type_streams
-      - type_videos
+        - active_false
+        - active_true
+        - doc_count
+        - duration
+        - duration_str
+        - media_size
+        - type_shorts
+        - type_streams
+        - type_videos
     VideoStatsItem:
       type: object
       description: serialize video stats item
@@ -4282,15 +4282,15 @@ components:
         duration_str:
           type: string
       required:
-      - doc_count
-      - duration
-      - duration_str
-      - media_size
+        - doc_count
+        - duration
+        - duration_str
+        - media_size
     ViewStyleHomeEnum:
       enum:
-      - grid
-      - list
-      - table
+        - grid
+        - list
+        - table
       type: string
       description: |-
         * `grid` - grid
@@ -4298,8 +4298,8 @@ components:
         * `table` - table
     ViewStylePlaylistEnum:
       enum:
-      - grid
-      - list
+        - grid
+        - list
       type: string
       description: |-
         * `grid` - grid
@@ -4318,30 +4318,30 @@ components:
         items:
           type: integer
       required:
-      - duration
-      - duration_str
-      - items
-      - progress
+        - duration
+        - duration_str
+        - items
+        - progress
     WatchStats:
       type: object
       description: serialize watch stats
       properties:
         total:
           allOf:
-          - $ref: '#/components/schemas/WatchTotalStats'
+            - $ref: '#/components/schemas/WatchTotalStats'
           nullable: true
         unwatched:
           allOf:
-          - $ref: '#/components/schemas/WatchItemStats'
+            - $ref: '#/components/schemas/WatchItemStats'
           nullable: true
         watched:
           allOf:
-          - $ref: '#/components/schemas/WatchItemStats'
+            - $ref: '#/components/schemas/WatchItemStats'
           nullable: true
       required:
-      - total
-      - unwatched
-      - watched
+        - total
+        - unwatched
+        - watched
     WatchTotalStats:
       type: object
       description: serialize total watch stats
@@ -4353,9 +4353,9 @@ components:
         items:
           type: integer
       required:
-      - duration
-      - duration_str
-      - items
+        - duration
+        - duration_str
+        - items
     WatchedData:
       type: object
       description: mark as watched serializer
@@ -4365,8 +4365,8 @@ components:
         is_watched:
           type: boolean
       required:
-      - id
-      - is_watched
+        - id
+        - is_watched
   securitySchemes:
     basicAuth:
       type: http

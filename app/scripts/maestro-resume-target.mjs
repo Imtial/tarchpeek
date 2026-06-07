@@ -5,7 +5,8 @@ const redisContainerName = process.env.TA_REDIS_CONTAINER_NAME ?? 'tarchpeek-arc
 
 function loadAuthConfig(authConfigPath) {
   const parsed = JSON.parse(readFileSync(authConfigPath, 'utf-8'));
-  const baseUrl = typeof parsed.baseUrl === 'string' ? parsed.baseUrl.trim().replace(/\/$/, '') : '';
+  const baseUrl =
+    typeof parsed.baseUrl === 'string' ? parsed.baseUrl.trim().replace(/\/$/, '') : '';
   const apiToken = typeof parsed.apiToken === 'string' ? parsed.apiToken.trim() : '';
 
   if (!baseUrl || !apiToken) {
@@ -65,8 +66,19 @@ function sortWatchedLast(items) {
 async function resolveHomeCardId(baseUrl, apiToken, videoId) {
   const [continuePage, recentPage, unwatchedPage] = await Promise.all([
     fetchVideoList(baseUrl, apiToken, { page: 1, type: 'videos', watch: 'continue' }),
-    fetchVideoList(baseUrl, apiToken, { page: 1, type: 'videos', sort: 'downloaded', order: 'desc' }),
-    fetchVideoList(baseUrl, apiToken, { page: 1, type: 'videos', watch: 'unwatched', sort: 'published', order: 'desc' }),
+    fetchVideoList(baseUrl, apiToken, {
+      page: 1,
+      type: 'videos',
+      sort: 'downloaded',
+      order: 'desc',
+    }),
+    fetchVideoList(baseUrl, apiToken, {
+      page: 1,
+      type: 'videos',
+      watch: 'unwatched',
+      sort: 'published',
+      order: 'desc',
+    }),
   ]);
 
   const merged = [...continuePage.data, ...recentPage.data, ...unwatchedPage.data];
@@ -127,12 +139,18 @@ async function setResumeProgress(baseUrl, apiToken, videoId, positionSeconds) {
 }
 
 function readRedisProgress(videoId) {
-  const keyLookup = spawnSync('docker', ['exec', redisContainerName, 'redis-cli', '--raw', 'KEYS', `ta:*:progress:${videoId}`], {
-    encoding: 'utf-8',
-  });
+  const keyLookup = spawnSync(
+    'docker',
+    ['exec', redisContainerName, 'redis-cli', '--raw', 'KEYS', `ta:*:progress:${videoId}`],
+    {
+      encoding: 'utf-8',
+    },
+  );
 
   if (keyLookup.status !== 0) {
-    throw new Error(`Failed to inspect Redis progress key for ${videoId}: ${keyLookup.stderr || keyLookup.stdout}`);
+    throw new Error(
+      `Failed to inspect Redis progress key for ${videoId}: ${keyLookup.stderr || keyLookup.stdout}`,
+    );
   }
 
   const progressKey = keyLookup.stdout
@@ -144,12 +162,18 @@ function readRedisProgress(videoId) {
     return null;
   }
 
-  const valueLookup = spawnSync('docker', ['exec', redisContainerName, 'redis-cli', '--raw', 'GET', progressKey], {
-    encoding: 'utf-8',
-  });
+  const valueLookup = spawnSync(
+    'docker',
+    ['exec', redisContainerName, 'redis-cli', '--raw', 'GET', progressKey],
+    {
+      encoding: 'utf-8',
+    },
+  );
 
   if (valueLookup.status !== 0) {
-    throw new Error(`Failed to read Redis progress value for ${videoId}: ${valueLookup.stderr || valueLookup.stdout}`);
+    throw new Error(
+      `Failed to read Redis progress value for ${videoId}: ${valueLookup.stderr || valueLookup.stdout}`,
+    );
   }
 
   const rawValue = valueLookup.stdout.trim();
@@ -182,7 +206,9 @@ async function prepareResumeTarget(authConfigPath) {
   const confirmedSeconds = await waitForRedisPosition(candidate.videoId, targetSeconds - 2);
 
   if (confirmedSeconds < targetSeconds - 2) {
-    throw new Error(`Failed to seed resume position for ${candidate.videoId}. Expected >= ${targetSeconds - 2}, got ${confirmedSeconds}.`);
+    throw new Error(
+      `Failed to seed resume position for ${candidate.videoId}. Expected >= ${targetSeconds - 2}, got ${confirmedSeconds}.`,
+    );
   }
 
   return {

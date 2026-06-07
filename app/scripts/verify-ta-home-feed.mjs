@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(scriptDir, '..');
-const authConfigPath = process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'maestro/.runtime/tubearchivist-auth.json');
+const authConfigPath =
+  process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'maestro/.runtime/tubearchivist-auth.json');
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1']);
 
 function fail(message) {
@@ -14,17 +15,20 @@ function fail(message) {
 
 function loadAuthConfig() {
   if (!existsSync(authConfigPath)) {
-    fail(`Missing auth config at ${authConfigPath}. Run npm --prefix app run ta:seed:bootstrap first.`);
+    fail(`Missing auth config at ${authConfigPath}. Run pnpm --dir app ta:seed:bootstrap first.`);
   }
 
   let parsed;
   try {
     parsed = JSON.parse(readFileSync(authConfigPath, 'utf-8'));
   } catch (error) {
-    fail(`Failed to parse auth config ${authConfigPath}: ${error instanceof Error ? error.message : String(error)}`);
+    fail(
+      `Failed to parse auth config ${authConfigPath}: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 
-  const baseUrl = typeof parsed.baseUrl === 'string' ? parsed.baseUrl.trim().replace(/\/$/, '') : '';
+  const baseUrl =
+    typeof parsed.baseUrl === 'string' ? parsed.baseUrl.trim().replace(/\/$/, '') : '';
   const apiToken = typeof parsed.apiToken === 'string' ? parsed.apiToken.trim() : '';
   if (!baseUrl || !apiToken) {
     fail(`Auth config is missing baseUrl/apiToken: ${authConfigPath}`);
@@ -63,14 +67,18 @@ async function fetchFeedSegment(baseUrl, apiToken, label, query, hostHeader) {
 
   if (!response.ok) {
     const detail = await response.text();
-    fail(`[home-feed-check] ${label} failed ${response.status} ${response.statusText} at ${url.toString()} :: ${detail}`);
+    fail(
+      `[home-feed-check] ${label} failed ${response.status} ${response.statusText} at ${url.toString()} :: ${detail}`,
+    );
   }
 
   let json;
   try {
     json = await response.json();
   } catch (error) {
-    fail(`[home-feed-check] ${label} returned non-JSON payload at ${url.toString()}: ${error instanceof Error ? error.message : String(error)}`);
+    fail(
+      `[home-feed-check] ${label} returned non-JSON payload at ${url.toString()}: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 
   const items = Array.isArray(json?.data) ? json.data.length : 0;
@@ -89,11 +97,16 @@ async function main() {
   const checks = [
     ['continue', { page: 1, type: 'videos', watch: 'continue' }],
     ['recent', { page: 1, type: 'videos', sort: 'downloaded', order: 'desc' }],
-    ['unwatched', { page: 1, type: 'videos', watch: 'unwatched', sort: 'published', order: 'desc' }],
+    [
+      'unwatched',
+      { page: 1, type: 'videos', watch: 'unwatched', sort: 'published', order: 'desc' },
+    ],
   ];
 
   const counts = await Promise.all(
-    checks.map(([label, query]) => fetchFeedSegment(auth.baseUrl, auth.apiToken, label, query, hostHeader)),
+    checks.map(([label, query]) =>
+      fetchFeedSegment(auth.baseUrl, auth.apiToken, label, query, hostHeader),
+    ),
   );
   const total = counts.reduce((sum, count) => sum + count, 0);
 

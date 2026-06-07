@@ -24,7 +24,9 @@ function createTubeArchivistClient(connection: TubeArchivistConnection): TubeArc
   async function fetchContinueWatching(page = 1) {
     const response = await transport.videoRetrieve({ page, watch: 'continue' });
     return {
-      items: response.data.data.map(video => mapVideoToContinueWatchingItem(video, connection.serverUrl)),
+      items: response.data.data.map(video =>
+        mapVideoToContinueWatchingItem(video, connection.serverUrl),
+      ),
       currentPage: response.data.paginate.current_page,
       hasNextPage: Boolean(response.data.paginate.next_pages?.length),
     };
@@ -34,10 +36,20 @@ function createTubeArchivistClient(connection: TubeArchivistConnection): TubeArc
     const [continueResponse, recentResponse, unwatchedResponse] = await Promise.all([
       transport.videoRetrieve({ page, type: 'videos', watch: 'continue' }),
       transport.videoRetrieve({ page, type: 'videos', sort: 'downloaded', order: 'desc' }),
-      transport.videoRetrieve({ page, type: 'videos', watch: 'unwatched', sort: 'published', order: 'desc' }),
+      transport.videoRetrieve({
+        page,
+        type: 'videos',
+        watch: 'unwatched',
+        sort: 'published',
+        order: 'desc',
+      }),
     ]);
 
-    const merged = [...continueResponse.data.data, ...recentResponse.data.data, ...unwatchedResponse.data.data];
+    const merged = [
+      ...continueResponse.data.data,
+      ...recentResponse.data.data,
+      ...unwatchedResponse.data.data,
+    ];
     const seenVideoIds = new Set<string>();
     const uniqueItems = merged.filter(video => {
       if (seenVideoIds.has(video.youtube_id)) {
@@ -48,7 +60,9 @@ function createTubeArchivistClient(connection: TubeArchivistConnection): TubeArc
     });
 
     return {
-      items: uniqueItems.slice(0, 20).map(video => mapVideoToContinueWatchingItem(video, connection.serverUrl)),
+      items: uniqueItems
+        .slice(0, 20)
+        .map(video => mapVideoToContinueWatchingItem(video, connection.serverUrl)),
       currentPage: page,
       hasNextPage:
         Boolean(continueResponse.data.paginate.next_pages?.length) ||
@@ -81,7 +95,9 @@ function createTubeArchivistClient(connection: TubeArchivistConnection): TubeArc
       order: 'desc',
     });
     return {
-      items: response.data.data.map(video => mapVideoToContinueWatchingItem(video, connection.serverUrl)),
+      items: response.data.data.map(video =>
+        mapVideoToContinueWatchingItem(video, connection.serverUrl),
+      ),
       currentPage: response.data.paginate.current_page,
       hasNextPage: Boolean(response.data.paginate.next_pages?.length),
     };
@@ -90,7 +106,9 @@ function createTubeArchivistClient(connection: TubeArchivistConnection): TubeArc
   async function fetchPlaylists(page = 1) {
     const response = await transport.playlistRetrieve({ page });
     return {
-      items: response.data.data.map(playlist => mapPlaylistListItem(playlist, connection.serverUrl)),
+      items: response.data.data.map(playlist =>
+        mapPlaylistListItem(playlist, connection.serverUrl),
+      ),
       currentPage: response.data.paginate.current_page,
       hasNextPage: Boolean(response.data.paginate.next_pages?.length),
     };

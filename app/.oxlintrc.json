@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["import", "react", "typescript"],
+  "options": {
+    "typeAware": true
+  },
+  "ignorePatterns": ["src/api/generated/**"],
+  "rules": {
+    "import/exports-last": "error",
+    "typescript/no-deprecated": "warn"
+  }
+}

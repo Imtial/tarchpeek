@@ -6,7 +6,7 @@ function setApiBaseUrl(baseUrl: URL) {
 
 const AXIOS_INSTANCE = Axios.create();
 
-AXIOS_INSTANCE.interceptors.request.use((config) => {
+AXIOS_INSTANCE.interceptors.request.use(config => {
   const method = (config.method ?? 'GET').toUpperCase();
   const base = config.baseURL ?? '';
   const path = config.url ?? '';
@@ -16,7 +16,7 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
 });
 
 AXIOS_INSTANCE.interceptors.response.use(
-  (response) => {
+  response => {
     const method = (response.config.method ?? 'GET').toUpperCase();
     const base = response.config.baseURL ?? '';
     const path = response.config.url ?? '';
@@ -24,7 +24,7 @@ AXIOS_INSTANCE.interceptors.response.use(
     console.log(`[API][RES] ${method} ${fullUrl} -> ${response.status}`);
     return response;
   },
-  (error) => {
+  error => {
     const method = (error.config?.method ?? 'GET').toUpperCase();
     const base = error.config?.baseURL ?? '';
     const path = error.config?.url ?? '';

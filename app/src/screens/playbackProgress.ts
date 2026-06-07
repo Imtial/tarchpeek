@@ -82,7 +82,4 @@ async function syncPlaybackProgressCheckpoint({
   }
 }
 
-export {
-  PROGRESS_SYNC_INTERVAL_SECONDS,
-  syncPlaybackProgressCheckpoint,
-};
+export { PROGRESS_SYNC_INTERVAL_SECONDS, syncPlaybackProgressCheckpoint };

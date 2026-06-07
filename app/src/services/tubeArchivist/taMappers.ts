@@ -1,4 +1,4 @@
-import type { Channel, Playlist, PlaylistEntry, Video } from '../../api/generated/models';
+import type { Channel, Playlist, PlaylistEntry, Video } from '../../api/generated/types.gen';
 import type {
   ChannelDetail,
   ChannelListItem,
@@ -36,8 +36,15 @@ function mapVideoToContinueWatchingItem(video: Video, serverUrl: string): Contin
   };
 }
 
-function mapVideoDetails(videoId: string, video: Video, serverUrl: string, apiToken: string): VideoDetails {
-  const firstUsableVideoStream = video.streams.find(stream => stream.type === 'video' && stream.width && stream.height);
+function mapVideoDetails(
+  videoId: string,
+  video: Video,
+  serverUrl: string,
+  apiToken: string,
+): VideoDetails {
+  const firstUsableVideoStream = video.streams.find(
+    stream => stream.type === 'video' && stream.width && stream.height,
+  );
   return {
     videoId,
     resumePositionSeconds: video.player.position ?? 0,

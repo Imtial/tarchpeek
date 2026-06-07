@@ -1,18 +1,107 @@
-import {
-  channelRetrieve,
-  channelRetrieve2,
-  pingRetrieve,
-  playlistRetrieve,
-  playlistRetrieve2,
-  videoProgressCreate,
-  videoRetrieve,
-  videoRetrieve2,
-  watchedCreate,
-} from '../../api/generated/endpoints/tubearchivist';
 import { searchRetrieve } from '../../api/search';
-import { setApiBaseUrl } from '../../api/fetcher';
-import type { VideoProgressUpdate, WatchedData } from '../../api/generated/models';
+import { customAxios, setApiBaseUrl } from '../../api/fetcher';
+import type {
+  ChannelRetrieve2Response,
+  ChannelRetrieveData,
+  ChannelRetrieveResponse,
+  PingRetrieveResponse,
+  PlaylistRetrieve2Response,
+  PlaylistRetrieveData,
+  PlaylistRetrieveResponse,
+  VideoProgressCreateResponse,
+  VideoProgressUpdate,
+  VideoRetrieve2Response,
+  VideoRetrieveData,
+  VideoRetrieveResponse,
+  WatchedCreateResponse,
+  WatchedData,
+} from '../../api/generated/types.gen';
 import type { TubeArchivistConnection } from './types';
+
+type RequestOptions<TData> = Parameters<typeof customAxios<TData>>[1];
+
+function pingRetrieve(options?: RequestOptions<PingRetrieveResponse>) {
+  return customAxios<PingRetrieveResponse>({ method: 'GET', url: '/api/ping/' }, options);
+}
+
+function videoRetrieve(
+  params?: VideoRetrieveData['query'],
+  options?: RequestOptions<VideoRetrieveResponse>,
+) {
+  return customAxios<VideoRetrieveResponse>({ method: 'GET', params, url: '/api/video/' }, options);
+}
+
+function videoRetrieve2(videoId: string, options?: RequestOptions<VideoRetrieve2Response>) {
+  return customAxios<VideoRetrieve2Response>(
+    { method: 'GET', url: `/api/video/${videoId}/` },
+    options,
+  );
+}
+
+function videoProgressCreate(
+  videoId: string,
+  videoProgressUpdate?: VideoProgressUpdate,
+  options?: RequestOptions<VideoProgressCreateResponse>,
+) {
+  return customAxios<VideoProgressCreateResponse>(
+    {
+      data: videoProgressUpdate,
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      url: `/api/video/${videoId}/progress/`,
+    },
+    options,
+  );
+}
+
+function watchedCreate(watchedData: WatchedData, options?: RequestOptions<WatchedCreateResponse>) {
+  return customAxios<WatchedCreateResponse>(
+    {
+      data: watchedData,
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      url: '/api/watched/',
+    },
+    options,
+  );
+}
+
+function channelRetrieve(
+  params?: ChannelRetrieveData['query'],
+  options?: RequestOptions<ChannelRetrieveResponse>,
+) {
+  return customAxios<ChannelRetrieveResponse>(
+    { method: 'GET', params, url: '/api/channel/' },
+    options,
+  );
+}
+
+function channelRetrieve2(channelId: string, options?: RequestOptions<ChannelRetrieve2Response>) {
+  return customAxios<ChannelRetrieve2Response>(
+    { method: 'GET', url: `/api/channel/${channelId}/` },
+    options,
+  );
+}
+
+function playlistRetrieve(
+  params?: PlaylistRetrieveData['query'],
+  options?: RequestOptions<PlaylistRetrieveResponse>,
+) {
+  return customAxios<PlaylistRetrieveResponse>(
+    { method: 'GET', params, url: '/api/playlist/' },
+    options,
+  );
+}
+
+function playlistRetrieve2(
+  playlistId: string,
+  options?: RequestOptions<PlaylistRetrieve2Response>,
+) {
+  return customAxios<PlaylistRetrieve2Response>(
+    { method: 'GET', url: `/api/playlist/${playlistId}/` },
+    options,
+  );
+}
 
 function configureApiBaseUrl(serverUrl: string) {
   setApiBaseUrl(new URL(serverUrl));

@@ -52,7 +52,12 @@ function ExpandableDescription({
           nestedScrollEnabled
           persistentScrollbar
           showsVerticalScrollIndicator
-          style={[styles.expandedDescriptionScroll, expandedScrollStyle, expandedScrollMaxHeight ? { maxHeight: expandedScrollMaxHeight } : null]}>
+          style={[
+            styles.expandedDescriptionScroll,
+            expandedScrollStyle,
+            expandedScrollMaxHeight ? { maxHeight: expandedScrollMaxHeight } : null,
+          ]}
+        >
           <Text style={descriptionStyle}>{text}</Text>
         </ScrollView>
       ) : (
@@ -63,7 +68,8 @@ function ExpandableDescription({
               text.length > 140 || event.nativeEvent.lines.length > collapsedLines,
             );
           }}
-          style={descriptionStyle}>
+          style={descriptionStyle}
+        >
           {text}
         </Text>
       )}
@@ -74,8 +80,11 @@ function ExpandableDescription({
             setIsExpanded(false);
             onExpandedChange?.(false);
           }}
-          style={[styles.toggleButton, toggleButtonStyle]}>
-          <Text style={[styles.toggleLabel, { color: theme.colors.textSecondary }, toggleLabelStyle]}>
+          style={[styles.toggleButton, toggleButtonStyle]}
+        >
+          <Text
+            style={[styles.toggleLabel, { color: theme.colors.textSecondary }, toggleLabelStyle]}
+          >
             See less...
           </Text>
         </Pressable>
@@ -87,8 +96,11 @@ function ExpandableDescription({
             setIsExpanded(true);
             onExpandedChange?.(true);
           }}
-          style={[styles.toggleButton, toggleButtonStyle]}>
-          <Text style={[styles.toggleLabel, { color: theme.colors.textSecondary }, toggleLabelStyle]}>
+          style={[styles.toggleButton, toggleButtonStyle]}
+        >
+          <Text
+            style={[styles.toggleLabel, { color: theme.colors.textSecondary }, toggleLabelStyle]}
+          >
             See more ...
           </Text>
         </Pressable>

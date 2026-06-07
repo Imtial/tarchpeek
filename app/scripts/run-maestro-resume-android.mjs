@@ -6,11 +6,14 @@ import { prepareResumeTarget, verifyResumePreserved } from './maestro-resume-tar
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const appRoot = resolve(scriptDir, '..');
-const authConfigPath = process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'maestro/.runtime/tubearchivist-auth.json');
+const authConfigPath =
+  process.env.TA_AUTH_CONFIG_FILE ?? resolve(appRoot, 'maestro/.runtime/tubearchivist-auth.json');
 const emulatorNetworkCheckScriptPath = resolve(scriptDir, 'verify-emulator-ta-network.mjs');
-const maestroBinaryPath = process.env.MAESTRO_PATH ?? resolve(process.env.HOME ?? '', '.maestro/bin/maestro');
+const maestroBinaryPath =
+  process.env.MAESTRO_PATH ?? resolve(process.env.HOME ?? '', '.maestro/bin/maestro');
 const maestroApkPath = resolve(appRoot, 'android/app/build/outputs/apk/maestro/app-maestro.apk');
-const adbPath = process.env.ADB_PATH ?? `${process.env.HOME}/Library/Android/sdk/platform-tools/adb`;
+const adbPath =
+  process.env.ADB_PATH ?? `${process.env.HOME}/Library/Android/sdk/platform-tools/adb`;
 const maestroFlowPath = resolve(appRoot, 'maestro/scenarios/resume-playback.yaml');
 
 function fail(message) {
@@ -33,7 +36,7 @@ function verifyMaestroInstalled() {
 
 function verifyMaestroApkBuilt() {
   if (!existsSync(maestroApkPath)) {
-    fail(`Maestro APK not found at ${maestroApkPath}. Run npm --prefix app run e2e:build:android first.`);
+    fail(`Maestro APK not found at ${maestroApkPath}. Run pnpm --dir app e2e:build:android first.`);
   }
 }
 

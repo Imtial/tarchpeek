@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../design/ThemeProvider';
-import type { ContinueWatchingItem, PlaylistDetail, TubeArchivistClient } from '../../services/tubeArchivist';
+import type {
+  ContinueWatchingItem,
+  PlaylistDetail,
+  TubeArchivistClient,
+} from '../../services/tubeArchivist';
 import { spacing } from '../../design/tokens';
 import { BrowsingScreenShell } from './BrowsingScreenShell';
 import { VideoResultsList } from './VideoResultsList';
@@ -9,7 +13,10 @@ import { VideoResultsList } from './VideoResultsList';
 type PlaylistDetailScreenProps = {
   playlistId: string;
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
+  onOpenVideo: (
+    videoId: string,
+    queueContext?: { videoIds: string[]; currentIndex: number },
+  ) => Promise<void>;
 };
 
 function PlaylistDetailScreen({ playlistId, client, onOpenVideo }: PlaylistDetailScreenProps) {
@@ -35,7 +42,7 @@ function PlaylistDetailScreen({ playlistId, client, onOpenVideo }: PlaylistDetai
       }
     }
 
-    loadDetail();
+    void loadDetail();
 
     return () => {
       isMounted = false;
@@ -88,9 +95,18 @@ function PlaylistDetailScreen({ playlistId, client, onOpenVideo }: PlaylistDetai
   }));
 
   return (
-    <BrowsingScreenShell subtitle="" testID="playlist-detail-screen" title={detail?.playlistName ?? 'Playlist'}>
+    <BrowsingScreenShell
+      subtitle=""
+      testID="playlist-detail-screen"
+      title={detail?.playlistName ?? 'Playlist'}
+    >
       {renderHeader()}
-      <VideoResultsList isLoading={!detail} items={entryItems} loadingCount={5} onOpenVideo={onOpenVideo} />
+      <VideoResultsList
+        isLoading={!detail}
+        items={entryItems}
+        loadingCount={5}
+        onOpenVideo={onOpenVideo}
+      />
     </BrowsingScreenShell>
   );
 }

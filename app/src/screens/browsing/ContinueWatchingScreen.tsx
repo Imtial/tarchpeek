@@ -7,7 +7,10 @@ import { usePagedResource } from './hooks/usePagedResource';
 type ContinueWatchingScreenProps = {
   browseRefreshKey: number;
   client: TubeArchivistClient;
-  onOpenVideo: (videoId: string, queueContext?: { videoIds: string[]; currentIndex: number }) => Promise<void>;
+  onOpenVideo: (
+    videoId: string,
+    queueContext?: { videoIds: string[]; currentIndex: number },
+  ) => Promise<void>;
 };
 
 function sortWatchedLast(items: ContinueWatchingItem[]) {
@@ -16,7 +19,11 @@ function sortWatchedLast(items: ContinueWatchingItem[]) {
   return [...unwatched, ...watched];
 }
 
-function ContinueWatchingScreen({ browseRefreshKey, client, onOpenVideo }: ContinueWatchingScreenProps) {
+function ContinueWatchingScreen({
+  browseRefreshKey,
+  client,
+  onOpenVideo,
+}: ContinueWatchingScreenProps) {
   const fetchPage = useCallback((page: number) => client.fetchContinueWatching(page), [client]);
   const mergeItems = useCallback(
     (currentItems: ContinueWatchingItem[], nextPageItems: ContinueWatchingItem[]) =>
@@ -24,17 +31,15 @@ function ContinueWatchingScreen({ browseRefreshKey, client, onOpenVideo }: Conti
     [],
   );
 
-  const { hasNextPage, isLoading, isLoadingMore, items, loadMore } = usePagedResource<ContinueWatchingItem>({
-    fetchPage,
-    mergeItems,
-    reloadKey: browseRefreshKey,
-  });
+  const { hasNextPage, isLoading, isLoadingMore, items, loadMore } =
+    usePagedResource<ContinueWatchingItem>({
+      fetchPage,
+      mergeItems,
+      reloadKey: browseRefreshKey,
+    });
 
   return (
-    <BrowsingScreenShell
-      subtitle=""
-      testID="continue-watching-screen"
-      title="Continue Watching">
+    <BrowsingScreenShell subtitle="" testID="continue-watching-screen" title="Continue Watching">
       <VideoResultsList
         hasNextPage={hasNextPage}
         isLoading={isLoading && items.length === 0}

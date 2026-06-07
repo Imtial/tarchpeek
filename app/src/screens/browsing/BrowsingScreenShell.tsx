@@ -15,9 +15,14 @@ function BrowsingScreenShell({ children, testID }: BrowsingScreenShellProps) {
   const { colors } = theme;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.pageBackground }]} testID={testID}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.pageBackground }]}
+      testID={testID}
+    >
       <View style={styles.content}>
-        <View style={[styles.bodyCard, { backgroundColor: colors.surfaceBackground }]}>{children}</View>
+        <View style={[styles.bodyCard, { backgroundColor: colors.surfaceBackground }]}>
+          {children}
+        </View>
       </View>
     </SafeAreaView>
   );

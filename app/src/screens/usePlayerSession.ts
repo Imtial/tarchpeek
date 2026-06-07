@@ -11,7 +11,11 @@ import {
   restoreOrientationAfterFullscreen,
   unlockFullscreenOrientation,
 } from './player/fullscreenOrientation';
-import { getWatchedSessionSeconds, startWatchSession, stopWatchSession } from './player/sessionPolicies';
+import {
+  getWatchedSessionSeconds,
+  startWatchSession,
+  stopWatchSession,
+} from './player/sessionPolicies';
 
 type UsePlayerSessionParams = {
   client: TubeArchivistClient;
@@ -23,13 +27,19 @@ type UsePlayerSessionParams = {
 const RESUME_MIN_SECONDS = TARCHPEEK_CONSTANTS.player.resumeMinSeconds;
 const RESUME_END_BUFFER_SECONDS = TARCHPEEK_CONSTANTS.player.resumeEndBufferSeconds;
 
-function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: UsePlayerSessionParams) {
+function usePlayerSession({
+  client,
+  onBack,
+  onPlayNextInQueue,
+  videoDetails,
+}: UsePlayerSessionParams) {
   const initialResumeSeconds = Math.max(0, Math.floor(videoDetails.resumePositionSeconds));
   const durationSeconds = Math.max(0, Math.floor(videoDetails.duration ?? 0));
   const canApplyResumePosition =
     initialResumeSeconds > RESUME_MIN_SECONDS &&
     (durationSeconds <= 0 ||
-      initialResumeSeconds < Math.max(RESUME_MIN_SECONDS + 1, durationSeconds - RESUME_END_BUFFER_SECONDS));
+      initialResumeSeconds <
+        Math.max(RESUME_MIN_SECONDS + 1, durationSeconds - RESUME_END_BUFFER_SECONDS));
 
   const setPlaybackStatus = useCallback((_value: string) => {}, []);
   const [isWatched, setIsWatched] = useState(videoDetails.watched);
@@ -44,7 +54,9 @@ function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: U
   const watchedSessionMsRef = useRef(0);
   const isAdvancingAfterEndRef = useRef(false);
   const fullscreenLockRef = useRef<ReturnType<typeof getFullscreenOrientationLock>>(null);
-  const fullscreenRotationContextRef = useRef<Awaited<ReturnType<typeof captureRotationModeContext>> | null>(null);
+  const fullscreenRotationContextRef = useRef<Awaited<
+    ReturnType<typeof captureRotationModeContext>
+  > | null>(null);
   const hasHandledFullscreenExitRef = useRef(true);
 
   const syncProgress = useCallback(
@@ -98,7 +110,10 @@ function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: U
         fullscreenRotationContextRef.current = null;
       });
     if (fullscreenLockRef.current === null) {
-      fullscreenLockRef.current = getFullscreenOrientationLock(videoDetails.streamWidth, videoDetails.streamHeight);
+      fullscreenLockRef.current = getFullscreenOrientationLock(
+        videoDetails.streamWidth,
+        videoDetails.streamHeight,
+      );
     }
     lockFullscreenOrientation(fullscreenLockRef.current);
   }, [videoDetails.streamHeight, videoDetails.streamWidth]);
@@ -251,7 +266,8 @@ function usePlayerSession({ client, onBack, onPlayNextInQueue, videoDetails }: U
       didWatchedStateChangeRef.current = true;
     } catch (error) {
       setIsWatched(!nextWatched);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown watched state update error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown watched state update error';
       setPlaybackStatus(`Watched state update failed: ${errorMessage}`);
     } finally {
       setIsUpdatingWatchedState(false);

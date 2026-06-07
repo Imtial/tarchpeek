@@ -1,8 +1,4 @@
-import {
-  StyleSheet,
-  StatusBar,
-  View,
-} from 'react-native';
+import { StyleSheet, StatusBar, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAppContentController } from './src/app/useAppContentController';
 import { ThemeProvider, useTheme } from './src/design/ThemeProvider';
@@ -55,7 +51,11 @@ function AppContent() {
 
   return hasConnection ? (
     <View style={styles.connectedRoot}>
-      <BrowsingTabs browseRefreshKey={browseRefreshKey} client={client} onOpenVideo={openVideoById} />
+      <BrowsingTabs
+        browseRefreshKey={browseRefreshKey}
+        client={client}
+        onOpenVideo={openVideoById}
+      />
       {videoDetails ? (
         <View style={styles.playerOverlay}>
           <PlayerScreen

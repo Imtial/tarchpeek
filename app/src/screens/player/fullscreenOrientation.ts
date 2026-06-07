@@ -6,7 +6,10 @@ type RotationModeContext = {
   uiOrientation: string | null;
 };
 
-function getFullscreenOrientationLock(streamWidth?: number, streamHeight?: number): FullscreenOrientation | null {
+function getFullscreenOrientationLock(
+  streamWidth?: number,
+  streamHeight?: number,
+): FullscreenOrientation | null {
   if (!streamWidth || !streamHeight) {
     return null;
   }
