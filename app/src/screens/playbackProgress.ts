@@ -2,11 +2,6 @@ import type { RefObject } from 'react';
 import { TARCHPEEK_CONSTANTS } from '../constants/tarchpeekConstants';
 import type { TubeArchivistClient } from '../services/tubeArchivist';
 
-const PROGRESS_SYNC_INTERVAL_SECONDS = TARCHPEEK_CONSTANTS.playbackProgress.syncIntervalSeconds;
-const PROGRESS_SYNC_MIN_DELTA_SECONDS = TARCHPEEK_CONSTANTS.playbackProgress.minDeltaSeconds;
-const PROGRESS_SYNC_FORCE_WAIT_STEP_MS = TARCHPEEK_CONSTANTS.playbackProgress.forceWaitStepMs;
-const PROGRESS_SYNC_FORCE_WAIT_MAX_MS = TARCHPEEK_CONSTANTS.playbackProgress.forceWaitMaxMs;
-
 function wait(ms: number) {
   return new Promise<void>(resolve => {
     setTimeout(resolve, ms);
@@ -18,9 +13,6 @@ type SyncPlaybackProgressParams = {
   isProgressSyncInFlightRef: RefObject<boolean>;
   lastSyncedProgressRef: RefObject<number>;
   latestPlaybackTimeRef: RefObject<number>;
-  reasonLabel: string;
-  shouldUpdateStatus: boolean;
-  setPlaybackStatus: (value: string) => void;
   force: boolean;
   videoId: string;
 };
@@ -31,55 +23,48 @@ async function syncPlaybackProgressCheckpoint({
   isProgressSyncInFlightRef,
   lastSyncedProgressRef,
   latestPlaybackTimeRef,
-  reasonLabel,
-  setPlaybackStatus,
-  shouldUpdateStatus,
   videoId,
 }: SyncPlaybackProgressParams) {
   const playbackSeconds = Math.max(0, Math.floor(latestPlaybackTimeRef.current));
 
   if (playbackSeconds <= 0) {
-    return 'Skipped progress sync because no watch time was recorded.';
+    return;
   }
 
   const isNewEnoughCheckpoint =
-    playbackSeconds >= lastSyncedProgressRef.current + PROGRESS_SYNC_MIN_DELTA_SECONDS;
+    playbackSeconds >=
+    lastSyncedProgressRef.current + TARCHPEEK_CONSTANTS.playbackProgress.minDeltaSeconds;
   if (!force && !isNewEnoughCheckpoint) {
-    return `Skipped ${reasonLabel} sync because progress only moved ${Math.max(0, playbackSeconds - lastSyncedProgressRef.current)}s.`;
+    return;
   }
 
   if (isProgressSyncInFlightRef.current) {
     if (force) {
       let elapsedMs = 0;
-      while (isProgressSyncInFlightRef.current && elapsedMs < PROGRESS_SYNC_FORCE_WAIT_MAX_MS) {
-        await wait(PROGRESS_SYNC_FORCE_WAIT_STEP_MS);
-        elapsedMs += PROGRESS_SYNC_FORCE_WAIT_STEP_MS;
+      while (
+        isProgressSyncInFlightRef.current &&
+        elapsedMs < TARCHPEEK_CONSTANTS.playbackProgress.forceWaitMaxMs
+      ) {
+        await wait(TARCHPEEK_CONSTANTS.playbackProgress.forceWaitStepMs);
+        elapsedMs += TARCHPEEK_CONSTANTS.playbackProgress.forceWaitStepMs;
       }
     }
   }
 
   if (isProgressSyncInFlightRef.current) {
-    return `Skipped ${reasonLabel} sync because another request is in flight.`;
+    return;
   }
 
   isProgressSyncInFlightRef.current = true;
-
-  if (shouldUpdateStatus) {
-    setPlaybackStatus(`Syncing progress checkpoint at ${playbackSeconds}s (${reasonLabel})...`);
-  }
 
   try {
     await client.postProgressCheckpoint(videoId, playbackSeconds);
     lastSyncedProgressRef.current = playbackSeconds;
 
-    if (shouldUpdateStatus) {
-      setPlaybackStatus(`Progress checkpoint synced at ${playbackSeconds}s.`);
-    }
-
-    return `Progress checkpoint synced at ${playbackSeconds}s.`;
+    return;
   } finally {
     isProgressSyncInFlightRef.current = false;
   }
 }
 
-export { PROGRESS_SYNC_INTERVAL_SECONDS, syncPlaybackProgressCheckpoint };
+export { syncPlaybackProgressCheckpoint };

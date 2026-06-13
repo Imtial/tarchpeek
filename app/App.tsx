@@ -1,5 +1,6 @@
 import { StyleSheet, StatusBar, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AndroidOrientationPolicyProvider } from './src/app/AndroidOrientationPolicyProvider';
 import { useAppContentController } from './src/app/useAppContentController';
 import { ThemeProvider, useTheme } from './src/design/ThemeProvider';
 import { BrowsingTabs } from './src/navigation/BrowsingTabs';
@@ -23,7 +24,9 @@ function ThemedApp() {
   return (
     <>
       <StatusBar barStyle={theme.statusBarStyle} />
-      <AppContent />
+      <AndroidOrientationPolicyProvider>
+        <AppContent />
+      </AndroidOrientationPolicyProvider>
     </>
   );
 }

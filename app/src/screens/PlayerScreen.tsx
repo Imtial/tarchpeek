@@ -2,6 +2,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons/static';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { VideoView } from 'react-native-video';
+import { AndroidOrientationOverride } from '../app/AndroidOrientationPolicyProvider';
 import { ExpandableDescription } from '../components/ExpandableDescription';
 import { TARCHPEEK_CONSTANTS } from '../constants/tarchpeekConstants';
 import { useTheme } from '../design/ThemeProvider';
@@ -65,6 +66,8 @@ function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: Playe
     handleToggleWatched,
     handleWillEnterFullscreen,
     handleWillExitFullscreen,
+    isFullscreen,
+    fullscreenOrientationLock,
     isWatched,
     player,
   } = usePlayerSession({
@@ -80,6 +83,7 @@ function PlayerScreen({ client, onBack, onPlayNextInQueue, videoDetails }: Playe
       style={[styles.container, { backgroundColor: theme.colors.pageBackground }]}
       testID="player-screen"
     >
+      <AndroidOrientationOverride enabled={isFullscreen} orientation={fullscreenOrientationLock} />
       <View
         style={[styles.playerScreenFrame, { backgroundColor: theme.colors.videoFrameBackground }]}
       >

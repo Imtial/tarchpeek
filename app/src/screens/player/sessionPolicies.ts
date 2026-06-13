@@ -2,38 +2,38 @@ type RefCell<T> = {
   current: T;
 };
 
-type PlayerSessionRefs = {
-  isPlayingRef: RefCell<boolean>;
-  playSessionStartedAtMsRef: RefCell<number | null>;
-  watchedSessionMsRef: RefCell<number>;
+type WatchSessionState = {
+  isPlaying: boolean;
+  startedAtMs: number | null;
+  watchedMs: number;
 };
 
-function startWatchSession(refs: PlayerSessionRefs) {
-  if (refs.isPlayingRef.current) {
+function startWatchSession(watchSessionRef: RefCell<WatchSessionState>) {
+  if (watchSessionRef.current.isPlaying) {
     return;
   }
 
-  refs.isPlayingRef.current = true;
-  refs.playSessionStartedAtMsRef.current = Date.now();
+  watchSessionRef.current.isPlaying = true;
+  watchSessionRef.current.startedAtMs = Date.now();
 }
 
-function stopWatchSession(refs: PlayerSessionRefs) {
-  if (!refs.isPlayingRef.current) {
+function stopWatchSession(watchSessionRef: RefCell<WatchSessionState>) {
+  if (!watchSessionRef.current.isPlaying) {
     return;
   }
 
-  const startedAt = refs.playSessionStartedAtMsRef.current;
+  const startedAt = watchSessionRef.current.startedAtMs;
   if (startedAt) {
-    refs.watchedSessionMsRef.current += Math.max(0, Date.now() - startedAt);
+    watchSessionRef.current.watchedMs += Math.max(0, Date.now() - startedAt);
   }
 
-  refs.playSessionStartedAtMsRef.current = null;
-  refs.isPlayingRef.current = false;
+  watchSessionRef.current.startedAtMs = null;
+  watchSessionRef.current.isPlaying = false;
 }
 
-function getWatchedSessionSeconds(watchedSessionMsRef: RefCell<number>) {
-  return Math.floor(watchedSessionMsRef.current / 1000);
+function getWatchedSessionSeconds(watchSessionRef: RefCell<WatchSessionState>) {
+  return Math.floor(watchSessionRef.current.watchedMs / 1000);
 }
 
 export { getWatchedSessionSeconds, startWatchSession, stopWatchSession };
-export type { PlayerSessionRefs };
+export type { WatchSessionState };
