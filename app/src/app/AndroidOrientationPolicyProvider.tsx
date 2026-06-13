@@ -5,7 +5,7 @@ import Orientation, {
   PORTRAIT,
   UNLOCK,
 } from 'react-native-orientation-locker';
-import { type PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
+import { type PropsWithChildren, createContext, use, useEffect, useMemo, useState } from 'react';
 
 type FullscreenOrientationLock = 'portrait' | 'landscape';
 
@@ -64,9 +64,10 @@ function AndroidOrientationPolicyProvider({ children }: PropsWithChildren) {
         : isAutoRotateEnabled
           ? UNLOCK
           : PORTRAIT;
+  const contextValue = useMemo(() => ({ setOrientationOverride }), [setOrientationOverride]);
 
   return (
-    <AndroidOrientationPolicyContext.Provider value={{ setOrientationOverride }}>
+    <AndroidOrientationPolicyContext.Provider value={contextValue}>
       <OrientationLocker orientation={orientation} />
       {children}
     </AndroidOrientationPolicyContext.Provider>
@@ -79,7 +80,7 @@ type AndroidOrientationOverrideProps = {
 };
 
 function AndroidOrientationOverride({ enabled, orientation }: AndroidOrientationOverrideProps) {
-  const context = useContext(AndroidOrientationPolicyContext);
+  const context = use(AndroidOrientationPolicyContext);
 
   useEffect(() => {
     if (!context || Platform.OS !== 'android') {

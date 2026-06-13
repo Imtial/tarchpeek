@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Pressable,
   ScrollView,
   StyleProp,
   StyleSheet,
   Text,
+  type TextLayoutEvent,
   TextStyle,
   View,
   ViewStyle,
@@ -24,7 +25,9 @@ type ExpandableDescriptionProps = {
   onExpandedChange?: (expanded: boolean) => void;
 };
 
-function ExpandableDescription({
+type ExpandableDescriptionContentProps = ExpandableDescriptionProps;
+
+function ExpandableDescriptionContent({
   text,
   collapsedLines,
   expandedScrollMaxHeight,
@@ -35,15 +38,18 @@ function ExpandableDescription({
   toggleLabelStyle,
   initialExpanded = false,
   onExpandedChange,
-}: ExpandableDescriptionProps) {
+}: ExpandableDescriptionContentProps) {
   const { theme } = useTheme();
   const [isExpanded, setIsExpanded] = useState(initialExpanded);
-  const [hasExpandableDescription, setHasExpandableDescription] = useState(text.length > 140);
+  const [measuredLineCount, setMeasuredLineCount] = useState<number | null>(null);
+  const hasExpandableDescription = text.length > 140 || (measuredLineCount ?? 0) > collapsedLines;
 
-  useEffect(() => {
-    setIsExpanded(initialExpanded);
-    setHasExpandableDescription(text.length > 140);
-  }, [initialExpanded, text]);
+  function handleTextLayout(event: TextLayoutEvent) {
+    const nextLineCount = event.nativeEvent.lines.length;
+    setMeasuredLineCount(currentLineCount =>
+      currentLineCount === nextLineCount ? currentLineCount : nextLineCount,
+    );
+  }
 
   return (
     <View style={containerStyle}>
@@ -58,22 +64,20 @@ function ExpandableDescription({
             expandedScrollMaxHeight ? { maxHeight: expandedScrollMaxHeight } : null,
           ]}
         >
-          <Text style={descriptionStyle}>{text}</Text>
+          <Text onTextLayout={handleTextLayout} style={descriptionStyle}>
+            {text}
+          </Text>
         </ScrollView>
       ) : (
         <Text
           numberOfLines={collapsedLines}
-          onTextLayout={event => {
-            setHasExpandableDescription(
-              text.length > 140 || event.nativeEvent.lines.length > collapsedLines,
-            );
-          }}
+          onTextLayout={handleTextLayout}
           style={descriptionStyle}
         >
           {text}
         </Text>
       )}
-      {isExpanded ? (
+      {isExpanded && hasExpandableDescription ? (
         <Pressable
           accessibilityRole="button"
           onPress={() => {
@@ -106,6 +110,17 @@ function ExpandableDescription({
         </Pressable>
       ) : null}
     </View>
+  );
+}
+
+function ExpandableDescription(props: ExpandableDescriptionProps) {
+  const { collapsedLines, initialExpanded = false, text } = props;
+
+  return (
+    <ExpandableDescriptionContent
+      key={`${text}:${collapsedLines}:${initialExpanded ? 'expanded' : 'collapsed'}`}
+      {...props}
+    />
   );
 }
 

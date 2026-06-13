@@ -33,6 +33,10 @@ function PagedFlashList<TItem>({
       onLoadMore().catch(() => undefined);
     }
   }, [hasNextPage, isLoadingMore, onLoadMore]);
+  const renderFlashListItem = useCallback(
+    ({ item, index }: { item: TItem; index: number }) => renderItem({ item, index }),
+    [renderItem],
+  );
 
   return (
     <FlashList
@@ -54,7 +58,7 @@ function PagedFlashList<TItem>({
       onEndReached={handleEndReached}
       onEndReachedThreshold={0.65}
       removeClippedSubviews
-      renderItem={({ item, index }) => renderItem({ item, index })}
+      renderItem={renderFlashListItem}
       showsVerticalScrollIndicator={false}
       testID={testID}
     />

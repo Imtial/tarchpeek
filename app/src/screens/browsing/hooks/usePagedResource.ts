@@ -13,9 +13,13 @@ type UsePagedResourceParams<TItem> = {
   shouldKeepItemsDuringReload?: boolean;
 };
 
+function replaceItems<TItem>(_: TItem[], nextPageItems: TItem[]) {
+  return nextPageItems;
+}
+
 function usePagedResource<TItem>({
   fetchPage,
-  mergeItems = (_, nextPageItems) => nextPageItems,
+  mergeItems = replaceItems,
   reloadKey,
   shouldKeepItemsDuringReload = false,
 }: UsePagedResourceParams<TItem>) {

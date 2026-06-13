@@ -1,6 +1,7 @@
-import { useCallback, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../design/ThemeProvider';
+import type { AppTheme } from '../../design/themes';
 import type { ChannelListItem, TubeArchivistClient } from '../../services/tubeArchivist';
 import { radii, spacing } from '../../design/tokens';
 import { BrowsingScreenShell } from './BrowsingScreenShell';
@@ -11,6 +12,67 @@ type ChannelsScreenProps = {
   client: TubeArchivistClient;
   onOpenChannel: (channelId: string) => void;
 };
+
+type ChannelRowProps = {
+  channelId: string;
+  channelName: string;
+  colors: AppTheme['colors'];
+  index: number;
+  isFocused: boolean;
+  onBlurChannel: (channelId: string) => void;
+  onFocusChannel: (channelId: string) => void;
+  onOpenChannel: (channelId: string) => void;
+  subscriberCount: number;
+  thumbnailUrl: string | null;
+};
+
+const ChannelRow = memo(function ChannelRow({
+  channelId,
+  channelName,
+  colors,
+  index,
+  isFocused,
+  onBlurChannel,
+  onFocusChannel,
+  onOpenChannel,
+  subscriberCount,
+  thumbnailUrl,
+}: ChannelRowProps) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onBlur={() => {
+        onBlurChannel(channelId);
+      }}
+      onFocus={() => {
+        onFocusChannel(channelId);
+      }}
+      onPress={() => {
+        onOpenChannel(channelId);
+      }}
+      style={({ pressed }) => [
+        styles.row,
+        { borderColor: isFocused ? colors.accent : colors.border },
+        pressed ? styles.pressed : null,
+      ]}
+      testID={index === 0 ? 'channel-card-first' : `channel-card-${channelId}`}
+    >
+      {thumbnailUrl ? (
+        <Image source={{ uri: thumbnailUrl }} style={styles.thumb} />
+      ) : (
+        <View style={[styles.thumb, { backgroundColor: colors.surfacePressed }]} />
+      )}
+      <View style={styles.textWrap}>
+        <Text numberOfLines={1} style={[styles.title, { color: colors.textPrimary }]}>
+          {channelName}
+        </Text>
+        <Text style={[styles.meta, { color: colors.textSecondary }]}>
+          {`${subscriberCount.toLocaleString()} subs`}
+        </Text>
+      </View>
+    </Pressable>
+  );
+});
 
 function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
   const { theme } = useTheme();
@@ -30,6 +92,29 @@ function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
       mergeItems,
       reloadKey: client,
     });
+  const handleBlurChannel = useCallback((channelId: string) => {
+    setFocusedElementId(current => (current === channelId ? null : current));
+  }, []);
+  const handleFocusChannel = useCallback((channelId: string) => {
+    setFocusedElementId(channelId);
+  }, []);
+  const renderChannelItem = useCallback(
+    ({ item, index }: { item: ChannelListItem; index: number }) => (
+      <ChannelRow
+        channelId={item.channelId}
+        channelName={item.channelName}
+        colors={colors}
+        index={index}
+        isFocused={focusedElementId === item.channelId}
+        onBlurChannel={handleBlurChannel}
+        onFocusChannel={handleFocusChannel}
+        onOpenChannel={onOpenChannel}
+        subscriberCount={item.subscriberCount}
+        thumbnailUrl={item.thumbnailUrl}
+      />
+    ),
+    [colors, focusedElementId, handleBlurChannel, handleFocusChannel, onOpenChannel],
+  );
 
   return (
     <BrowsingScreenShell subtitle="" testID="channels-screen" title="Channels">
@@ -55,43 +140,7 @@ function ChannelsScreen({ client, onOpenChannel }: ChannelsScreenProps) {
             isLoadingMore={isLoadingMore}
             keyExtractor={item => item.channelId}
             onLoadMore={loadMore}
-            renderItem={({ item, index }) => (
-              <Pressable
-                accessibilityRole="button"
-                onBlur={() => {
-                  setFocusedElementId(current => (current === item.channelId ? null : current));
-                }}
-                onFocus={() => {
-                  setFocusedElementId(item.channelId);
-                }}
-                onPress={() => {
-                  onOpenChannel(item.channelId);
-                }}
-                style={({ pressed }) => [
-                  styles.row,
-                  {
-                    borderColor:
-                      focusedElementId === item.channelId ? colors.accent : colors.border,
-                  },
-                  pressed ? styles.pressed : null,
-                ]}
-                testID={index === 0 ? 'channel-card-first' : `channel-card-${item.channelId}`}
-              >
-                {item.thumbnailUrl ? (
-                  <Image source={{ uri: item.thumbnailUrl }} style={styles.thumb} />
-                ) : (
-                  <View style={[styles.thumb, { backgroundColor: colors.surfacePressed }]} />
-                )}
-                <View style={styles.textWrap}>
-                  <Text numberOfLines={1} style={[styles.title, { color: colors.textPrimary }]}>
-                    {item.channelName}
-                  </Text>
-                  <Text style={[styles.meta, { color: colors.textSecondary }]}>
-                    {`${item.subscriberCount.toLocaleString()} subs`}
-                  </Text>
-                </View>
-              </Pressable>
-            )}
+            renderItem={renderChannelItem}
           />
         </View>
       )}
