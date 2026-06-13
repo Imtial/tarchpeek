@@ -3,19 +3,15 @@ import { BackHandler } from 'react-native';
 import { useEvent, useVideoPlayer } from 'react-native-video';
 import { TARCHPEEK_CONSTANTS } from '../constants/tarchpeekConstants';
 import type { TubeArchivistClient, VideoDetails } from '../services/tubeArchivist';
-import { PROGRESS_SYNC_INTERVAL_SECONDS, syncPlaybackProgressCheckpoint } from './playbackProgress';
-import {
-  captureRotationModeContext,
-  getFullscreenOrientationLock,
-  lockFullscreenOrientation,
-  restoreOrientationAfterFullscreen,
-  unlockFullscreenOrientation,
-} from './player/fullscreenOrientation';
+import { syncPlaybackProgressCheckpoint } from './playbackProgress';
 import {
   getWatchedSessionSeconds,
   startWatchSession,
   stopWatchSession,
 } from './player/sessionPolicies';
+
+type SessionPhase = 'active' | 'advancing' | 'closing';
+type FullscreenOrientationLock = 'portrait' | 'landscape';
 
 type UsePlayerSessionParams = {
   client: TubeArchivistClient;
@@ -23,9 +19,6 @@ type UsePlayerSessionParams = {
   onPlayNextInQueue: () => Promise<boolean>;
   videoDetails: VideoDetails;
 };
-
-const RESUME_MIN_SECONDS = TARCHPEEK_CONSTANTS.player.resumeMinSeconds;
-const RESUME_END_BUFFER_SECONDS = TARCHPEEK_CONSTANTS.player.resumeEndBufferSeconds;
 
 function usePlayerSession({
   client,
@@ -36,54 +29,56 @@ function usePlayerSession({
   const initialResumeSeconds = Math.max(0, Math.floor(videoDetails.resumePositionSeconds));
   const durationSeconds = Math.max(0, Math.floor(videoDetails.duration ?? 0));
   const canApplyResumePosition =
-    initialResumeSeconds > RESUME_MIN_SECONDS &&
+    initialResumeSeconds > TARCHPEEK_CONSTANTS.player.resumeMinSeconds &&
     (durationSeconds <= 0 ||
       initialResumeSeconds <
-        Math.max(RESUME_MIN_SECONDS + 1, durationSeconds - RESUME_END_BUFFER_SECONDS));
+        Math.max(
+          TARCHPEEK_CONSTANTS.player.resumeMinSeconds + 1,
+          durationSeconds - TARCHPEEK_CONSTANTS.player.resumeEndBufferSeconds,
+        ));
 
-  const setPlaybackStatus = useCallback((_value: string) => {}, []);
   const [isWatched, setIsWatched] = useState(videoDetails.watched);
   const [isUpdatingWatchedState, setIsUpdatingWatchedState] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const latestPlaybackTimeRef = useRef(0);
   const lastSyncedProgressRef = useRef(0);
   const isProgressSyncInFlightRef = useRef(false);
-  const isClosingRef = useRef(false);
-  const didWatchedStateChangeRef = useRef(false);
-  const isPlayingRef = useRef(false);
-  const playSessionStartedAtMsRef = useRef<number | null>(null);
-  const watchedSessionMsRef = useRef(0);
-  const isAdvancingAfterEndRef = useRef(false);
-  const fullscreenLockRef = useRef<ReturnType<typeof getFullscreenOrientationLock>>(null);
-  const fullscreenRotationContextRef = useRef<Awaited<
-    ReturnType<typeof captureRotationModeContext>
-  > | null>(null);
-  const hasHandledFullscreenExitRef = useRef(true);
+  const sessionPhaseRef = useRef<SessionPhase>('active');
+  const watchSessionRef = useRef({
+    isPlaying: false,
+    startedAtMs: null as number | null,
+    watchedMs: 0,
+  });
+  const fullscreenOrientationLock: FullscreenOrientationLock | null =
+    !videoDetails.streamWidth || !videoDetails.streamHeight
+      ? null
+      : videoDetails.streamWidth > videoDetails.streamHeight
+        ? 'landscape'
+        : videoDetails.streamHeight > videoDetails.streamWidth
+          ? 'portrait'
+          : null;
 
   const syncProgress = useCallback(
-    async (reasonLabel: string, force: boolean) => {
+    async (force: boolean) => {
       await syncPlaybackProgressCheckpoint({
         client,
         force,
         isProgressSyncInFlightRef,
         lastSyncedProgressRef,
         latestPlaybackTimeRef,
-        reasonLabel,
-        setPlaybackStatus,
-        shouldUpdateStatus: false,
         videoId: videoDetails.videoId,
       });
     },
-    [client, setPlaybackStatus, videoDetails.videoId],
+    [client, videoDetails.videoId],
   );
 
-  const syncProgressWithErrorStatus = useCallback(
-    (reasonLabel: string, force: boolean) => {
-      syncProgress(reasonLabel, force).catch(error => {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
-        setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
+  const syncProgressFireAndForget = useCallback(
+    (force: boolean) => {
+      syncProgress(force).catch(_error => {
+        // TODO: do something with the error.
       });
     },
-    [setPlaybackStatus, syncProgress],
+    [syncProgress],
   );
 
   const player = useVideoPlayer(videoDetails.source, currentPlayer => {
@@ -101,143 +96,83 @@ function usePlayerSession({
   });
 
   const handleWillEnterFullscreen = useCallback(() => {
-    hasHandledFullscreenExitRef.current = false;
-    captureRotationModeContext()
-      .then(context => {
-        fullscreenRotationContextRef.current = context;
-      })
-      .catch(() => {
-        fullscreenRotationContextRef.current = null;
-      });
-    if (fullscreenLockRef.current === null) {
-      fullscreenLockRef.current = getFullscreenOrientationLock(
-        videoDetails.streamWidth,
-        videoDetails.streamHeight,
-      );
-    }
-    lockFullscreenOrientation(fullscreenLockRef.current);
-  }, [videoDetails.streamHeight, videoDetails.streamWidth]);
+    setIsFullscreen(true);
+  }, []);
 
   const handleWillExitFullscreen = useCallback(() => {
-    if (hasHandledFullscreenExitRef.current) {
-      return;
-    }
-    hasHandledFullscreenExitRef.current = true;
-    fullscreenLockRef.current = null;
-    restoreOrientationAfterFullscreen(fullscreenRotationContextRef.current);
-    fullscreenRotationContextRef.current = null;
+    setIsFullscreen(false);
   }, []);
 
-  const handleFullscreenChange = useCallback((isFullscreen: boolean) => {
-    if (!isFullscreen) {
-      if (hasHandledFullscreenExitRef.current) {
-        return;
-      }
-      hasHandledFullscreenExitRef.current = true;
-      fullscreenLockRef.current = null;
-      restoreOrientationAfterFullscreen(fullscreenRotationContextRef.current);
-      fullscreenRotationContextRef.current = null;
-    }
+  const handleFullscreenChange = useCallback((nextIsFullscreen: boolean) => {
+    setIsFullscreen(nextIsFullscreen);
   }, []);
-
-  useEvent(player, 'onLoadStart', () => {
-    setPlaybackStatus('Loading video source...');
-  });
-
-  useEvent(player, 'onLoad', data => {
-    setPlaybackStatus(
-      canApplyResumePosition
-        ? `Playback started. Resumed at ${initialResumeSeconds}s.`
-        : `Playback started. Duration ${Math.round(data.duration)}s.`,
-    );
-  });
 
   useEvent(player, 'onProgress', data => {
     latestPlaybackTimeRef.current = data.currentTime;
 
     const playbackSeconds = Math.max(0, Math.floor(data.currentTime));
     const hasReachedIntervalThreshold =
-      playbackSeconds >= lastSyncedProgressRef.current + PROGRESS_SYNC_INTERVAL_SECONDS;
+      playbackSeconds >=
+      lastSyncedProgressRef.current + TARCHPEEK_CONSTANTS.playbackProgress.syncIntervalSeconds;
 
     if (hasReachedIntervalThreshold) {
-      syncProgressWithErrorStatus('interval', false);
-    }
-  });
-
-  useEvent(player, 'onBuffer', buffering => {
-    if (buffering) {
-      setPlaybackStatus('Buffering video...');
+      syncProgressFireAndForget(false);
     }
   });
 
   useEvent(player, 'onPlaybackStateChange', data => {
-    const nextStateLabel = data.isBuffering ? 'buffering' : data.isPlaying ? 'playing' : 'paused';
-    setPlaybackStatus(`Playback state: ${nextStateLabel}`);
-
     if (data.isPlaying) {
-      startWatchSession({
-        isPlayingRef,
-        playSessionStartedAtMsRef,
-        watchedSessionMsRef,
-      });
+      startWatchSession(watchSessionRef);
     }
 
     if (!data.isPlaying || data.isBuffering) {
-      stopWatchSession({
-        isPlayingRef,
-        playSessionStartedAtMsRef,
-        watchedSessionMsRef,
-      });
+      stopWatchSession(watchSessionRef);
     }
 
     if (!data.isPlaying && !data.isBuffering) {
-      syncProgressWithErrorStatus(nextStateLabel, true);
+      syncProgressFireAndForget(true);
     }
   });
 
   useEvent(player, 'onEnd', () => {
-    if (isClosingRef.current || isAdvancingAfterEndRef.current) {
+    if (sessionPhaseRef.current !== 'active') {
       return;
     }
 
-    isAdvancingAfterEndRef.current = true;
-    syncProgress('ended', true)
+    sessionPhaseRef.current = 'advancing';
+    syncProgress(true)
       .then(async () => {
         await onPlayNextInQueue();
       })
-      .catch(error => {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown progress sync error';
-        setPlaybackStatus(`Background progress sync failed: ${errorMessage}`);
+      .catch(_error => {
+        // TODO: do something with the error.
       })
       .finally(() => {
-        isAdvancingAfterEndRef.current = false;
+        if (sessionPhaseRef.current === 'advancing') {
+          sessionPhaseRef.current = 'active';
+        }
       });
   });
 
-  useEvent(player, 'onError', error => {
-    setPlaybackStatus(`Playback failed: ${error.message}`);
+  useEvent(player, 'onError', _error => {
+    // TODO: do something with the error.
   });
 
   const handleBackPress = useCallback(async () => {
-    if (isClosingRef.current) {
+    if (sessionPhaseRef.current === 'closing') {
       return;
     }
 
-    isClosingRef.current = true;
-    stopWatchSession({
-      isPlayingRef,
-      playSessionStartedAtMsRef,
-      watchedSessionMsRef,
-    });
-    unlockFullscreenOrientation();
-    const watchedSessionSeconds = getWatchedSessionSeconds(watchedSessionMsRef);
+    sessionPhaseRef.current = 'closing';
+    stopWatchSession(watchSessionRef);
+    const watchedSessionSeconds = getWatchedSessionSeconds(watchSessionRef);
     const shouldRefreshBrowse =
       watchedSessionSeconds >= TARCHPEEK_CONSTANTS.player.browseRefreshWatchThresholdSeconds ||
-      didWatchedStateChangeRef.current;
+      isWatched !== videoDetails.watched;
     onBack({ resultMessage: 'Playback closed.', shouldRefreshBrowse });
 
-    syncProgress('exit', true).catch(() => undefined);
-  }, [onBack, syncProgress]);
+    syncProgress(true).catch(() => undefined);
+  }, [isWatched, onBack, syncProgress, videoDetails.watched]);
 
   useEffect(() => {
     // Needed to map Android hardware back/gesture to player exit + final progress sync.
@@ -247,7 +182,6 @@ function usePlayerSession({
     });
 
     return () => {
-      unlockFullscreenOrientation();
       backSubscription.remove();
     };
   }, [handleBackPress]);
@@ -263,19 +197,18 @@ function usePlayerSession({
 
     try {
       await client.setWatchedState(videoDetails.videoId, nextWatched);
-      didWatchedStateChangeRef.current = true;
-    } catch (error) {
+    } catch {
       setIsWatched(!nextWatched);
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown watched state update error';
-      setPlaybackStatus(`Watched state update failed: ${errorMessage}`);
+      // TODO: do something with the error.
     } finally {
       setIsUpdatingWatchedState(false);
     }
   }
 
   return {
+    fullscreenOrientationLock,
     isWatched,
+    isFullscreen,
     player,
     handleFullscreenChange,
     handleWillEnterFullscreen,

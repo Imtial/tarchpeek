@@ -2,7 +2,6 @@ packages:
   - .
 
 nodeLinker: hoisted
-hoistingLimits: workspaces
 
 registries:
   default: https://registry.npmjs.org/
