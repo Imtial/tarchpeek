@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../design/ThemeProvider';
+import type { AppTheme } from '../../design/themes';
 import type {
   ContinueWatchingItem,
   PlaylistDetail,
@@ -18,6 +19,41 @@ type PlaylistDetailScreenProps = {
     queueContext?: { videoIds: string[]; currentIndex: number },
   ) => Promise<void>;
 };
+
+type PlaylistDetailHeaderProps = {
+  colors: AppTheme['colors'];
+  detail: PlaylistDetail | null;
+};
+
+function PlaylistDetailHeader({ colors, detail }: PlaylistDetailHeaderProps) {
+  return (
+    <View>
+      {detail?.thumbnailUrl ? (
+        <Image source={{ uri: detail.thumbnailUrl }} style={styles.banner} />
+      ) : (
+        <View style={[styles.banner, { backgroundColor: colors.surfacePressed }]} />
+      )}
+      <View style={styles.metadataSection}>
+        <View style={styles.channelRow}>
+          {detail?.channelLogoUrl ? (
+            <Image source={{ uri: detail.channelLogoUrl }} style={styles.channelLogo} />
+          ) : (
+            <View style={[styles.channelLogo, { backgroundColor: colors.surfacePressed }]} />
+          )}
+          <Text numberOfLines={2} style={[styles.channelName, { color: colors.textSecondary }]}>
+            {detail?.channelName ?? 'Unknown channel'}
+          </Text>
+        </View>
+        <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+          {`${detail?.videoCount.toLocaleString() ?? 0} videos`}
+        </Text>
+        <Text style={[styles.playlistTitle, { color: colors.textPrimary }]}>
+          {detail?.playlistName ?? 'Playlist'}
+        </Text>
+      </View>
+    </View>
+  );
+}
 
 function PlaylistDetailScreen({ playlistId, client, onOpenVideo }: PlaylistDetailScreenProps) {
   const { theme } = useTheme();
@@ -49,36 +85,6 @@ function PlaylistDetailScreen({ playlistId, client, onOpenVideo }: PlaylistDetai
     };
   }, [client, playlistId]);
 
-  function renderHeader() {
-    return (
-      <View>
-        {detail?.thumbnailUrl ? (
-          <Image source={{ uri: detail.thumbnailUrl }} style={styles.banner} />
-        ) : (
-          <View style={[styles.banner, { backgroundColor: colors.surfacePressed }]} />
-        )}
-        <View style={styles.metadataSection}>
-          <View style={styles.channelRow}>
-            {detail?.channelLogoUrl ? (
-              <Image source={{ uri: detail.channelLogoUrl }} style={styles.channelLogo} />
-            ) : (
-              <View style={[styles.channelLogo, { backgroundColor: colors.surfacePressed }]} />
-            )}
-            <Text numberOfLines={2} style={[styles.channelName, { color: colors.textSecondary }]}>
-              {detail?.channelName ?? 'Unknown channel'}
-            </Text>
-          </View>
-          <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-            {`${detail?.videoCount.toLocaleString() ?? 0} videos`}
-          </Text>
-          <Text style={[styles.playlistTitle, { color: colors.textPrimary }]}>
-            {detail?.playlistName ?? 'Playlist'}
-          </Text>
-        </View>
-      </View>
-    );
-  }
-
   const entryItems: ContinueWatchingItem[] = (detail?.entries ?? []).map(entry => ({
     videoId: entry.videoId,
     title: entry.title,
@@ -100,7 +106,7 @@ function PlaylistDetailScreen({ playlistId, client, onOpenVideo }: PlaylistDetai
       testID="playlist-detail-screen"
       title={detail?.playlistName ?? 'Playlist'}
     >
-      {renderHeader()}
+      <PlaylistDetailHeader colors={colors} detail={detail} />
       <VideoResultsList
         isLoading={!detail}
         items={entryItems}

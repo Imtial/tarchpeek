@@ -11,10 +11,22 @@ type UseChannelDetailResourceParams = {
   client: TubeArchivistClient;
 };
 
+type ChannelDetailState = {
+  channelId: string;
+  client: TubeArchivistClient;
+  detail: ChannelDetail | null;
+  isError: boolean;
+  isLoaded: boolean;
+};
+
 function useChannelDetailResource({ channelId, client }: UseChannelDetailResourceParams) {
-  const [detail, setDetail] = useState<ChannelDetail | null>(null);
-  const [isDetailLoading, setIsDetailLoading] = useState(true);
-  const [isDetailError, setIsDetailError] = useState(false);
+  const [detailState, setDetailState] = useState<ChannelDetailState>({
+    channelId,
+    client,
+    detail: null,
+    isError: false,
+    isLoaded: false,
+  });
 
   const reloadKey = useMemo(() => ({ channelId, client }), [channelId, client]);
   const mergeVideoItems = useCallback(
@@ -42,10 +54,13 @@ function useChannelDetailResource({ channelId, client }: UseChannelDetailResourc
     reloadKey,
   });
 
+  const isCurrentDetailState = detailState.channelId === channelId && detailState.client === client;
+  const detail = isCurrentDetailState ? detailState.detail : null;
+  const isDetailError = isCurrentDetailState ? detailState.isError : false;
+  const isDetailLoading = !isCurrentDetailState || !detailState.isLoaded;
+
   useEffect(() => {
     let isMounted = true;
-    setIsDetailLoading(true);
-    setIsDetailError(false);
 
     async function loadDetail() {
       try {
@@ -53,17 +68,24 @@ function useChannelDetailResource({ channelId, client }: UseChannelDetailResourc
         if (!isMounted) {
           return;
         }
-        setDetail(response);
+        setDetailState({
+          channelId,
+          client,
+          detail: response,
+          isError: false,
+          isLoaded: true,
+        });
       } catch {
         if (!isMounted) {
           return;
         }
-        setIsDetailError(true);
-        setDetail(null);
-      } finally {
-        if (isMounted) {
-          setIsDetailLoading(false);
-        }
+        setDetailState({
+          channelId,
+          client,
+          detail: null,
+          isError: true,
+          isLoaded: true,
+        });
       }
     }
 

@@ -116,18 +116,20 @@ function createTubeArchivistClient(connection: TubeArchivistConnection): TubeArc
 
   async function fetchPlaylistDetail(playlistId: string) {
     const response = await transport.playlistRetrieveById(playlistId);
-    const channelResponse = await transport.channelRetrieveById(response.data.playlist_channel_id);
-    const entries = await Promise.all(
-      response.data.playlist_entries.map(async entry => {
-        const entryVideo = await transport.videoRetrieveById(entry.youtube_id);
-        return mapPlaylistEntry({
-          entry,
-          video: entryVideo.data,
-          fallbackChannelName: response.data.playlist_channel,
-          serverUrl: connection.serverUrl,
-        });
-      }),
-    );
+    const [channelResponse, entries] = await Promise.all([
+      transport.channelRetrieveById(response.data.playlist_channel_id),
+      Promise.all(
+        response.data.playlist_entries.map(async entry => {
+          const entryVideo = await transport.videoRetrieveById(entry.youtube_id);
+          return mapPlaylistEntry({
+            entry,
+            video: entryVideo.data,
+            fallbackChannelName: response.data.playlist_channel,
+            serverUrl: connection.serverUrl,
+          });
+        }),
+      ),
+    ]);
 
     return mapPlaylistDetail({
       playlist: response.data,

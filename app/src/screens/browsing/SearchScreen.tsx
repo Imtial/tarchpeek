@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 import { Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTheme } from '../../design/ThemeProvider';
 import type {
@@ -21,17 +21,86 @@ type SearchScreenProps = {
   onOpenPlaylist: (playlistId: string) => void;
 };
 
+type SearchState = {
+  channelResults: SearchChannelResult[];
+  isError: boolean;
+  isLoading: boolean;
+  playlistResults: SearchPlaylistResult[];
+  queryInput: string;
+  results: SearchVideoResult[];
+  submittedQuery: string;
+};
+
+type SearchAction =
+  | { type: 'query_changed'; queryInput: string }
+  | { type: 'search_started'; submittedQuery: string }
+  | {
+      type: 'search_succeeded';
+      channelResults: SearchChannelResult[];
+      playlistResults: SearchPlaylistResult[];
+      results: SearchVideoResult[];
+    }
+  | { type: 'search_failed' };
+
+const INITIAL_SEARCH_STATE: SearchState = {
+  channelResults: [],
+  isError: false,
+  isLoading: false,
+  playlistResults: [],
+  queryInput: '',
+  results: [],
+  submittedQuery: '',
+};
+
+function searchReducer(state: SearchState, action: SearchAction): SearchState {
+  switch (action.type) {
+    case 'query_changed':
+      return {
+        ...state,
+        queryInput: action.queryInput,
+      };
+    case 'search_started':
+      return {
+        ...state,
+        isError: false,
+        isLoading: true,
+        submittedQuery: action.submittedQuery,
+      };
+    case 'search_succeeded':
+      return {
+        ...state,
+        channelResults: action.channelResults,
+        isError: false,
+        isLoading: false,
+        playlistResults: action.playlistResults,
+        results: action.results,
+      };
+    case 'search_failed':
+      return {
+        ...state,
+        channelResults: [],
+        isError: true,
+        isLoading: false,
+        playlistResults: [],
+        results: [],
+      };
+  }
+}
+
 function SearchScreen({ client, onOpenChannel, onOpenPlaylist, onOpenVideo }: SearchScreenProps) {
   const { theme } = useTheme();
   const { colors } = theme;
-  const [queryInput, setQueryInput] = useState('');
-  const [submittedQuery, setSubmittedQuery] = useState('');
-  const [results, setResults] = useState<SearchVideoResult[]>([]);
-  const [channelResults, setChannelResults] = useState<SearchChannelResult[]>([]);
-  const [playlistResults, setPlaylistResults] = useState<SearchPlaylistResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [searchState, dispatch] = useReducer(searchReducer, INITIAL_SEARCH_STATE);
   const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
+  const {
+    channelResults,
+    isError,
+    isLoading,
+    playlistResults,
+    queryInput,
+    results,
+    submittedQuery,
+  } = searchState;
 
   async function submitSearch() {
     const query = queryInput.trim();
@@ -39,21 +108,17 @@ function SearchScreen({ client, onOpenChannel, onOpenPlaylist, onOpenVideo }: Se
       return;
     }
     Keyboard.dismiss();
-    setSubmittedQuery(query);
-    setIsLoading(true);
-    setIsError(false);
+    dispatch({ type: 'search_started', submittedQuery: query });
     try {
       const response = await client.searchArchive(query);
-      setResults(response.videoResults);
-      setChannelResults(response.channelResults);
-      setPlaylistResults(response.playlistResults);
+      dispatch({
+        type: 'search_succeeded',
+        channelResults: response.channelResults,
+        playlistResults: response.playlistResults,
+        results: response.videoResults,
+      });
     } catch {
-      setResults([]);
-      setChannelResults([]);
-      setPlaylistResults([]);
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
+      dispatch({ type: 'search_failed' });
     }
   }
 
@@ -67,7 +132,9 @@ function SearchScreen({ client, onOpenChannel, onOpenPlaylist, onOpenVideo }: Se
         <TextInput
           autoCapitalize="none"
           autoCorrect={false}
-          onChangeText={setQueryInput}
+          onChangeText={nextQueryInput => {
+            dispatch({ type: 'query_changed', queryInput: nextQueryInput });
+          }}
           onSubmitEditing={() => {
             submitSearch().catch(() => undefined);
           }}

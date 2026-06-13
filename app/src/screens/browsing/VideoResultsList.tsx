@@ -3,6 +3,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { TARCHPEEK_CONSTANTS } from '../../constants/tarchpeekConstants';
 import { useTheme } from '../../design/ThemeProvider';
 import type { ContinueWatchingItem } from '../../services/tubeArchivist';
+import type { AppTheme } from '../../design/themes';
 import { radii, spacing } from '../../design/tokens';
 import { PagedFlashList } from './PagedFlashList';
 
@@ -23,6 +24,11 @@ type VideoResultsListProps = {
   onLoadMore?: () => Promise<void>;
 };
 
+type VideoCardProgressProps = {
+  colors: AppTheme['colors'];
+  item: ContinueWatchingItem;
+};
+
 function formatViewCount(viewCount: number) {
   return VIEW_COUNT_FORMATTER.format(Math.max(0, viewCount));
 }
@@ -39,6 +45,56 @@ function isRecentlyAdded(dateDownloaded: number) {
 
   const nowSeconds = Math.floor(Date.now() / 1000);
   return nowSeconds - dateDownloaded <= NEW_CHIP_WINDOW_SECONDS;
+}
+
+function VideoCardProgress({ colors, item }: VideoCardProgressProps) {
+  const duration = Math.max(1, item.durationSeconds);
+  const progressRatio = Math.max(0, Math.min(1, item.resumePositionSeconds / duration));
+  const progressPercent = Math.round(progressRatio * 100);
+  const isNew = isRecentlyAdded(item.dateDownloaded);
+  const hasContinueProgress = item.resumePositionSeconds > 0;
+
+  return (
+    <View style={styles.thumbnailOverlay}>
+      <View style={styles.chipRow}>
+        {isNew ? (
+          <View style={[styles.badgeChip, { backgroundColor: colors.accent }]}>
+            <Text style={[styles.badgeLabel, { color: colors.buttonLabel }]}>New</Text>
+          </View>
+        ) : hasContinueProgress ? (
+          <View style={[styles.badgeChip, { backgroundColor: colors.surfaceBackground }]}>
+            <Text
+              style={[styles.badgeLabel, { color: colors.textPrimary }]}
+            >{`${progressPercent}%`}</Text>
+          </View>
+        ) : (
+          <View style={styles.badgeChipPlaceholder} />
+        )}
+        <View style={styles.rightChips}>
+          {item.watched ? (
+            <View style={[styles.watchedChip, { backgroundColor: colors.accent }]}>
+              <Text style={[styles.badgeLabel, { color: colors.buttonLabel }]}>Watched</Text>
+            </View>
+          ) : null}
+          <View style={[styles.timeChip, { backgroundColor: colors.surfaceBackground }]}>
+            <Text style={[styles.timeChipLabel, { color: colors.textPrimary }]}>
+              {item.durationLabel}
+            </Text>
+          </View>
+        </View>
+      </View>
+      {hasContinueProgress ? (
+        <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
+          <View
+            style={[
+              styles.progressFill,
+              { backgroundColor: colors.accent, width: `${progressPercent}%` },
+            ]}
+          />
+        </View>
+      ) : null}
+    </View>
+  );
 }
 
 function VideoResultsList({
@@ -80,56 +136,6 @@ function VideoResultsList({
     [onOpenVideo, queueIndexByVideoId, queueVideoIds],
   );
 
-  function renderProgress(item: ContinueWatchingItem) {
-    const duration = Math.max(1, item.durationSeconds);
-    const progressRatio = Math.max(0, Math.min(1, item.resumePositionSeconds / duration));
-    const progressPercent = Math.round(progressRatio * 100);
-    const isNew = isRecentlyAdded(item.dateDownloaded);
-    const hasContinueProgress = item.resumePositionSeconds > 0;
-
-    return (
-      <View style={styles.thumbnailOverlay}>
-        <View style={styles.chipRow}>
-          {isNew ? (
-            <View style={[styles.badgeChip, { backgroundColor: colors.accent }]}>
-              <Text style={[styles.badgeLabel, { color: colors.buttonLabel }]}>New</Text>
-            </View>
-          ) : hasContinueProgress ? (
-            <View style={[styles.badgeChip, { backgroundColor: colors.surfaceBackground }]}>
-              <Text
-                style={[styles.badgeLabel, { color: colors.textPrimary }]}
-              >{`${progressPercent}%`}</Text>
-            </View>
-          ) : (
-            <View style={styles.badgeChipPlaceholder} />
-          )}
-          <View style={styles.rightChips}>
-            {item.watched ? (
-              <View style={[styles.watchedChip, { backgroundColor: colors.accent }]}>
-                <Text style={[styles.badgeLabel, { color: colors.buttonLabel }]}>Watched</Text>
-              </View>
-            ) : null}
-            <View style={[styles.timeChip, { backgroundColor: colors.surfaceBackground }]}>
-              <Text style={[styles.timeChipLabel, { color: colors.textPrimary }]}>
-                {item.durationLabel}
-              </Text>
-            </View>
-          </View>
-        </View>
-        {hasContinueProgress ? (
-          <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
-            <View
-              style={[
-                styles.progressFill,
-                { backgroundColor: colors.accent, width: `${progressPercent}%` },
-              ]}
-            />
-          </View>
-        ) : null}
-      </View>
-    );
-  }
-
   function renderVideoCard(item: ContinueWatchingItem, index: number) {
     return (
       <Pressable
@@ -155,7 +161,7 @@ function VideoResultsList({
       >
         <View style={styles.thumbnailWrap}>
           <Image source={{ uri: item.thumbnailUrl }} style={styles.thumbnailImage} />
-          {renderProgress(item)}
+          <VideoCardProgress colors={colors} item={item} />
         </View>
         <Text numberOfLines={2} style={[styles.videoTitle, { color: colors.textPrimary }]}>
           {item.title}

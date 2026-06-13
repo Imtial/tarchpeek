@@ -21,6 +21,7 @@ const VIEW_COUNT_FORMATTER = new Intl.NumberFormat('en-US', {
   notation: 'compact',
   maximumFractionDigits: 1,
 });
+const PUBLISHED_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' });
 
 function formatViewCount(viewCount: number) {
   const compactLabel = VIEW_COUNT_FORMATTER.format(Math.max(0, viewCount));
@@ -36,9 +37,7 @@ function formatPublishedDate(published: string) {
   const now = Date.now();
   const diffMs = now - publishedDate.getTime();
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  const absoluteLabel = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(
-    publishedDate,
-  );
+  const absoluteLabel = PUBLISHED_DATE_FORMATTER.format(publishedDate);
 
   if (days < 1) {
     return `Today • ${absoluteLabel}`;
